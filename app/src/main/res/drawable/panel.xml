@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- first border -->
+    <item>
+        <shape android:shape="rectangle">
+            <corners android:radius="15dp"/>
+            <solid android:color="#111111"/>
+        </shape>
+    </item>
+    <!-- second border for shortcut -->
+    <item
+        android:top="1dp"
+        android:right="1dp"
+        android:bottom="1dp"
+        android:left="1dp">
+        <shape android:shape="rectangle">
+            <corners android:radius="15dp"/>
+            <solid android:color="@color/shortcutBorder"/>
+        </shape>
+    </item>
+    <!-- third border for shortcut -->
+    <item
+        android:top="2dp"
+        android:right="2dp"
+        android:bottom="2dp"
+        android:left="2dp">
+        <shape android:shape="rectangle">
+            <corners android:radius="15dp"/>
+            <solid android:color="#111111"/>
+        </shape>
+    </item>
+    <!-- upper shortcut -->
+    <item
+        android:top="3dp"
+        android:right="3dp"
+        android:bottom="3dp"
+        android:left="3dp">
+        <shape android:shape="rectangle">
+            <corners android:radius="15dp"/>
+            <solid android:color="@color/shortcut"/>
+        </shape>
+    </item>
+    <!-- border between shortcut and body -->
+    <item
+        android:top="50dp">
+        <shape android:shape="rectangle">
+            <corners
+                android:bottomRightRadius="15dp"
+                android:bottomLeftRadius="15dp"/>
+            <solid android:color="#111111"/>
+        </shape>
+    </item>
+    <!-- second border for body -->
+    <item
+        android:top="51dp"
+        android:right="1dp"
+        android:bottom="1dp"
+        android:left="1dp">
+        <shape android:shape="rectangle">
+            <corners
+                android:bottomRightRadius="15dp"
+                android:bottomLeftRadius="15dp"/>
+            <solid android:color="@color/bodyBorder"/>
+        </shape>
+    </item>
+    <!-- third border for body -->
+    <item
+        android:top="50dp"
+        android:right="2dp"
+        android:bottom="2dp"
+        android:left="2dp">
+        <shape android:shape="rectangle">
+            <corners
+                android:bottomRightRadius="15dp"
+                android:bottomLeftRadius="15dp"/>
+            <solid android:color="#111111"/>
+        </shape>
+    </item>
+    <!-- body -->
+    <item
+        android:top="51dp"
+        android:right="3dp"
+        android:bottom="3dp"
+        android:left="3dp">
+        <shape android:shape="rectangle">
+            <corners
+                android:bottomRightRadius="15dp"
+                android:bottomLeftRadius="15dp"/>
+            <solid android:color="@color/body"/>
+        </shape>
+    </item>
+
+</layer-list>

@@ -7,4 +7,28 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <!-- color for circle button from workspace -->
+    <color name="blocksButtonCircleCenterUp">#555555</color>
+    <color name="blocksButtonCircleEdgeUp">#676767</color>
+    <color name="blocksButtonCircleCenterDown">#505050</color>
+    <color name="blocksButtonCircleEdgeDown">#626262</color>
+    <color name="blocksButtonPlus">#999999</color>
+
+    <!-- color for buttons from home screen -->
+    <color name="homeFragmentButtonsStartUp">#393939</color>
+    <color name="homeFragmentButtonsStartDown">#343434</color>
+    <color name="homeFragmentButtonsEndUp">#575757</color>
+    <color name="homeFragmentButtonsEndDown">#525252</color>
+
+    <color name="homeTextButtons">#CCCCCC</color>
+    <color name="background">#303030</color>
+
+    <!-- color for panel with blocks -->
+    <color name="shortcut">#CCBBAA</color>
+    <color name="shortcutBorder">#887766</color>
+    <color name="body">#AABBCC</color>
+    <color name="bodyBorder">#667788</color>
+    <color name="closeButton">#AA0000</color>
+
 </resources>
