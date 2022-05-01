@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".HomeFragment">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/background">
+
+
+
+        <Button
+            android:id="@+id/start_Button"
+
+            style="@style/homeFragmentButton"
+
+            android:text="@string/Start"
+
+            app:layout_constraintBottom_toTopOf="@id/settings_Button"
+            app:layout_constraintEnd_toEndOf="@id/rightKeyboardBorder"
+            app:layout_constraintStart_toStartOf="@id/leftKeyboardBorder"
+            app:layout_constraintTop_toTopOf="@id/upperKeyboardBorder" />
+        <Button
+            android:id="@+id/settings_Button"
+
+            style="@style/homeFragmentButton"
+
+            android:text="settings"
+
+            app:layout_constraintBottom_toTopOf="@id/exit_Button"
+            app:layout_constraintEnd_toEndOf="@id/rightKeyboardBorder"
+            app:layout_constraintStart_toStartOf="@id/leftKeyboardBorder"
+            app:layout_constraintTop_toBottomOf="@id/start_Button" />
+        <Button
+            android:id="@+id/exit_Button"
+
+            style="@style/homeFragmentButton"
+
+            android:text="exit"
+
+            app:layout_constraintBottom_toBottomOf="@id/downKeyboardBorder"
+            app:layout_constraintEnd_toEndOf="@id/rightKeyboardBorder"
+            app:layout_constraintStart_toStartOf="@id/leftKeyboardBorder"
+            app:layout_constraintTop_toBottomOf="@id/settings_Button" />
+
+
+
+        <androidx.constraintlayout.widget.Group
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            app:constraint_referenced_ids="start_Button, settings_Button, exit_Button"/>
+
+
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/upperKeyboardBorder"
+
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.5"/>
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/downKeyboardBorder"
+
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.9"/>
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/leftKeyboardBorder"
+
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.2"/>
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/rightKeyboardBorder"
+
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.8"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</FrameLayout>
