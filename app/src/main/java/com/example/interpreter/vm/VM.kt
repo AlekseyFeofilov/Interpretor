@@ -4,9 +4,17 @@ import android.util.Log
 import com.example.interpreter.vm.instruction.Nop
 import com.example.interpreter.vm.instruction.Number
 import com.example.interpreter.vm.instruction.Math
+import com.example.interpreter.vm.instruction.SetVar
+import io.ktor.server.application.*
+import io.ktor.server.engine.*
+import io.ktor.server.http.content.*
+import io.ktor.server.netty.*
+import io.ktor.server.response.*
+import io.ktor.server.routing.*
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import kotlin.concurrent.thread
+import kotlin.system.exitProcess
 
 class VM {
     lateinit var block: Executor
@@ -32,7 +40,7 @@ class VM {
 //        Log.i("VM", this.Tree[2].Type ?: "")
 //        Log.i("VM", Json.encodeToString(this.Tree))
         
-        this.block = Executor(Env(), listOf(/*Math(""),*/ Number(), Nop()))
+        this.block = Executor(Env(), listOf(SetVar("two", Number(2.0), true), Math("two pow two / sqrt 4"), /*Math("""123 / 3 + 30"""),*/ Number(), Nop()))
         start()
     }
     
@@ -47,6 +55,18 @@ class VM {
         name = "VM"
     ) {
         val vm = _VM().iterator()
+        var i = 0
+    
+//        embeddedServer(Netty, port = 8080, host = "0.0.0.0"){
+//            routing {
+//                get("/") {
+//                    call.respondText("Hello World!")
+//                }
+//                static("/static") {
+//                    resources("static")
+//                }
+//            }
+//        }.start()
         
         while(true){
             if(vm.hasNext()) {
@@ -54,7 +74,10 @@ class VM {
             }
             
             Log.i("VM", "debugCaller")
-            Thread.sleep(500)
+            Thread.sleep(50)
+            
+            if(i++ >= 10)
+                exitProcess(0)
         }
     }
     
