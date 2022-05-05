@@ -2,8 +2,16 @@ package com.example.interpreter
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.window.layout.WindowMetrics
+import androidx.window.layout.WindowMetricsCalculator
 import com.example.interpreter.databinding.ActivityMainBinding
 import com.example.interpreter.vm.VM
+
+// settings:
+var isButtonForConsoleVisibility = false
+
+
+lateinit var metrics: WindowMetrics
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
@@ -12,7 +20,9 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        metrics = WindowMetricsCalculator.getOrCreate()
+            .computeCurrentWindowMetrics(this)
         
-        val test: VM = VM()
+        //val test: VM = VM()
     }
 }

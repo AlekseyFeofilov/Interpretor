@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- border -->
+    <item>
+        <shape android:shape="oval">
+            <size android:height="61dp" android:width="61dp"/>
+            <solid android:color="#111111"/>
+        </shape>
+    </item>
+
+    <!-- circle when is clicked -->
+    <item android:state_pressed="true"
+        android:top="1dp"
+        android:bottom="1dp"
+        android:left="1dp"
+        android:right="1dp">
+        <shape android:shape="oval">
+            <gradient
+                android:angle="45.0"
+                android:startColor="@color/blocksButtonCircleEdgeDown"
+                android:centerColor="@color/homeFragmentButtonsEndDown"
+                android:endColor="@color/blocksButtonCircleEdgeDown"/>
+        </shape>
+    </item>
+
+    <!-- circle -->
+    <item
+        android:top="1dp"
+        android:bottom="1dp"
+        android:left="1dp"
+        android:right="1dp">
+        <shape android:shape="oval">
+            <gradient
+                android:angle="45.0"
+                android:startColor="@color/blocksButtonCircleEdgeUp"
+                android:centerColor="@color/homeFragmentButtonsEndUp"
+                android:endColor="@color/blocksButtonCircleEdgeUp" />
+        </shape>
+    </item>
+
+    <!-- screen -->
+    <item
+        android:top="15dp"
+        android:bottom="15dp"
+        android:left="10dp"
+        android:right="10dp">
+        <shape android:shape="rectangle">
+            <corners android:radius="5dp"/>
+            <solid android:color="#111111"/>
+        </shape>
+    </item>
+    <item
+        android:top="16dp"
+        android:bottom="15dp"
+        android:left="11dp"
+        android:right="11dp">
+        <shape android:shape="rectangle">
+            <corners android:radius="5dp"/>
+            <solid android:color="@color/blocksButtonCircleEdgeUp"/>
+        </shape>
+    </item>
+    <item
+        android:top="20dp"
+        android:bottom="15dp"
+        android:left="10dp"
+        android:right="10dp">
+        <shape android:shape="rectangle">
+            <corners android:bottomLeftRadius="5dp"
+                android:bottomRightRadius="5dp"/>
+            <solid android:color="#111111"/>
+        </shape>
+    </item>
+    <item
+        android:top="21dp"
+        android:bottom="16dp"
+        android:left="11dp"
+        android:right="11dp">
+        <shape android:shape="rectangle">
+            <corners android:bottomLeftRadius="5dp"
+                android:bottomRightRadius="5dp"/>
+            <solid android:color="@color/blocksButtonCircleEdgeUp"/>
+        </shape>
+    </item>
+</layer-list>

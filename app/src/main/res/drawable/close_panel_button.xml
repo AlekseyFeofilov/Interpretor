@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- border -->
     <item>
         <shape android:shape="oval">
             <solid android:color="#111111"/>
@@ -8,6 +9,7 @@
                 android:width="31dp"/>
         </shape>
     </item>
+    <!-- body -->
     <item
         android:top="1dp"
         android:bottom="1dp"
@@ -20,6 +22,7 @@
                 android:width="30dp"/>
         </shape>
     </item>
+    <!-- cross -->
     <item
         android:top="13dp"
         android:bottom="13dp"

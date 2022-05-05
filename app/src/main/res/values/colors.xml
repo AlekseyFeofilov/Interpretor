@@ -26,9 +26,9 @@
 
     <!-- color for panel with blocks -->
     <color name="shortcut">#CCBBAA</color>
-    <color name="shortcutBorder">#887766</color>
-    <color name="body">#AABBCC</color>
-    <color name="bodyBorder">#667788</color>
+    <color name="shortcutBorder">#665544</color>
+    <color name="body">#99AABB</color>
+    <color name="bodyBorder">#445566</color>
     <color name="closeButton">#AA0000</color>
 
 </resources>
