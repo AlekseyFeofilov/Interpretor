@@ -15,4 +15,10 @@ class RowAction @JvmOverloads constructor(
         definiteInput = true
         inputType = BlockView.Companion.InputType.FUNCTION
     }
+/*
+    override var expressionField = false
+    override var description = "action"
+    override var definiteInput = true
+    override var inputType = BlockView.Companion.InputType.FUNCTION
+*/
 }

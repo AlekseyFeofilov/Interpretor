@@ -42,7 +42,7 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
         
         binding.scrollView.scrollable = false
         binding.horizontalScrollView.scrollable = false
-        binding.scrollView.setOnTouchListener(twoDimensionScrolling)
+        //binding.scrollView.setOnTouchListener(twoDimensionScrolling)
     }
     
     private fun addCanvas(canvas: DrawView) {

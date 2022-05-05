@@ -77,7 +77,7 @@ class DrawView(context: Context?) : View(context) {
                 )
             }
             MotionEvent.ACTION_UP -> {
-                TODO("redraw old lines")
+                //TODO("redraw old lines")
             }
         }
         true
