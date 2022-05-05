@@ -14,6 +14,7 @@ class RowCondition @JvmOverloads constructor(
         expressionField = false
         outputField = false
         description = "condition"
+        definiteInput = true
         inputType = BlockView.Companion.InputType.BOOLEAN
     }
 }

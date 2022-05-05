@@ -32,9 +32,6 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
         
         val canvas = DrawView(activity)
         addCanvas(canvas)
-
-        /*val rowCondition = RowCondition(activity as Context)
-        binding.constraintLayout.addView(rowCondition)*/
         
         binding.blocksButton.setOnClickListener {
             if (!isPanelOnScreen) {
@@ -42,10 +39,13 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
                 isPanelOnScreen = true
             }
         }
-        binding.horizontalScrollView.setOnTouchListener(twoDimensionScrolling)
+        
+        binding.scrollView.scrollable = false
+        binding.horizontalScrollView.scrollable = false
+        binding.scrollView.setOnTouchListener(twoDimensionScrolling)
     }
     
-    private fun addCanvas(canvas: DrawView){
+    private fun addCanvas(canvas: DrawView) {
         val density = this.resources.displayMetrics.density
         val params =
             ConstraintLayout.LayoutParams((5000 * density).toInt(), (5000 * density).toInt())

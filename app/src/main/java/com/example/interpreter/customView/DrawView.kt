@@ -6,10 +6,14 @@ import android.graphics.*
 import android.view.MotionEvent
 import android.view.View
 
+data class Line(var point1: Point, var point2: Point, var point3: Point, var point4: Point)
+
 @SuppressLint("ClickableViewAccessibility")
 class DrawView(context: Context?) : View(context) {
     private var p: Paint = Paint(Paint.ANTI_ALIAS_FLAG)
     private var path = Path()
+    
+    private var connections = mutableListOf<Line>()
     
     private var point1 = Point(0, 0)
     private var point2 = Point(0, 0)
@@ -23,6 +27,10 @@ class DrawView(context: Context?) : View(context) {
         var startY = 0f
     }
     
+    private fun saveLine(point1: Point, point2: Point, point3: Point, point4: Point){
+        connections.add(Line(point1, point2, point3, point4))
+    }
+    
     private fun draw(point1: Point, point2: Point, point3: Point, point4: Point) {
         this.point1 = point1
         this.point2 = point2
@@ -31,7 +39,6 @@ class DrawView(context: Context?) : View(context) {
         
         invalidate()
     }
-    
     
     override fun onDraw(canvas: Canvas) {
         p.color = Color.CYAN
@@ -61,13 +68,16 @@ class DrawView(context: Context?) : View(context) {
             MotionEvent.ACTION_MOVE -> {
                 position.curX = event.x + it.x
                 position.curY = event.y + it.y
-                
+    
                 draw(
                     Point(position.startX.toInt(), position.startY.toInt()),
-                    Point(position.startX.toInt() + 30, position.startY.toInt()),
-                    Point(position.curX.toInt() - 30, position.curY.toInt()),
+                    Point(position.startX.toInt() + 400, position.startY.toInt()),
+                    Point(position.curX.toInt() - 400, position.curY.toInt()),
                     Point(position.curX.toInt(), position.curY.toInt())
                 )
+            }
+            MotionEvent.ACTION_UP -> {
+                TODO("redraw old lines")
             }
         }
         true
@@ -75,6 +85,6 @@ class DrawView(context: Context?) : View(context) {
     
     init {
         p.strokeWidth = 10f
-        //this.setOnTouchListener(touchListener)
+        this.setOnTouchListener(touchListener)
     }
 }

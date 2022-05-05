@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<com.example.interpreter.customView.LockableScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/scrollView"
@@ -7,7 +7,7 @@
     android:layout_height="wrap_content"
     tools:context=".MainActivity">
 
-    <HorizontalScrollView
+    <com.example.interpreter.customView.LockableHorizontalScrollView
         android:id="@+id/horizontalScrollView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">
@@ -29,10 +29,11 @@
                 app:layout_constraintTop_toTopOf="parent"/>
 
             <com.example.interpreter.customView.blockWhile.BlockWhile
+                android:id="@+id/BlockWhileView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintLeft_toLeftOf="parent"/>
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
             <Button
                 android:id="@+id/blocksButton"
@@ -67,5 +68,5 @@
                 app:layout_constraintGuide_percent="0.95" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
-    </HorizontalScrollView>
-</ScrollView>
+    </com.example.interpreter.customView.LockableHorizontalScrollView>
+</com.example.interpreter.customView.LockableScrollView>
