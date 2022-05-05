@@ -1,57 +1,71 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".WorkspaceFragment">
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/background">
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/scrollView"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    tools:context=".MainActivity">
 
+    <HorizontalScrollView
+        android:id="@+id/horizontalScrollView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
 
-        <FrameLayout
-            android:id="@+id/container"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"/>
-
-        <Button
-            android:id="@+id/blocksButton"
-
-            android:layout_height="60dp"
-            android:layout_width="0dp"
-            android:layout_marginBottom="1dp"
-            android:layout_marginEnd="1dp"
-
-            app:layout_constraintDimensionRatio="1:1"
-            android:background="@drawable/blocks_button"
-
-            app:layout_constraintBottom_toBottomOf="@id/downBlocksBorder"
-            app:layout_constraintEnd_toEndOf="@id/rightBlocksBorder"/>
-
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/downBlocksBorder"
-
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/constraintLayout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:background="@color/background">
 
-            android:orientation="horizontal"
-            app:layout_constraintGuide_percent="0.95"/>
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/rightBlocksBorder"
+            <FrameLayout
+                android:id="@+id/container"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
 
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"/>
 
-            android:orientation="vertical"
-            app:layout_constraintGuide_percent="0.95"/>
+            <com.example.interpreter.customView.blockWhile.BlockWhile
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"/>
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+            <Button
+                android:id="@+id/blocksButton"
 
-</FrameLayout>
+                android:layout_width="0dp"
+                android:layout_height="60dp"
+                android:layout_marginEnd="1dp"
+                android:layout_marginBottom="1dp"
+
+                android:background="@drawable/blocks_button"
+                app:layout_constraintBottom_toBottomOf="@id/downBlocksBorder"
+
+                app:layout_constraintDimensionRatio="1:1"
+                app:layout_constraintEnd_toEndOf="@id/rightBlocksBorder" />
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/downBlocksBorder"
+
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+
+                android:orientation="horizontal"
+                app:layout_constraintGuide_percent="0.95" />
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/rightBlocksBorder"
+
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent="0.95" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </HorizontalScrollView>
+</ScrollView>

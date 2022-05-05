@@ -2,4 +2,11 @@
     <string name="app_name">Interpreter</string>
 
     <string name="Start">Start</string>
+
+    <string-array name="inputType">
+        <item>Double</item>
+        <item>String</item>
+        <item>Boolean</item>
+        <item>Function</item>
+    </string-array>
 </resources>
