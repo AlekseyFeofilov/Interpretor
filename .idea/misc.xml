@@ -18,11 +18,11 @@
         <entry key="..\:/projects/interpreter/app/src/main/res/drawable/right_panel_button.xml" value="0.229" />
         <entry key="..\:/projects/interpreter/app/src/main/res/drawable/settings_panel.xml" value="0.229" />
         <entry key="..\:/projects/interpreter/app/src/main/res/layout/activity_main.xml" value="0.12447916666666667" />
-        <entry key="..\:/projects/interpreter/app/src/main/res/layout/fragment_blocks.xml" value="0.23007246376811594" />
+        <entry key="..\:/projects/interpreter/app/src/main/res/layout/fragment_blocks.xml" value="0.152" />
         <entry key="..\:/projects/interpreter/app/src/main/res/layout/fragment_home.xml" value="0.1265625" />
-        <entry key="..\:/projects/interpreter/app/src/main/res/layout/fragment_right_panel.xml" value="0.264" />
+        <entry key="..\:/projects/interpreter/app/src/main/res/layout/fragment_right_panel.xml" value="0.136" />
         <entry key="..\:/projects/interpreter/app/src/main/res/layout/fragment_settings.xml" value="0.264" />
-        <entry key="..\:/projects/interpreter/app/src/main/res/layout/fragment_workspace.xml" value="0.8" />
+        <entry key="..\:/projects/interpreter/app/src/main/res/layout/fragment_workspace.xml" value="0.152" />
       </map>
     </option>
   </component>
