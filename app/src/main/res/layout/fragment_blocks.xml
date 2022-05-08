@@ -38,57 +38,7 @@
             android:layout_marginBottom="3dp"
             android:layout_marginTop="51dp"
             android:scrollbars="none">
-            <LinearLayout
-                android:id="@+id/listOfBlocks"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
-                <View
-                    android:layout_margin="8dp"
-                    android:layout_width="match_parent"
-                    android:layout_height="200dp"
-                    android:background="@drawable/cell_for_blocks"/>
-                <View
-                    android:layout_margin="8dp"
-                    android:layout_width="wrap_content"
-                    android:layout_height="200dp"
-                    android:background="@drawable/cell_for_blocks"/>
-                <View
-                    android:layout_margin="5dp"
-                    android:layout_width="wrap_content"
-                    android:layout_height="200dp"
-                    android:background="@drawable/cell_for_blocks"/>
-                <View
-                    android:layout_margin="8dp"
-                    android:layout_width="wrap_content"
-                    android:layout_height="200dp"
-                    android:background="@drawable/cell_for_blocks"/>
-                <View
-                    android:layout_margin="8dp"
-                    android:layout_width="wrap_content"
-                    android:layout_height="200dp"
-                    android:background="@drawable/cell_for_blocks"/>
-                <View
-                    android:layout_margin="5dp"
-                    android:layout_width="wrap_content"
-                    android:layout_height="200dp"
-                    android:background="@drawable/cell_for_blocks"/>
-                <View
-                    android:layout_margin="8dp"
-                    android:layout_width="wrap_content"
-                    android:layout_height="200dp"
-                    android:background="@drawable/cell_for_blocks"/>
-                <View
-                    android:layout_margin="8dp"
-                    android:layout_width="wrap_content"
-                    android:layout_height="200dp"
-                    android:background="@drawable/cell_for_blocks"/>
-                <View
-                    android:layout_margin="5dp"
-                    android:layout_width="wrap_content"
-                    android:layout_height="200dp"
-                    android:background="@drawable/cell_for_blocks"/>
-            </LinearLayout>
+            <include layout="@layout/list_of_blocks"/>
         </ScrollView>
     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -130,7 +80,7 @@
         android:layout_height="wrap_content"
 
         android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.95"/>
+        app:layout_constraintGuide_percent="0.98"/>
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/rightBlocksBorder"
 
