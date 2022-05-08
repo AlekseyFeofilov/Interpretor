@@ -2,6 +2,11 @@
     <string name="app_name">Interpreter</string>
 
     <string name="Start">Start</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string-array name="inputType">
+        <item>Double</item>
+        <item>String</item>
+        <item>Boolean</item>
+        <item>Function</item>
+    </string-array>
 </resources>

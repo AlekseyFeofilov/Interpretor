@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/standardBlockView"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    tools:parentTag="androidx.constraintlayout.widget.ConstraintLayout">
+
+    <TableLayout
+        android:id="@+id/bodyView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        tools:layout_editor_absoluteX="33dp"
+        tools:layout_editor_absoluteY="51dp"
+        android:background="#222222"
+        android:paddingBottom="5dp">
+
+        <TableRow
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/headerTextView"
+                android:layout_width="0dp"
+                android:layout_height="40dp"
+                android:padding="3dp"
+                android:background="#470505"
+                android:gravity="center_vertical|center"
+                android:textColor="@color/white"
+                android:textSize="18sp"
+                android:lines="1"
+                android:text="Title"
+                android:layout_weight="1"/>
+        </TableRow>
+
+        <com.example.interpreter.customView.BlockRowView/>
+    </TableLayout>
+</merge>
