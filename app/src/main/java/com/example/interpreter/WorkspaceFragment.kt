@@ -2,6 +2,7 @@ package com.example.interpreter
 
 import android.annotation.SuppressLint
 import android.content.ClipData
+import android.os.Build
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.view.DragEvent
@@ -34,6 +35,10 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
     private lateinit var bindingStack: StackForWorkspaceBinding
     private lateinit var bindingBlocksPanel: FragmentBlocksBinding
     private lateinit var bindingListOfBlocks: ListOfBlocksBinding
+    private lateinit var bindingScrollBox: ScrollBoxBinding
+    
+    private var location = Point(0f, 0f)
+    private lateinit var draggingView: View
     
     @SuppressLint("ClickableViewAccessibility")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -44,6 +49,7 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
         bindingBlocksPanel = FragmentBlocksBinding.bind(view)
         bindingStack = StackForWorkspaceBinding.bind(view)
         bindingListOfBlocks = ListOfBlocksBinding.bind(view)
+        bindingScrollBox = ScrollBoxBinding.bind(view)
         
         isConsoleHidden = true
         isBlocksPanelHidden = true
@@ -86,16 +92,17 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
         for (i in 0 until bindingListOfBlocks.listOfBlocks.childCount) {
             bindingListOfBlocks.listOfBlocks.getChildAt(i).setOnClickListener { button ->
                 addBlockToStack(createBlockByClickedButton(button as Button))
-                //stackOfBlocks[stackOfBlocks.size - 1].setOnDragListener()
             }
         }
         
         
         // turn on drag-n-drop
-        bindingWorkspace.scrollBox.setOnDragListener(choiceDragListener())
+        bindingScrollBox.scrollBox.setOnDragListener(choiceDragListener())
         bindingStack.stackContainer.setOnDragListener(choiceDragListener())
+        bindingScrollBox.BlockWhileView.setOnTouchListener(choiceTouchListener())
     }
     
+    // generate and put in stack blocks
     private fun createBlockByClickedButton(button: Button): View =
         when (button) {
             bindingListOfBlocks.VARIABLE -> {
@@ -136,70 +143,79 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
             bindingStack.stackContainer.height - 40
         )
         bindingStack.stackContainer.addView(view, params)
-        //bindingWorkspace.scrollBox.addView(view, params)
         view.x += 20
         view.y += 20
         view.setOnTouchListener(choiceTouchListener())
         view.translationZ = 30f
-        //view.setOnDragListener(choiceDragListener())
     }
     
-    // drag blocks
+    // drag-n-drop for blocks
     @SuppressLint("ClickableViewAccessibility")
-    private fun choiceTouchListener() = View.OnTouchListener { view, event ->
-        if (event.action == MotionEvent.ACTION_DOWN) {
-            val data = ClipData.newPlainText("", "")
-            val shadowBuilder = DragShadowBuilder(view)
+    private fun choiceTouchListener() = OnTouchListener { view, _ ->
+        val data = ClipData.newPlainText("", "")
+        val shadowBuilder = DragShadowBuilder(view)
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+            @Suppress("DEPRECATION")
             view.startDrag(data, shadowBuilder, view, 0)
-            draggingView = view as Button
-            true
         } else {
-            false
+            view.startDragAndDrop(data, shadowBuilder, view, 0)
         }
+        draggingView = view as View
+        true
     }
-    
-    //private var point = Point(0f, 0f)
-    private var location = Point(0f, 0f)
-    private lateinit var currentParent: FrameLayout
-    private lateinit var draggingView: Button
     
     private fun choiceDragListener() = OnDragListener { view, event ->
         when (event.action) {
             DragEvent.ACTION_DRAG_STARTED -> {
-                //draggingView.visibility = INVISIBLE
+                if(draggingView.parent == bindingScrollBox.scrollBox)
+                    draggingView.visibility = INVISIBLE
             }
             DragEvent.ACTION_DRAG_LOCATION -> {
-                if (view == bindingWorkspace.scrollBox) {
+                if (view == bindingScrollBox.scrollBox) {
                     location.x = event.x
                     location.y = event.y
+                }
+                else {
+                
                 }
             }
             DragEvent.ACTION_DROP -> {
                 when (view) {
                     draggingView.parent -> {
-                        draggingView.x = location.x - draggingView.width / 2
-                        draggingView.y = location.y - draggingView.height / 2
-                        draggingView.translationZ = 30f
+                        when(view) {
+                            bindingStack.stackContainer -> {
+                                draggingView.x = 20f
+                                draggingView.y = 20f
+                            }
+                            bindingScrollBox.scrollBox -> {
+                                draggingView.translationZ = 30f
+                                draggingView.x = location.x - draggingView.width / 2
+                                draggingView.y = location.y - draggingView.height / 2
+                            }
+                        }
                     }
                     bindingStack.stackContainer -> {
-                        bindingWorkspace.scrollBox.removeView(draggingView)
+                        bindingScrollBox.scrollBox.removeView(draggingView)
                         bindingStack.stackContainer.addView(draggingView)
                         draggingView.x = 20f
                         draggingView.y = 20f
                     }
-                    bindingWorkspace.scrollBox -> {
+                    bindingScrollBox.scrollBox -> {
                         bindingStack.stackContainer.removeView(draggingView)
-                        bindingWorkspace.scrollBox.addView(draggingView)
+                        bindingScrollBox.scrollBox.addView(draggingView)
                         draggingView.translationZ = 30f
                         draggingView.x = location.x - draggingView.width / 2
                         draggingView.y = location.y - draggingView.height / 2
                     }
                 }
-                //draggingView.visibility = VISIBLE
             }
+            DragEvent.ACTION_DRAG_ENDED -> draggingView.visibility = VISIBLE
+    
         }
         true
     }
+    
+    //private fun open
     
     // animation for ui: console and down panel
     @SuppressLint("ClickableViewAccessibility", "SetTextI18n")
@@ -235,7 +251,7 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
     private fun moveBlocksFragment(time: Long) {
         isBlocksPanelHidden = if (isBlocksPanelHidden) {
             val from = Point(blocksPanel.x, blocksPanel.y)
-            val to = Point(blocksPanel.x, 0.05f * metrics.bounds.height())
+            val to = Point(blocksPanel.x, 0.03f * metrics.bounds.height())
             moveContainer(from, to, time, blocksPanel)
             false
         } else {

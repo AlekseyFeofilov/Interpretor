@@ -8,38 +8,6 @@
     <include layout="@layout/fragment_blocks" />
     <include layout="@layout/fragment_right_panel"/>
     <include layout="@layout/stack_for_workspace"/>
-
-    <ScrollView
-        android:id="@+id/vScroll"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/workspaceBorder"
-        android:orientation="vertical">
-        <HorizontalScrollView
-            android:id="@+id/hScroll"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-            <FrameLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@drawable/home_buttons"
-                android:id="@+id/scrollBox">
-                <View
-                    android:layout_width="1000dp"
-                    android:layout_height="1000dp"
-                    android:background="@drawable/home_buttons"/>
-            </FrameLayout>
-        </HorizontalScrollView>
-    </ScrollView>
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/workspaceBorder"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.78"/>
+    <include layout="@layout/scroll_box"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

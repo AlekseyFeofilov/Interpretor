@@ -10,12 +10,11 @@
         android:id="@+id/console"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginStart="-30dp"
         android:translationZ="15dp"
-        app:layout_constraintTop_toTopOf="@id/upRightPanelBorder"
-        app:layout_constraintBottom_toBottomOf="@id/downRightPanelBorder"
-        app:layout_constraintStart_toEndOf="parent"
-        app:layout_constraintEnd_toEndOf="@id/border">
+        app:layout_constraintTop_toTopOf="@id/topBorderConsole"
+        app:layout_constraintBottom_toBottomOf="@id/BottomBorderConsole"
+        app:layout_constraintStart_toEndOf="@id/startBorderConsole"
+        app:layout_constraintEnd_toEndOf="@id/endBorderConsole">
         <View
             android:id="@+id/body_panel"
             android:layout_width="0dp"
@@ -27,72 +26,75 @@
             app:layout_constraintEnd_toEndOf="parent" />
         <Button
             android:id="@+id/button_panel"
-            android:layout_marginTop="50dp"
-            android:layout_marginBottom="50dp"
-            android:layout_width="30dp"
-
-            android:layout_height="match_parent"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
             android:background="@drawable/right_panel_button"
-            app:layout_constraintEnd_toStartOf="@id/body_panel"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintEnd_toStartOf="@id/endBorderConsoleButton"
+            app:layout_constraintBottom_toBottomOf="@id/BottomBorderConsoleButton"
+            app:layout_constraintTop_toTopOf="@id/topBorderConsoleButton"
+            app:layout_constraintStart_toStartOf="@id/console" />
+        <androidx.constraintlayout.widget.Guideline
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.9"
+            android:id="@+id/BottomBorderConsoleButton"/>
+        <androidx.constraintlayout.widget.Guideline
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.1"
+            android:id="@+id/topBorderConsoleButton"/>
+        <androidx.constraintlayout.widget.Guideline
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.05"
+            android:id="@+id/endBorderConsoleButton"/>
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <Button
         android:id="@+id/consoleButton"
-
         android:layout_height="60dp"
         android:layout_width="0dp"
-        android:layout_marginBottom="68dp"
-        android:layout_marginEnd="1dp"
         android:text="cons_"
         android:textSize="11sp"
         app:layout_constraintDimensionRatio="1:1"
         android:background="@drawable/button_call_to_console"
-
-        app:layout_constraintBottom_toTopOf="@id/downBlocksBorder"
-        app:layout_constraintEnd_toEndOf="@id/rightBlocksBorder"/>
+        app:layout_constraintTop_toTopOf="@id/topBorderCallButton"
+        app:layout_constraintEnd_toEndOf="@id/startBorderConsole"/>
 
     <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/upRightPanelBorder"
-
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-
         android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.15"/>
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/downRightPanelBorder"
+        app:layout_constraintGuide_percent="0.77"
+        android:id="@+id/topBorderCallButton"/>
 
+
+    <androidx.constraintlayout.widget.Guideline
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-
         android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.6"/>
+        app:layout_constraintGuide_percent="0.25"
+        android:id="@+id/topBorderConsole"/>
     <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/border"
-
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.70"
+        android:id="@+id/BottomBorderConsole"/>
+    <androidx.constraintlayout.widget.Guideline
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:orientation="vertical"
-        app:layout_constraintGuide_percent="2"/>
+        app:layout_constraintGuide_percent="1.95"
+        android:id="@+id/endBorderConsole"/>
     <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/downBlocksBorder"
-
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.95"/>
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/rightBlocksBorder"
-
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-
         android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.95"/>
+        app:layout_constraintGuide_percent="0.95"
+        android:id="@+id/startBorderConsole"/>
 
 </merge>

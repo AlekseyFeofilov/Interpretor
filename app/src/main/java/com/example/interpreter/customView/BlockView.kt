@@ -1,6 +1,7 @@
 package com.example.interpreter.customView
 
 import android.annotation.SuppressLint
+import android.content.ClipData
 import android.content.Context
 import android.graphics.Color
 import android.os.Build
@@ -28,50 +29,52 @@ open class BlockView @JvmOverloads constructor(
     open var headerColor = "#470505"
     open var rows = listOf(binding.bodyView.getChildAt(1) as BlockRowView)
     
-    private val touchListener = OnTouchListener { it, _ ->
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
-            @Suppress("DEPRECATION")
-            it.startDrag(null, DragShadowBuilder(it), it, 0)
-        } else {
-            it.startDragAndDrop(null, DragShadowBuilder(it), it, 0)
-        }
-        //it.visibility = View.INVISIBLE
-        true
-    }
+//    private val touchListener = OnTouchListener { it, _ ->
+//        val data = ClipData.newPlainText("", "")
+//        val shadowBuilder = DragShadowBuilder(it)
+//        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+//            @Suppress("DEPRECATION")
+//            it.startDrag(data, shadowBuilder, it, 0)
+//        } else {
+//            it.startDragAndDrop(data, shadowBuilder, it, 0)
+//        }
+//        //it.visibility = View.INVISIBLE
+//        true
+//    }
 
 /*    override fun onInterceptTouchEvent(ev: MotionEvent?): Boolean {
         return super.onInterceptTouchEvent(ev)
     }*/
     
-    private val dragListener = OnDragListener { view, dragEvent ->
-        val draggableItem = dragEvent.localState as View
-        
-        when (dragEvent.action) {
-            DragEvent.ACTION_DRAG_STARTED,
-            DragEvent.ACTION_DRAG_LOCATION,
-            DragEvent.ACTION_DRAG_EXITED,
-            DragEvent.ACTION_DRAG_ENTERED -> {
-                true
-            }
-            DragEvent.ACTION_DRAG_ENDED -> {
-                draggableItem.x = dragEvent.x - draggableItem.width / 2
-                draggableItem.y = dragEvent.y - draggableItem.height / 2
-                draggableItem.visibility = View.VISIBLE
-                
-                view.invalidate()
-                true
-            }
-            DragEvent.ACTION_DROP -> {
-                draggableItem.x = dragEvent.x - draggableItem.width / 2
-                draggableItem.y = dragEvent.y - draggableItem.height / 2
-                draggableItem.visibility = View.VISIBLE
-                
-                view.invalidate()
-                true
-            }
-            else -> false
-        }
-    }
+//    private val dragListener = OnDragListener { view, dragEvent ->
+//        val draggableItem = dragEvent.localState as View
+//
+//        when (dragEvent.action) {
+//            DragEvent.ACTION_DRAG_STARTED,
+//            DragEvent.ACTION_DRAG_LOCATION,
+//            DragEvent.ACTION_DRAG_EXITED,
+//            DragEvent.ACTION_DRAG_ENTERED -> {
+//                true
+//            }
+//            DragEvent.ACTION_DRAG_ENDED -> {
+//                draggableItem.x = dragEvent.x - draggableItem.width / 2
+//                draggableItem.y = dragEvent.y - draggableItem.height / 2
+//                draggableItem.visibility = View.VISIBLE
+//
+//                view.invalidate()
+//                true
+//            }
+//            DragEvent.ACTION_DROP -> {
+//                draggableItem.x = dragEvent.x - draggableItem.width / 2
+//                draggableItem.y = dragEvent.y - draggableItem.height / 2
+//                draggableItem.visibility = View.VISIBLE
+//
+//                view.invalidate()
+//                true
+//            }
+//            else -> false
+//        }
+//    }
 
 /*    private val connecting = OnTouchListener { it, event ->
         when (event.action) {
@@ -104,8 +107,8 @@ open class BlockView @JvmOverloads constructor(
         setRows()
         setAppearance()
         
-        this.setOnTouchListener(touchListener)
-        this.setOnDragListener(dragListener)
+        //this.setOnTouchListener(touchListener)
+        //this.setOnDragListener(dragListener)
         //binding.output1RadioButton.setOnTouchListener(connecting)
     }
 }
