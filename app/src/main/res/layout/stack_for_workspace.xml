@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+
+    tools:parentTag="androidx.constraintlayout.widget.ConstraintLayout">
+
+    <FrameLayout
+        android:id="@+id/stackContainer"
+        android:layout_height="0dp"
+        android:layout_width="0dp"
+        android:translationZ="20dp"
+        android:layout_marginEnd="60dp"
+        android:background="@drawable/settings_panel"
+        app:layout_constraintTop_toTopOf="@id/topBorderStack"
+        app:layout_constraintEnd_toEndOf="@id/endBorderStack"
+        app:layout_constraintBottom_toBottomOf="@id/bottomBorderStack"
+        app:layout_constraintStart_toStartOf="@id/startBorderStack"/>
+
+
+    <androidx.constraintlayout.widget.Guideline
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.95"
+        android:id="@+id/bottomBorderStack"/>
+    <androidx.constraintlayout.widget.Guideline
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.77"
+        android:id="@+id/topBorderStack"/>
+    <androidx.constraintlayout.widget.Guideline
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.05"
+        android:id="@+id/startBorderStack"/>
+    <androidx.constraintlayout.widget.Guideline
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.9"
+        android:id="@+id/endBorderStack"/>
+</merge>
