@@ -43,6 +43,9 @@
                         android:background="@drawable/home_buttons"
                         android:layout_width="2000dp"
                         android:layout_height="2000dp">
+                        <com.example.interpreter.customView.DrawView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"/>
 
                         <com.example.interpreter.customView.blockWhile.BlockWhile
                             android:id="@+id/BlockWhileView"

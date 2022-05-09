@@ -10,7 +10,6 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.View.*
 import android.widget.Button
-import android.widget.FrameLayout
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
 import com.example.interpreter.databinding.*
@@ -67,15 +66,15 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
         blocksPanel.y = metrics.bounds.height().toFloat()
         // set touch listener for button that pull console
         console = bindingConsole.console
-        bindingConsole.buttonPanel.setOnTouchListener(consoleMoving())
+        //bindingConsole.buttonPanel.setOnTouchListener(consoleMoving())
         
         // show or hide button that call or close console
-        if (isButtonForConsoleVisibility) {
+        //if (isButtonForConsoleVisibility) {
             bindingConsole.consoleButton.setOnClickListener {
                 if (isBlocksPanelHidden) {
                     isPanelMoving = true
                     isConsoleHidden = if (console.x > 0.6 * metrics.bounds.width()) {
-                        takeConsole(bindingConsole.buttonPanel, 200)
+                        takeConsole( 200)
                         false
                     } else {
                         hideConsole(bindingConsole.buttonPanel, 200)
@@ -84,9 +83,9 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
                     isPanelMoving = false
                 }
             }
-        } else {
-            bindingConsole.consoleButton.visibility = View.INVISIBLE
-        }
+        //} else {
+        //    bindingConsole.consoleButton.visibility = View.INVISIBLE
+        //}
         
         // set on click listener for button that add block from panel to stack
         for (i in 0 until bindingListOfBlocks.listOfBlocks.childCount) {
@@ -100,13 +99,15 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
         bindingScrollBox.scrollBox.setOnDragListener(choiceDragListener())
         bindingStack.stackContainer.setOnDragListener(choiceDragListener())
         bindingStack.basketContainer.setOnDragListener(choiceDragListener())
-        bindingScrollBox.BlockWhileView.setOnTouchListener(choiceTouchListener())
+        bindingScrollBox.BlockWhileView.setOnLongClickListener(choiceLongClickListener())
     }
     
     // generate and put in stack blocks
     private fun createBlockByClickedButton(button: Button): View =
+        //TODO: change body of "when" that it creates blocks not stubs
         when (button) {
             bindingListOfBlocks.VARIABLE -> {
+                //TODO: add new function whose will creates "views"
                 val newButton = Button(context)
                 newButton.background = resources.getDrawable(R.drawable.home_buttons)
                 newButton.text = "VAR"
@@ -139,6 +140,7 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
         }
     
     private fun addBlockToStack(view: View) {
+        //TODO: change function that it generates blocks with correct size
         val params = ConstraintLayout.LayoutParams(
             bindingStack.stackContainer.width - 40,
             bindingStack.stackContainer.height - 40
@@ -146,13 +148,13 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
         bindingStack.stackContainer.addView(view, params)
         view.x += 20
         view.y += 20
-        view.setOnTouchListener(choiceTouchListener())
+        view.setOnLongClickListener(choiceLongClickListener())
         view.translationZ = 30f
     }
     
     // drag-n-drop for blocks
     @SuppressLint("ClickableViewAccessibility")
-    private fun choiceTouchListener() = OnTouchListener { view, _ ->
+    private fun choiceLongClickListener() = OnLongClickListener { view ->
         val data = ClipData.newPlainText("", "")
         val shadowBuilder = DragShadowBuilder(view)
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
@@ -167,9 +169,9 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
     
     private fun choiceDragListener() = OnDragListener { view, event ->
         when (event.action) {
+            //TODO: this fun is need refactoring
             DragEvent.ACTION_DRAG_STARTED -> {
-                if (draggingView.parent == bindingScrollBox.scrollBox)
-                    draggingView.visibility = INVISIBLE
+                draggingView.visibility = INVISIBLE
             }
             DragEvent.ACTION_DRAG_LOCATION -> {
                 if (view == bindingScrollBox.scrollBox) {
@@ -217,46 +219,46 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
                     }
                 }
             }
-            DragEvent.ACTION_DRAG_ENDED -> draggingView.visibility = VISIBLE
-            
+            DragEvent.ACTION_DRAG_ENDED -> {
+                draggingView.visibility = VISIBLE
+            }
         }
         true
     }
-    
-    //private fun open
-    
+
     // animation for ui: console and down panel
-    @SuppressLint("ClickableViewAccessibility", "SetTextI18n")
-    private fun consoleMoving() = View.OnTouchListener { view, event ->
-        if (isBlocksPanelHidden && !isPanelMoving) {
-            when (event.action) {
-                MotionEvent.ACTION_DOWN -> {
-                    touchPoint.x = event.x
-                    false
-                }
-                MotionEvent.ACTION_MOVE -> {
-                    if (console.x + event.x - touchPoint.x > 0.1 * metrics.bounds.width()) {
-                        console.x += event.x - touchPoint.x
-                    }
-                    false
-                }
-                else -> {
-                    isPanelMoving = true
-                    isConsoleHidden = if (console.x > 0.6 * metrics.bounds.width()) {
-                        hideConsole(view, 200)
-                        true
-                    } else {
-                        takeConsole(view, 200)
-                        false
-                    }
-                    isPanelMoving = false
-                    true
-                }
-            }
-        } else true
-    }
+//    @SuppressLint("ClickableViewAccessibility", "SetTextI18n")
+//    private fun consoleMoving() = View.OnTouchListener { view, event ->
+//        if (isBlocksPanelHidden && !isPanelMoving) {
+//            when (event.action) {
+//                MotionEvent.ACTION_DOWN -> {
+//                    touchPoint.x = event.x
+//                    false
+//                }
+//                MotionEvent.ACTION_MOVE -> {
+//                    if (console.x + event.x - touchPoint.x > 0.1 * metrics.bounds.width()) {
+//                        console.x += event.x - touchPoint.x
+//                    }
+//                    false
+//                }
+//                else -> {
+//                    isPanelMoving = true
+//                    isConsoleHidden = if (console.x > 0.6 * metrics.bounds.width()) {
+//                        hideConsole(view, 200)
+//                        true
+//                    } else {
+//                        takeConsole(200)
+//                        false
+//                    }
+//                    isPanelMoving = false
+//                    true
+//                }
+//            }
+//        } else true
+//    }
     
     private fun moveBlocksFragment(time: Long) {
+        isMovingScreenOn = true
         isBlocksPanelHidden = if (isBlocksPanelHidden) {
             val from = Point(blocksPanel.x, blocksPanel.y)
             val to = Point(blocksPanel.x, 0.03f * metrics.bounds.height())
@@ -268,9 +270,10 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
             moveContainer(from, to, time, blocksPanel)
             true
         }
+        isMovingScreenOn = false
     }
     
-    private fun takeConsole(view: View, time: Long) {
+    private fun takeConsole(time: Long) {
         val from = Point(console.x, console.y)
         val to = Point(0.2f * metrics.bounds.width(), console.y)
         moveContainer(from, to, time, console)
@@ -285,15 +288,18 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
     private fun moveContainer(from: Point, to: Point, time: Long, container: ConstraintLayout) {
         object : CountDownTimer(time, 1) {
             override fun onTick(millisUntilFinished: Long) {
-                val newPoint = Point(
+                //radius vector of moving by one fps
+                val deltaVector = Point(
                     container.x + (to.x - from.x) / (time * 60f / 1000f),
                     container.y + (to.y - from.y) / (time * 60f / 1000f)
                 )
+                //radius vector of moving
                 val direction = Point(to.x - from.x, to.y - from.y)
-                if (newPoint.x * direction.x <= to.x * direction.x) {
+                
+                if (deltaVector.x * direction.x <= to.x * direction.x) {
                     container.x += (to.x - from.x) / (time * 60f / 1000f)
                 }
-                if (newPoint.y * direction.y <= to.y * direction.y) {
+                if (deltaVector.y * direction.y <= to.y * direction.y) {
                     container.y += (to.y - from.y) / (time * 60f / 1000f)
                 }
             }

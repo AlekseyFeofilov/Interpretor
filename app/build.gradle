@@ -37,6 +37,7 @@ android {
     viewBinding {
         enabled = true
     }
+
 }
 
 dependencies {
@@ -66,6 +67,6 @@ dependencies {
 //    implementation "ch.qos.logback:logback-classic:$logback_version"
 
     runtimeOnly group: 'org.jetbrains.kotlin', name: 'kotlin-reflect', version: '1.6.20'
-
+    api("com.otaliastudios:zoomlayout:latest-SNAPSHOT")
     implementation("com.otaliastudios:zoomlayout:1.9.0")
 }
