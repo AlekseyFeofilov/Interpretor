@@ -57,7 +57,7 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
         // set on click listener for button that call panel with blocks
         bindingBlocksPanel.closeButton.setOnClickListener { moveBlocksFragment(300) }
         bindingBlocksPanel.blocksButton.setOnClickListener {
-            if (isBlocksPanelHidden && isConsoleHidden) {
+            if (isConsoleHidden) {
                 moveBlocksFragment(400)
             }
         }
@@ -99,6 +99,7 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
         // turn on drag-n-drop
         bindingScrollBox.scrollBox.setOnDragListener(choiceDragListener())
         bindingStack.stackContainer.setOnDragListener(choiceDragListener())
+        bindingStack.basketContainer.setOnDragListener(choiceDragListener())
         bindingScrollBox.BlockWhileView.setOnTouchListener(choiceTouchListener())
     }
     
@@ -167,7 +168,7 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
     private fun choiceDragListener() = OnDragListener { view, event ->
         when (event.action) {
             DragEvent.ACTION_DRAG_STARTED -> {
-                if(draggingView.parent == bindingScrollBox.scrollBox)
+                if (draggingView.parent == bindingScrollBox.scrollBox)
                     draggingView.visibility = INVISIBLE
             }
             DragEvent.ACTION_DRAG_LOCATION -> {
@@ -175,22 +176,29 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
                     location.x = event.x
                     location.y = event.y
                 }
-                else {
-                
-                }
             }
             DragEvent.ACTION_DROP -> {
                 when (view) {
                     draggingView.parent -> {
-                        when(view) {
+                        when (view) {
                             bindingStack.stackContainer -> {
                                 draggingView.x = 20f
                                 draggingView.y = 20f
                             }
                             bindingScrollBox.scrollBox -> {
                                 draggingView.translationZ = 30f
-                                draggingView.x = location.x - draggingView.width / 2
+                                draggingView.x = (location.x - draggingView.width / 2)
                                 draggingView.y = location.y - draggingView.height / 2
+                            }
+                        }
+                    }
+                    bindingStack.basketContainer -> {
+                        when(draggingView.parent) {
+                            bindingScrollBox.scrollBox -> {
+                                bindingScrollBox.scrollBox.removeView(draggingView)
+                            }
+                            bindingStack.stackContainer-> {
+                                bindingStack.stackContainer.removeView(draggingView)
                             }
                         }
                     }
@@ -210,7 +218,7 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
                 }
             }
             DragEvent.ACTION_DRAG_ENDED -> draggingView.visibility = VISIBLE
-    
+            
         }
         true
     }

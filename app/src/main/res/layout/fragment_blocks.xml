@@ -14,7 +14,7 @@
         app:layout_constraintEnd_toEndOf="@id/endBorderPanel"
         app:layout_constraintStart_toStartOf="@id/startBorderPanel"
         app:layout_constraintBottom_toBottomOf="@id/bottomBorderPanel"
-        android:translationZ="10dp">
+        android:translationZ="100dp">
         <View
             android:id="@+id/panel"
             android:background="@drawable/panel"

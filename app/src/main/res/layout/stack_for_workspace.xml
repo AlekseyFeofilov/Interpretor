@@ -12,14 +12,31 @@
         android:layout_height="0dp"
         android:layout_width="0dp"
         android:translationZ="20dp"
-        android:layout_marginEnd="60dp"
         android:background="@drawable/settings_panel"
         app:layout_constraintTop_toTopOf="@id/topBorderStack"
         app:layout_constraintEnd_toEndOf="@id/endBorderStack"
         app:layout_constraintBottom_toBottomOf="@id/bottomBorderStack"
         app:layout_constraintStart_toStartOf="@id/startBorderStack"/>
+    <FrameLayout
+        android:id="@+id/basketContainer"
+        android:layout_height="0dp"
+        android:layout_width="0dp"
+        android:translationZ="20dp"
+        android:layout_marginEnd="60dp"
+
+        android:background="@drawable/settings_panel"
+        app:layout_constraintTop_toTopOf="@id/topBorderStack"
+        app:layout_constraintEnd_toEndOf="@id/endBorderBasket"
+        app:layout_constraintBottom_toBottomOf="@id/bottomBorderStack"
+        app:layout_constraintStart_toStartOf="@id/endBorderStack"/>
 
 
+    <androidx.constraintlayout.widget.Guideline
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.50"
+        android:id="@+id/endBorderStack"/>
     <androidx.constraintlayout.widget.Guideline
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -43,5 +60,5 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         app:layout_constraintGuide_percent="0.9"
-        android:id="@+id/endBorderStack"/>
+        android:id="@+id/endBorderBasket"/>
 </merge>
