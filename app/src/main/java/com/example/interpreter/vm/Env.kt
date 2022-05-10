@@ -1,18 +1,23 @@
 package com.example.interpreter.vm
 
+import com.example.interpreter.vm.instruction.Instruction
+import com.example.interpreter.vm.instruction.Object
 import kotlinx.serialization.descriptors.SerialKind
 import java.lang.Error
 
-//import kotlinx.serialization.Serializable
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.Transient
 
-//@Serializable
+@Serializable
 class Env {
-    val vars: HashMap<String, Instruction> = hashMapOf<String, Instruction>()
+    @Transient
+    val register = hashMapOf<Instruction, Instruction>()
+    val vars = hashMapOf<String, Instruction>()
     var env: Env? = null
     
     constructor()
     
-    constructor(Env: Env){
+    constructor(Env: Env) {
         this.env = Env
     }
     
@@ -35,5 +40,28 @@ class Env {
         if(!vars.containsKey(item)) {
             vars[item] = value
         }else throw Error("Runtime Error (Env new var [${item}] is already defined)")
+    }
+    
+    private fun regRecursiveSearchEnv(item: Instruction): Env?{
+        var parent: Env = this
+    
+        while(!parent.register.containsKey(item)){
+            if(parent.env != null) {
+                parent = parent.env!!
+            }else return null
+        }
+    
+        return parent
+    }
+    
+    fun reg(item: Instruction): Instruction?{
+        val currEnv = regRecursiveSearchEnv(item) ?: return null
+        
+        return currEnv.register[item]
+    }
+    
+    fun reg(item: Instruction, value: Instruction){
+        if(value !is Object) return
+        register[item] = value
     }
 }

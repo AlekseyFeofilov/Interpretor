@@ -1,11 +1,14 @@
 package com.example.interpreter.vm.instruction
 
+import android.util.Log
 import com.example.interpreter.vm.Env
+import com.example.interpreter.vm.yieldAllLR
 import kotlinx.serialization.Serializable
 
 @Serializable
-class GetVar(val name: kotlin.String) : Instruction()   {
+open class Print(val value: Instruction) : Instruction() {
     override fun exec(env: Env) = sequence<Instruction> {
-        yield(env[name])
+        Log.i(TAG, yieldAllLR(value.exec(env)).toString())
+        yield(this@Print)
     }.iterator()
 }

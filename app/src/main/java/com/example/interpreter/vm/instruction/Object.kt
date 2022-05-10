@@ -1,12 +1,17 @@
 package com.example.interpreter.vm.instruction
 
 import com.example.interpreter.vm.Env
-import com.example.interpreter.vm.Instruction
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
-class Object : Instruction {
+@Serializable
+open class Object(val value: HashMap<kotlin.String, Instruction> = hashMapOf()) : Instruction() {
+    @SerialName("_isBasic")
     override val isBasic: Boolean = true
     
     override fun exec(env: Env) = sequence<Instruction> { yield(this@Object) }.iterator()
+    override fun toString(): kotlin.String = value.toString()
     
-    constructor() : super() { TODO("NOT READY") }
+    operator fun get(item: kotlin.String): Instruction? { return value[item] }
+    operator fun set(item: kotlin.String, setVal: Instruction) { value[item] = setVal }
 }
