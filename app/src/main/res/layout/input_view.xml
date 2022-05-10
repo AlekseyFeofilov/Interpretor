@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    tools:parentTag="android.widget.LinearLayout">
+
+    <LinearLayout
+        android:id="@+id/inputLinearLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        tools:background="#222222">
+
+        <RadioButton
+            android:id="@+id/inputRadioButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:buttonTint="#B10808"/>
+
+        <TextView
+            android:id="@+id/inputDescriptionTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/white"
+            android:text="description"
+            android:gravity="center"
+            android:layout_marginEnd="6dp"/>
+
+        <EditText
+            android:id="@+id/inputDefaultValueEditTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:minWidth="85dp"
+            android:maxWidth="100dp"
+            android:lines="1"
+            android:background="@color/blocksButtonPlus"
+            android:textColorHint="@color/background"
+
+            android:hint="@string/enter_value"
+            android:textSize="14sp"
+            android:gravity="center"
+            android:padding="2dp"
+            android:inputType="text"
+            android:importantForAutofill="no" />
+
+        <Spinner
+            android:id="@+id/inputBooleanSpinner"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:entries="@array/booleanValue"
+            android:background="@color/blocksButtonPlus"/>
+    </LinearLayout>
+</merge>

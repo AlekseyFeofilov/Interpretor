@@ -2,11 +2,13 @@
     <string name="app_name">Interpreter</string>
 
     <string name="Start">Start</string>
+    <string name="defaultBlockName">No name block</string>
+    <string name="enter_value">Enter value…</string>
+    <string name="before">before</string>
+    <string name="after">after</string>
 
-    <string-array name="inputType">
-        <item>Double</item>
-        <item>String</item>
-        <item>Boolean</item>
-        <item>Function</item>
+    <string-array name="booleanValue">
+        <item>True</item>
+        <item>False</item>
     </string-array>
 </resources>

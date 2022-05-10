@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<merge
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/standardBlockView"
@@ -8,33 +7,88 @@
     android:layout_height="wrap_content"
     tools:parentTag="androidx.constraintlayout.widget.ConstraintLayout">
 
-    <TableLayout
-        android:id="@+id/bodyView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        tools:layout_editor_absoluteX="33dp"
-        tools:layout_editor_absoluteY="51dp"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/blockViewContainer"
         android:background="#222222"
-        android:paddingBottom="5dp">
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
 
-        <TableRow
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
+        <TextView
+            android:id="@+id/headerTextView"
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:background="#798086"
+            android:gravity="center_vertical|center"
+            android:lines="1"
+            android:padding="3dp"
+            android:text="@string/defaultBlockName"
+            android:textColor="@color/white"
+            android:textSize="18sp"
+            app:layout_constraintTop_toTopOf="@id/blockViewContainer"
+            app:layout_constraintLeft_toLeftOf="@id/listOfInputLinearLayout"
+            app:layout_constraintRight_toRightOf="@id/listOfOutputLinearLayout" />
 
-            <TextView
-                android:id="@+id/headerTextView"
+        <LinearLayout
+            android:id="@+id/codeDirectionLinearLayout"
+            android:layout_width="0dp"
+            android:layout_height="30dp"
+            android:background="#222222"
+            android:orientation="horizontal"
+            app:layout_constraintTop_toBottomOf="@id/headerTextView"
+            app:layout_constraintLeft_toLeftOf="@id/listOfInputLinearLayout"
+            app:layout_constraintRight_toRightOf="@id/listOfOutputLinearLayout">
+
+            <RadioButton
+                android:id="@+id/inputRadioButton"
                 android:layout_width="0dp"
-                android:layout_height="40dp"
-                android:padding="3dp"
-                android:background="#470505"
-                android:gravity="center_vertical|center"
-                android:textColor="@color/white"
-                android:textSize="18sp"
-                android:lines="1"
-                android:text="Title"
-                android:layout_weight="1"/>
-        </TableRow>
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:button="@android:drawable/ic_media_play"
+                android:buttonTint="@color/blocksButtonCircleCenterDown" />
 
-        <com.example.interpreter.customView.BlockRowView/>
-    </TableLayout>
+            <RadioButton
+                android:id="@+id/outputRadioButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end|center"
+                android:button="@android:drawable/ic_media_play"
+                android:buttonTint="@color/blocksButtonCircleCenterDown" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/listOfInputLinearLayout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintLeft_toLeftOf="@id/blockViewContainer"
+            app:layout_constraintRight_toLeftOf="@id/listOfOutputLinearLayout"
+            app:layout_constraintTop_toBottomOf="@id/codeDirectionLinearLayout"
+            tools:layout_editor_absoluteY="100dp">
+
+            <!--
+            uncomment to look how does it seem
+            -->
+
+            <!--<com.example.interpreter.customView.InputView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />-->
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/listOfOutputLinearLayout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintLeft_toRightOf="@id/listOfInputLinearLayout"
+            app:layout_constraintTop_toTopOf="@id/listOfInputLinearLayout">
+
+            <!--
+                    uncomment to look how does it seem
+            -->
+            <!--<com.example.interpreter.customView.OutputView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />-->
+        </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </merge>

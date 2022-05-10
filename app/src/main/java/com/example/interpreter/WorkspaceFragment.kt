@@ -1,15 +1,12 @@
 package com.example.interpreter
 
 import android.annotation.SuppressLint
-import android.content.Context
 import android.os.Bundle
 import android.view.MotionEvent
 import android.view.View
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
 import com.example.interpreter.customView.DrawView
-import com.example.interpreter.customView.blockWhile.BlockWhile
-import com.example.interpreter.customView.blockWhile.RowCondition
 import com.example.interpreter.databinding.FragmentWorkspaceBinding
 
 class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
@@ -40,9 +37,11 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
             }
         }
         
+/*
         binding.scrollView.scrollable = false
         binding.horizontalScrollView.scrollable = false
-        //binding.scrollView.setOnTouchListener(twoDimensionScrolling)
+*/
+        binding.scrollView.setOnTouchListener(twoDimensionScrolling)
     }
     
     private fun addCanvas(canvas: DrawView) {
