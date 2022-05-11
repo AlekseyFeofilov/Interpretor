@@ -1,33 +1,98 @@
 package com.example.interpreter.customView
 
 import android.annotation.SuppressLint
-import android.content.ClipData
 import android.content.Context
 import android.graphics.Color
 import android.os.Build
 import android.util.AttributeSet
 import android.view.*
-import android.widget.TableRow
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.graphics.toColorInt
+import androidx.core.view.get
 import com.example.interpreter.databinding.BlockViewBinding
+import com.example.interpreter.mainBlock.Input
+import com.example.interpreter.mainBlock.IOContainer
+import com.example.interpreter.mainBlock.Output
+import com.example.interpreter.mainBlock.ioTypes.InputDouble
 
 @SuppressLint("ClickableViewAccessibility")
 open class BlockView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0,
-) : ConstraintLayout(context, attrs, defStyleAttr) {
+) : ConstraintLayout(context, attrs, defStyleAttr), IOContainer {
     private val binding = BlockViewBinding.inflate(LayoutInflater.from(context), this)
     
-    companion object{
-        enum class InputType { DOUBLE, STRING, BOOLEAN, FUNCTION }
+    override val view = this
+    override var inputs = mutableListOf<Pair<Input, Output?>>()
+    override var outputs = mutableListOf<Pair<Output, List<Input>>>()
+    
+    //todo: add spinner for InputBoolean
+    override fun addInput(input: Input, before: Input?) {
+        super.addInput(input, before)
         
+        val row = InputView(context)
+        val currentInput = inputs[findIndexByInput(input)].first
+        
+        row.initComponents(
+            input, true, !currentInput.description.isNullOrEmpty(), currentInput.isDefault
+        )
+        
+        row.setDescription(input.description)
+        binding.listOfInputLinearLayout.addView(row, findIndexByInput(input))
     }
     
-    open var name = "Standard Block"
-    open var headerColor = "#470505"
-    open var rows = listOf(binding.bodyView.getChildAt(1) as BlockRowView)
+    override fun addOutput(output: Output, before: Output?) {
+        super.addOutput(output, before)
+    
+        val row = OutputView(context)
+        val currentInput = outputs[findIndexByOutput(output)].first
+    
+        row.initComponents(
+            true, !currentInput.description.isNullOrEmpty()
+        )
+    
+        row.setDescription(output.description)
+        binding.listOfOutputLinearLayout.addView(row, findIndexByOutput(output))
+    }
+    
+    override fun removeInput(input: Input, disconnectInput: Boolean) {
+        binding.listOfInputLinearLayout.removeViewAt(findIndexByInput(input))
+        super.removeInput(input, disconnectInput)
+    }
+    
+    override fun removeOutput(output: Output) {
+        binding.listOfOutputLinearLayout.removeViewAt(findIndexByOutput(output))
+        
+        super.removeOutput(output)
+    }
+    
+    override fun connectInput(input: Input, output: Output, connectOutput: Boolean) {
+        super.connectInput(input, output, connectOutput)
+    
+        val row = binding.listOfInputLinearLayout.getChildAt(findIndexByInput(input)) as InputView
+        val currentInput = inputs[findIndexByInput(input)].first
+        
+        if(currentInput.isDefault){
+            row.hideDefaultValue()
+        }
+    }
+    
+    override fun disconnectInput(input: Input, disconnectOutput: Boolean) {
+        super.disconnectInput(input, disconnectOutput)
+        if(findIndexByInput(input) == -1) return
+        
+        val row = binding.listOfInputLinearLayout.getChildAt(findIndexByInput(input)) as InputView
+        val currentInput = inputs[findIndexByInput(input)].first
+    
+        if(currentInput.isDefault){
+            row.showDefaultValue()
+        }
+    }
+    
+    override fun setHeader(name: String, colorHEX: String) {
+        binding.headerTextView.text = name
+        binding.headerTextView.setBackgroundColor(Color.parseColor(colorHEX))
+    }
     
 //    private val touchListener = OnTouchListener { it, _ ->
 //        val data = ClipData.newPlainText("", "")
@@ -86,22 +151,16 @@ open class BlockView @JvmOverloads constructor(
         false
     }*/
     
-    private fun setRows(){
-        for (row in rows){
-            binding.bodyView.addView(row)
-        }
-    }
-    
-    private fun setAppearance(){
-        binding.headerTextView.text = name
-        binding.headerTextView.setBackgroundColor(Color.parseColor(headerColor))
-    }
-    
-    open fun overrideData(){
-
-    }
+    /*val connect = OnClickListener {
+        connectInput(inputs[0].first, outputs[0].first)
+       
+    }*/
     
     init {
+        this.setOnTouchListener(touchListener)
+        this.setOnDragListener(dragListener)
+        
+        //binding.listOfInputLinearLayout.setOnClickListener(connect)
         overrideData()
         binding.bodyView.removeView(binding.bodyView.getChildAt(1))
         setRows()

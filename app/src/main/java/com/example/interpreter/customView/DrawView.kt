@@ -85,6 +85,6 @@ class DrawView(context: Context?) : View(context) {
     
     init {
         p.strokeWidth = 10f
-        this.setOnTouchListener(touchListener)
+        //this.setOnTouchListener(touchListener)
     }
 }
