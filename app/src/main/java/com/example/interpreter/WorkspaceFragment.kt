@@ -5,13 +5,17 @@ import android.content.ClipData
 import android.os.Build
 import android.os.Bundle
 import android.os.CountDownTimer
+import android.util.Log
 import android.view.DragEvent
 import android.view.MotionEvent
 import android.view.View
 import android.view.View.*
 import android.widget.Button
+import android.widget.RadioButton
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
+import com.example.interpreter.customView.DrawView
+import com.example.interpreter.customView.blocks.BlockWhile
 import com.example.interpreter.databinding.*
 
 
@@ -21,13 +25,15 @@ var isBlocksPanelHidden = true
 data class Point(var x:Float, var y:Float)
 
 class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
-    private val touchPoint = Point(0f, 0f)
+    private var touchPoint = Point(0f, 0f)
     
     private var isPanelMoving = false
     private var isMovingScreenOn = true
     
     private lateinit var console: ConstraintLayout
     private lateinit var blocksPanel: ConstraintLayout
+    
+    private lateinit var canvas: DrawView
     
     private lateinit var bindingWorkspace: FragmentWorkspaceBinding
     private lateinit var bindingConsole: FragmentRightPanelBinding
@@ -99,7 +105,42 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
         bindingScrollBox.scrollBox.setOnDragListener(choiceDragListener())
         bindingStack.stackContainer.setOnDragListener(choiceDragListener())
         bindingStack.basketContainer.setOnDragListener(choiceDragListener())
-        bindingScrollBox.BlockWhileView.setOnLongClickListener(choiceLongClickListener())
+    
+        canvas = DrawView(activity)
+        addCanvas(canvas)
+    
+    
+        val context = context
+        val newBlock = BlockWhile(context!!)
+        newBlock.findViewById<RadioButton>(R.id.outputRadioButton).setOnTouchListener(onTouchBlocksPoint())
+        bindingScrollBox.scrollBox.addView(newBlock)
+        newBlock.setOnLongClickListener(choiceLongClickListener())
+    }
+    
+    private fun addCanvas(canvas: DrawView) {
+        val density = this.resources.displayMetrics.density
+        val params =
+            ConstraintLayout.LayoutParams((5000 * density).toInt(), (5000 * density).toInt())
+        bindingScrollBox.scrollBox.addView(canvas, params)
+    }
+    @SuppressLint("ClickableViewAccessibility")
+    private fun onTouchBlocksPoint() = OnTouchListener { view, event ->
+        when (event.action) {
+            MotionEvent.ACTION_DOWN -> {
+                touchPoint = Point(view.x + view.width/2 , view.y + view.height/2 + event.y)
+                canvas.down(event, touchPoint)
+                Log.i("hello", "down")
+            }
+            MotionEvent.ACTION_MOVE -> {
+                canvas.move(event, touchPoint)
+                Log.i("hello", "move")
+            }
+            MotionEvent.ACTION_UP -> {
+                canvas.up(event, touchPoint)
+                Log.i("hello", "else")
+            }
+        }
+        true
     }
     
     // generate and put in stack blocks
@@ -120,10 +161,10 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
                 newButton
             }
             bindingListOfBlocks.WHILE -> {
-                val newButton = Button(context)
-                newButton.background = resources.getDrawable(R.drawable.home_buttons)
-                newButton.text = "WHILE"
-                newButton
+                val context = context
+                val newBlock = BlockWhile(context!!)
+                newBlock.findViewById<RadioButton>(R.id.outputRadioButton).setOnTouchListener(onTouchBlocksPoint())
+                newBlock
             }
             bindingListOfBlocks.MATH -> {
                 val newButton = Button(context)
@@ -157,6 +198,7 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
     private fun choiceLongClickListener() = OnLongClickListener { view ->
         val data = ClipData.newPlainText("", "")
         val shadowBuilder = DragShadowBuilder(view)
+        
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
             @Suppress("DEPRECATION")
             view.startDrag(data, shadowBuilder, view, 0)

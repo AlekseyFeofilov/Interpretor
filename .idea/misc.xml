@@ -6,6 +6,7 @@
         <entry key="..\:/Portable/Git/module7/app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.3165" />
         <entry key="..\:/Portable/Git/module7/app/src/main/res/drawable/ic_launcher_background.xml" value="0.33" />
         <entry key="..\:/Portable/Git/module7/app/src/main/res/layout/activity_main.xml" value="0.31354166666666666" />
+        <entry key="..\:/projects/interpreter/app/src/main/res/drawable/back.xml" value="0.137" />
         <entry key="..\:/projects/interpreter/app/src/main/res/drawable/blocks_button.xml" value="0.2075" />
         <entry key="..\:/projects/interpreter/app/src/main/res/drawable/button_call_to_console.xml" value="0.229" />
         <entry key="..\:/projects/interpreter/app/src/main/res/drawable/ceil_workspace.xml" value="0.264" />
@@ -30,6 +31,8 @@
         <entry key="..\:/projects/interpreter/app/src/main/res/drawable/settings_panel.xml" value="0.229" />
         <entry key="..\:/projects/interpreter/app/src/main/res/drawable/workspace_back.xml" value="0.179" />
         <entry key="..\:/projects/interpreter/app/src/main/res/layout/activity_main.xml" value="0.12447916666666667" />
+        <entry key="..\:/projects/interpreter/app/src/main/res/layout/block_row_view.xml" value="0.264" />
+        <entry key="..\:/projects/interpreter/app/src/main/res/layout/block_view.xml" value="0.264" />
         <entry key="..\:/projects/interpreter/app/src/main/res/layout/fragment_blocks.xml" value="0.152" />
         <entry key="..\:/projects/interpreter/app/src/main/res/layout/fragment_home.xml" value="0.1265625" />
         <entry key="..\:/projects/interpreter/app/src/main/res/layout/fragment_right_panel.xml" value="0.2" />

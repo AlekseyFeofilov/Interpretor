@@ -157,14 +157,14 @@ open class BlockView @JvmOverloads constructor(
     }*/
     
     init {
-        this.setOnTouchListener(touchListener)
-        this.setOnDragListener(dragListener)
+        //this.setOnTouchListener(touchListener)
+        //this.setOnDragListener(dragListener)
         
         //binding.listOfInputLinearLayout.setOnClickListener(connect)
-        overrideData()
-        binding.bodyView.removeView(binding.bodyView.getChildAt(1))
-        setRows()
-        setAppearance()
+        //overrideData()
+        //binding.bodyView.removeView(binding.bodyView.getChildAt(1))
+        //setRows()
+        //setAppearance()
         
         //this.setOnTouchListener(touchListener)
         //this.setOnDragListener(dragListener)
