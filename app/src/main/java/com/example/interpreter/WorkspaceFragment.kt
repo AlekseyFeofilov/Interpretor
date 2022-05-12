@@ -2,6 +2,7 @@ package com.example.interpreter
 
 import android.annotation.SuppressLint
 import android.content.ClipData
+import android.content.Context
 import android.os.Build
 import android.os.Bundle
 import android.os.CountDownTimer
@@ -13,7 +14,9 @@ import android.view.View.*
 import android.widget.Button
 import android.widget.RadioButton
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.view.children
 import androidx.fragment.app.Fragment
+import com.example.interpreter.customView.BlockView
 import com.example.interpreter.customView.DrawView
 import com.example.interpreter.customView.blocks.BlockWhile
 import com.example.interpreter.databinding.*

@@ -3,9 +3,10 @@ package com.example.interpreter.customView.blocks
 import android.content.Context
 import android.util.AttributeSet
 import com.example.interpreter.customView.BlockView
-import com.example.interpreter.mainBlock.ioTypes.InputBoolean
-import com.example.interpreter.mainBlock.ioTypes.InputDouble
-import com.example.interpreter.mainBlock.ioTypes.OutputBoolean
+import com.example.interpreter.ioInterfaces.ioTypes.InputBoolean
+import com.example.interpreter.ioInterfaces.ioTypes.InputDouble
+import com.example.interpreter.ioInterfaces.ioTypes.InputString
+import com.example.interpreter.ioInterfaces.ioTypes.OutputBoolean
 
 class BlockWhile @JvmOverloads constructor(
     context: Context,
@@ -14,12 +15,9 @@ class BlockWhile @JvmOverloads constructor(
 ) : BlockView(context, attrs, defStyleAttr) {
       init{
           addInput(InputBoolean("condition:", this))
+          addInput(InputDouble("condition:", this, true))
+          addInput(InputString("condition:", this, true))
           addOutput(OutputBoolean("action:", this))
           setHeader("While", "#0D5697")
-    
-/*
-          addOutput(listOf(OutputBoolean("action:", this), OutputBoolean("action2:", this)))
-          addInput(listOf(InputBoolean("condition:", this), InputDouble("for test", this, true)))
-*/
       }
 }

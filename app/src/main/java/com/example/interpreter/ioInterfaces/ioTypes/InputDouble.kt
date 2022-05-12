@@ -1,9 +1,8 @@
-package com.example.interpreter.mainBlock.ioTypes
+package com.example.interpreter.ioInterfaces.ioTypes
 
-import android.graphics.Color
-import android.view.View
-import com.example.interpreter.mainBlock.IOContainer
-import com.example.interpreter.mainBlock.Input
+import com.example.interpreter.ioInterfaces.IO
+import com.example.interpreter.ioInterfaces.IOContainer
+import com.example.interpreter.ioInterfaces.Input
 import java.lang.Double.parseDouble
 
 class InputDouble(
@@ -11,11 +10,12 @@ class InputDouble(
     override var parent: IOContainer,
     override val autocomplete: Boolean = false
 ) : Input {
+    override val type = IO.Companion.Type.Double
     override val isDefault = true
     override val color = "#80505B"
     var default: Double? = null
     
-    override fun parse(value: String) {
+    override fun parseValue(value: String) {
         if(value.isEmpty()) {
             default = null
             return

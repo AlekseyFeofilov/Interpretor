@@ -8,6 +8,7 @@
     <string name="after">after</string>
 
     <string-array name="booleanValue">
+        <item>Bool</item>
         <item>True</item>
         <item>False</item>
     </string-array>

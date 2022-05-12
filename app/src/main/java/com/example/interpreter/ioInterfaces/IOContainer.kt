@@ -1,6 +1,7 @@
-package com.example.interpreter.mainBlock
+package com.example.interpreter.ioInterfaces
 
 import android.view.View
+import com.example.interpreter.ioInterfaces.ioTypes.InputBoolean
 
 interface IOContainer {
     val view: View
@@ -13,9 +14,8 @@ interface IOContainer {
     fun findIndexByOutput(element: Output?) =
         outputs.indexOf(outputs.find { it.first == element })
     
-    //todo: add before: Int? type
-    fun addInput(input: Input, before: Input? = null) {
-        val position = findIndexByInput(before)
+    fun addInput(input: Input, to: Input? = null, before: Boolean = true) {
+        val position = if (before) findIndexByInput(to) else findIndexByInput(to) + 1
         
         inputs.add(
             if (position != -1) position else inputs.size,
@@ -23,16 +23,37 @@ interface IOContainer {
         )
     }
     
-    fun addInput(inputList: List<Input>, before: Input? = null) {
+    fun addInput(stringArray: Array<String>){
+        /*val input = when(stringArray[1]){
+            IO.Companion.Type.Boolean.toString() -> InputBoolean(stringArray[2], this, stringArray[3].toBoolean())
+        }*/
+        
+        //input.parse()
+    }
+    
+    fun addInput(inputList: List<Input>, to: Input? = null, before: Boolean = true) {
         inputList.forEachIndexed { index, it ->
-            addInput(it, if (index == 0) before else inputList[index - 1])
+            addInput(
+                it,
+                if (index == 0) to else inputList[index - 1],
+                index == 0 && before
+            )
+        }
+    }
+    
+    fun inputAutocomplete(input: Input){
+        if(!input.autocomplete || !input.isEmpty()) return
+        addInput(input.clone(), input, false)
+    }
+    
+    fun removeCloneInput(input: Input){
+        if (input.autocomplete && input.isEmpty()){
+            removeInput(input, false)
         }
     }
     
     fun removeInput(input: Input, disconnectInput: Boolean = true) {
-        if(disconnectInput) {
-            disconnectInput(input)
-        }
+        if(disconnectInput) { disconnectInput(input) }
         
         inputs.remove(inputs[findIndexByInput(input)])
     }
@@ -50,11 +71,9 @@ interface IOContainer {
         if (index == -1 || inputs[index].second == output) return
         
         inputs[index] = inputs[index].copy(second = output)
-        val pair = inputs[index]
         
-        if (pair.first.autocomplete) {
-            val before = if (index != inputs.size - 1) inputs[index + 1].first else null
-            addInput(pair.first.clone(), before)
+        if (input.autocomplete) {
+            inputAutocomplete(input)
         }
         
         if (connectOutput) {
@@ -75,16 +94,16 @@ interface IOContainer {
                 .disconnectOutput(pair.second!!, input)
         }
         
-        if (input.autocomplete && input.getValue() == null) {
-            removeInput(input, false)
+        if (input.autocomplete && input.isEmpty()) {
+            removeCloneInput(input)
             return
         }
         
         inputs[index] = inputs[index].copy(second = null)
     }
     
-    fun addOutput(output: Output, before: Output? = null) {
-        val index = findIndexByOutput(before)
+    fun addOutput(output: Output, to: Output? = null, before: Boolean = true) {
+        val index = if (before) findIndexByOutput(to) else findIndexByOutput(to) + 1
     
         outputs.add(
             if (index != -1) index else outputs.size,
@@ -92,10 +111,12 @@ interface IOContainer {
         )
     }
     
-    //todo: make right order (for Input too)
-    fun addOutput(outputList: List<Output>, before: Output? = null) {
+    fun addOutput(outputList: List<Output>, to: Output? = null, before: Boolean = true) {
         outputList.forEachIndexed { index, it ->
-            addOutput(it, if (index == 0) before else outputList[index - 1])
+            addOutput(
+                it,
+                if (index == 0) to else outputList[index - 1],
+                index == 0 && before)
         }
     }
     
@@ -144,4 +165,21 @@ interface IOContainer {
     }
     
     fun setHeader(name: String, colorHEX: String)
+    
+    /*fun toString(): String{
+        var string: String
+        var inputsStrings: MutableList<String>
+        var outputsStrings: MutableList<String>
+        
+        inputs.forEach{
+            inputsStrings.add(it.first.toString())
+            outputsStrings.add(it.second.toString())
+        }
+        
+        return string
+    }
+    
+    fun parse(string: String){
+    
+    }*/
 }
