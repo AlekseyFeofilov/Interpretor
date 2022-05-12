@@ -2,7 +2,7 @@ package com.example.interpreter.vm.instruction
 
 import com.example.interpreter.vm.Env
 import kotlinx.serialization.Serializable
-
+// todo: register construct is env and not env, exec() and exec(env)
 @Serializable
 open class Register(val value: Instruction, val objItem: kotlin.String) : Instruction() {
     override fun exec(env: Env) = sequence<Instruction> {
@@ -12,4 +12,5 @@ open class Register(val value: Instruction, val objItem: kotlin.String) : Instru
         
         yield(reg[objItem] ?: throw Error("Object define is null"))
     }.iterator()
+    
 }

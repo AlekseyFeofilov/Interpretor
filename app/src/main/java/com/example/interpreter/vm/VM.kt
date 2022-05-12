@@ -1,5 +1,6 @@
 package com.example.interpreter.vm
 
+import android.util.JsonToken
 import android.util.Log
 import com.example.interpreter.vm.instruction.*
 import com.example.interpreter.vm.instruction.Number
@@ -10,6 +11,7 @@ import io.ktor.server.netty.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.ktor.server.websocket.*
+import io.ktor.util.Identity.encode
 import io.ktor.websocket.*
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.ClosedReceiveChannelException
@@ -17,15 +19,19 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import kotlinx.serialization.PolymorphicSerializer
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.*
+import kotlinx.serialization.json.Json.Default.encodeToJsonElement
+import kotlinx.serialization.serializer
 import org.json.JSONObject
 import java.time.Duration
 import java.util.*
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.collections.LinkedHashSet
 import kotlin.concurrent.thread
+import kotlin.reflect.jvm.jvmName
 import kotlin.system.exitProcess
 
 class VM {
@@ -63,7 +69,9 @@ class VM {
             Math.TNumber(Number(2.0))
         ))
         
-        this.block = Executor(Env(), listOf(
+        val env = Env()
+        
+        this.block = Executor(env, listOf(
             SetVar("two", Number(6.0), true),
             math,
             math2,
@@ -72,13 +80,18 @@ class VM {
             Print(GetVar("two")),
             Print(GetVar("da")),
             Print(GetVar("da1")),
+            If(listOf<Executor>(
+                Executor(Env(env), listOf(Bool(false))), // todo: test Register(env, math, "out")
+                Executor(Env(env), listOf(Print(String("if true")))),
+                Executor(Env(env), listOf(Print(String("if false")))),
+            )),
             Number(),
             Nop()
         ))
         
-        Log.i("VM", Json.encodeToString(block))
+//        Log.i("VM", Json.encodeToString(math))
         
-        start()
+        start(true)
     }
     
     fun start(debug: Boolean = false){
@@ -95,6 +108,7 @@ class VM {
             START,
             STOP,
             NEXT,
+            RESTART,
         }
     }
     
@@ -125,7 +139,7 @@ class VM {
     ) {
         runBlocking {
             val channelDebug = Channel<Debug>(10)
-            val vm = _VM()
+            var vm = _VM()
     
             embeddedServer(Netty, port = 8080, host = "0.0.0.0") {
                 install(WebSockets) {
@@ -156,6 +170,7 @@ class VM {
                                             "next" -> Debug(Debug.Type.NEXT)
                                             "stop" -> Debug(Debug.Type.STOP)
                                             "start" -> Debug(Debug.Type.START)
+                                            "restart" -> Debug(Debug.Type.RESTART)
                                             else -> Debug(Debug.Type.NONE)
                                         }
                                     )
@@ -201,21 +216,30 @@ class VM {
                         Debug.Type.NEXT -> {
                             boolNext = true
                         }
+                        Debug.Type.RESTART -> {
+                            vm = _VM()
+                        }
                         else -> {}
                     }
                 }
         
                 if (vm.hasNext() && (!pause || boolNext)) {
-                    vm.next()
+                    val lastInst = vm.next()
                     delay(100)
                     
-//                    var strVars = ""
-//
-//                    block.env.vars.iterator().forEach {
-//                        strVars += it.key + " = " + it.value.toString() + "\n"
-//                    }
-                    Log.i("VM", Json.encodeToString(block.env))
-                    launch { WSConnects.sendAll(JSONObject(block.env.vars.toMap()).toString()) }.join()
+                    val jsonObj = Json.encodeToString(
+                        buildJsonObject {
+                            put("instruction", JsonPrimitive(lastInst::class.jvmName + "@" + lastInst.id.toString()))
+                            put("env", Json.encodeToJsonElement(block.env))
+                            if(lastInst is Print){
+                                put("console", JsonPrimitive(lastInst.value.exec(block.env).let { var last: Instruction = Nop(); while(it.hasNext()){ last = it.next() }; last; }.toString()))
+                            }
+                        }
+                    )
+                    
+                    Log.i("VM", jsonObj)
+                    
+                    launch { WSConnects.sendAll(jsonObj) }.join()
                 } else delay(50)
                 
 //            Log.i("VM", "debugCaller")

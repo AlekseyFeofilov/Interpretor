@@ -2,7 +2,6 @@ package com.example.interpreter.vm.instruction
 
 import com.example.interpreter.vm.Env
 import com.example.interpreter.vm.Executor
-import kotlinx.serialization.SerialName
 import java.lang.Error
 import kotlin.String
 import kotlinx.serialization.Serializable
@@ -10,8 +9,13 @@ import kotlinx.serialization.Serializable
 @Serializable
 sealed class Instruction {
 //    @SerialName("class_type")
+    companion object{
+        var _id = 0
+    }
+    
     open val types: String = javaClass.simpleName
     open val isBasic: Boolean = false
+    open val id = _id++
     open var blocks: List<Executor>? = null
     
     val TAG: String = "VM_INSTRUCTION[$types]"

@@ -37,9 +37,9 @@ class Env {
     operator fun set(item: String, value: Instruction){ recursiveSearchEnv(item).vars[item] = value }
     
     fun new(item: String, value: Instruction){
-        if(!vars.containsKey(item)) {
+//        if(!vars.containsKey(item)) {
             vars[item] = value
-        }else throw Error("Runtime Error (Env new var [${item}] is already defined)")
+//        }else throw Error("Runtime Error (Env new var [${item}] is already defined)")
     }
     
     private fun regRecursiveSearchEnv(item: Instruction): Env?{

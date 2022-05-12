@@ -1,8 +1,9 @@
 package com.example.interpreter.vm.instruction
 
-import android.util.Log
 import com.example.interpreter.vm.Env
 import com.example.interpreter.vm.awaitLR
+import kotlinx.serialization.Polymorphic
+import kotlinx.serialization.Serializable
 import java.lang.Error
 import kotlin.math.pow
 import kotlin.math.sqrt
@@ -10,14 +11,12 @@ import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 import kotlin.reflect.KProperty1
 import kotlin.reflect.full.*
-import kotlinx.serialization.Contextual
-import kotlinx.serialization.Serializable
 
 //TODO: more operators
 @Serializable
 @Suppress("UNUSED", "UNUSED_PARAMETER", "MemberVisibilityCanBePrivate", "PropertyName")
 class Math : Instruction {
-    private var tokens: MutableList<@Contextual Any>
+    private var tokens: MutableList<@Polymorphic Any>
     
     companion object {
         @JvmStatic fun getStaticFunc(obj: KClass<*>, name: kotlin.String): KFunction<*> {
@@ -83,7 +82,6 @@ class Math : Instruction {
         companion object{
             const val operator = ""
             const val weight = -1
-//            @JvmStatic fun exec(rt: TRuntime, env: Env): Class<*>? = null
         }
         
         open fun exec(rt: TRuntime, env: Env): Any? = null
@@ -204,7 +202,7 @@ class Math : Instruction {
         }
     
         override fun exec(rt: TRuntime, env: Env){
-            TODO("Error")
+            throw Error("Runtime math error, found TLBrk token")
         }
     }
     
@@ -215,7 +213,7 @@ class Math : Instruction {
         }
     
         override fun exec(rt: TRuntime, env: Env){
-            TODO("Error")
+            throw Error("Runtime math error, found TRBrk token")
         }
     }
     
@@ -258,13 +256,13 @@ class Math : Instruction {
     override fun exec(env: Env) = sequence {
 //        val ret = TRuntime(tokens).exec(env)
 //        Log.i(TAG + "DEMO", ret.toString())
+        yield(this@Math)
         yield(Object(hashMapOf(
             "out" to TRuntime(tokens).exec(env)
         )))
     }.iterator()
     
     @Throws(Error::class)
-//    @Suppress("ConvertSecondaryConstructorToPrimary")
     constructor(math: List<Token>): super() {
         val calcQueue = mutableListOf<Any>()
         val operatorStack = mutableListOf<Any>()
@@ -314,20 +312,7 @@ class Math : Instruction {
     }
     
     @Throws(Error::class)
-//    @Suppress("ConvertSecondaryConstructorToPrimary")
     constructor(math: kotlin.String): super() {
-//        val reflectMap = mutableMapOf<kotlin.String, KClass<*>>()
-//
-//        for(tokens in this::class.nestedClasses) {
-//            if (tokens.isSubclassOf(TokenOP::class) && tokens != TokenOP::class){
-//                reflectMap[
-//                    getStaticField(tokens, "operator").get(tokens) as kotlin.String
-//                ] = tokens
-//            }
-//        }
-        
-        Log.i(TAG, reflectMap.toString())
-        
         var results: MatchResult? = """(?:\s+)?([-+]?\d*\.?\d*(?:[eE][-+]?\d+)?)(?:\s+)?([A-Za-z][A-Za-z\d]*)?(?:\s+)?([^A-Za-z\d\s]*)(?:\s+)?""".toRegex().find(math)
         
         val calcQueue = mutableListOf<Any>()
@@ -370,12 +355,12 @@ class Math : Instruction {
                     
                     if(op::class != TLBrk::class) throw Error("Unexpected ')'")
                 }else{
-                    val priority = getStaticField(reflectOP::class, "weight").get(reflectOP::class) as Int //getStaticFunc(reflectOP::class, "weight").call(reflectOP::class.companionObjectInstance, results) as Int
+                    val priority = getStaticField(reflectOP::class, "weight").get(reflectOP::class) as Int
                     
                     while(operatorStack.any() && reflectOP::class != TLBrk::class){
                         val op = operatorStack.removeLast()
                         
-                        if(priority > getStaticField(op::class, "weight").get(op::class) as Int){ //getStaticFunc(op::class, "weight").call(op::class.companionObjectInstance, results) as Int){
+                        if(priority > getStaticField(op::class, "weight").get(op::class) as Int){
                             operatorStack.add(op)
                             break
                         }

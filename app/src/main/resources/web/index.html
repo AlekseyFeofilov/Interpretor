@@ -1,12 +1,47 @@
 <html>
 	<head>
+		<link rel="stylesheet" href="static/main.css" type="text/css" />
+		
 		<script src="static/jquery-3.5.1.js"></script>
 		<script src="static/main.js"></script>
 	</head>
 	
 	<body>
-		<h1>
-		Giga Hi
-		</h1>
+		<div class="main">
+			<div class="control">
+				<a href="#" red id="butt-restart">Restart</a>
+				<a href="#" red id="butt-stop">Stop</a>
+				<a href="#" green id="butt-play">Play</a>
+				<a href="#" orange id="butt-next">Next step</a>
+			</div>
+			<div class="display">
+				<span>Current Instruction:</span>
+				<div id="instruction"><!-- Math@123 --></div>
+			</div>
+			<div class="vars">
+				<span>Global Vars:</span>
+				<table>
+					<tbody>
+						<!-- <tr> -->
+							<!-- <td>a</td> -->
+							<!-- <td>12</td> -->
+						<!-- </tr> -->
+						<!-- <tr> -->
+							<!-- <td>b</td> -->
+							<!-- <td>36</td> -->
+						<!-- </tr> -->
+					</tbody>
+				</table>
+			</div>
+			<div class="console">
+				<!-- <pre>высрал</pre> -->
+			</div>
+		</div>
+		<div id="error" class="popup">
+			<div>
+				<pre>test   2</pre>
+				<a href="#">Reload</a>
+			</div>
+		</div>
 	</body>
 </html>
