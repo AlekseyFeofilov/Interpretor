@@ -2,12 +2,12 @@ package com.example.interpreter.vm
 
 import com.example.interpreter.vm.instruction.Instruction
 import com.example.interpreter.vm.instruction.Object
-import kotlinx.serialization.descriptors.SerialKind
 import java.lang.Error
 
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
 
+@Suppress("MemberVisibilityCanBePrivate")
 @Serializable
 class Env {
     @Transient
@@ -63,5 +63,10 @@ class Env {
     fun reg(item: Instruction, value: Instruction){
         if(value !is Object) return
         register[item] = value
+    }
+    
+    fun clear(){
+        register.clear()
+        vars.clear()
     }
 }

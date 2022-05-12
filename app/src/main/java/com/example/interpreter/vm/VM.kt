@@ -1,6 +1,5 @@
 package com.example.interpreter.vm
 
-import android.util.JsonToken
 import android.util.Log
 import com.example.interpreter.vm.instruction.*
 import com.example.interpreter.vm.instruction.Number
@@ -8,32 +7,27 @@ import io.ktor.server.application.*
 import io.ktor.server.engine.*
 import io.ktor.server.http.content.*
 import io.ktor.server.netty.*
-import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.ktor.server.websocket.*
-import io.ktor.util.Identity.encode
 import io.ktor.websocket.*
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.ClosedReceiveChannelException
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import kotlinx.serialization.PolymorphicSerializer
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.*
-import kotlinx.serialization.json.Json.Default.encodeToJsonElement
-import kotlinx.serialization.serializer
-import org.json.JSONObject
 import java.time.Duration
 import java.util.*
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.collections.LinkedHashSet
 import kotlin.concurrent.thread
 import kotlin.reflect.jvm.jvmName
-import kotlin.system.exitProcess
 
+@Suppress("MemberVisibilityCanBePrivate", "RemoveExplicitTypeArguments",
+    "RemoveEmptyPrimaryConstructor", "FunctionName"
+)
 class VM {
     lateinit var block: Executor
     
@@ -58,7 +52,7 @@ class VM {
 //        Log.i("VM", this.Tree[2].Type ?: "")
 //        Log.i("VM", Json.encodeToString(this.Tree))
     
-        val math = Math("two pow two / sqrt 4")
+        val math = Math("sin PI min cos PI")
         val math2 = Math(listOf(
             Math.TLBrk(),
             Math.TRegister(Register(math, "out")),
@@ -81,7 +75,7 @@ class VM {
             Print(GetVar("da")),
             Print(GetVar("da1")),
             If(listOf<Executor>(
-                Executor(Env(env), listOf(Bool(false))), // todo: test Register(env, math, "out")
+                Executor(Env(env), listOf(Bool(Register(math, "out", env)))),
                 Executor(Env(env), listOf(Print(String("if true")))),
                 Executor(Env(env), listOf(Print(String("if false")))),
             )),
@@ -232,7 +226,7 @@ class VM {
                             put("instruction", JsonPrimitive(lastInst::class.jvmName + "@" + lastInst.id.toString()))
                             put("env", Json.encodeToJsonElement(block.env))
                             if(lastInst is Print){
-                                put("console", JsonPrimitive(lastInst.value.exec(block.env).let { var last: Instruction = Nop(); while(it.hasNext()){ last = it.next() }; last; }.toString()))
+                                put("console", JsonPrimitive(awaitLR(lastInst.value.exec(block.env)).toString()))
                             }
                         }
                     )
@@ -256,6 +250,7 @@ class VM {
     }.iterator()
 }
 
+@Suppress("RemoveRedundantQualifierName")
 suspend fun kotlin.sequences.SequenceScope<Instruction>.yieldAllLR(iterator: Iterator<Instruction>): Instruction {
     var last: Instruction = Nop()
     

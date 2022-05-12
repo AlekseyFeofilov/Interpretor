@@ -1,11 +1,13 @@
 package com.example.interpreter.vm.instruction
 
 import com.example.interpreter.vm.Env
+import com.example.interpreter.vm.awaitLR
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import java.lang.Error
 
+@Suppress("RemoveRedundantQualifierName")
 @Serializable
 open class Bool : Instruction {
     @SerialName("_isBasic")
@@ -17,14 +19,13 @@ open class Bool : Instruction {
     override fun toNumber(): Double = if(toBoolean(value)) 1.0 else 0.0
     override fun toString(): kotlin.String = toBoolean(value).toString()
     fun toBool(): kotlin.Boolean = toBoolean(value)
-//    (num is Register) && num.exec().value != 0.0
     
     private fun toBoolean(value: Any): kotlin.Boolean{
         if(value is Boolean) return value
         if(value is Number) return value.value != 0.0
-        if(value is String) return value.value.isNotEmpty()
+        if(value is String) return value.toString().isNotEmpty()
         if(value is Object) return value.value.values.any()
-//        if(value is Register) return value.exe // todo: do write Register(env) (exec())
+        if(value is Register) return toBoolean(awaitLR(value.exec()))
         
         throw Error("Runtime Error 'to bool' instruction not entry")
     }
