@@ -13,15 +13,6 @@
         <entry key="..\:/projects/interpreter/app/src/main/res/drawable/cell_for_blocks.xml" value="0.2075" />
         <entry key="..\:/projects/interpreter/app/src/main/res/drawable/close_panel_button.xml" value="0.2075" />
         <entry key="..\:/projects/interpreter/app/src/main/res/drawable/dfjkdas.xml" value="0.229" />
-        <entry key="..\:/Users/Aleksey/AndroidStudioProjects/Interpretor/app/src/main/res/layout/activity_main.xml" value="0.25416666666666665" />
-        <entry key="..\:/Users/Aleksey/AndroidStudioProjects/Interpretor/app/src/main/res/layout/block.xml" value="0.2" />
-        <entry key="..\:/Users/Aleksey/AndroidStudioProjects/Interpretor/app/src/main/res/layout/block_row_view.xml" value="0.25416666666666665" />
-        <entry key="..\:/Users/Aleksey/AndroidStudioProjects/Interpretor/app/src/main/res/layout/block_view.xml" value="0.264" />
-        <entry key="..\:/Users/Aleksey/AndroidStudioProjects/Interpretor/app/src/main/res/layout/fragment_blocks.xml" value="0.25416666666666665" />
-        <entry key="..\:/Users/Aleksey/AndroidStudioProjects/Interpretor/app/src/main/res/layout/fragment_home.xml" value="0.11979166666666667" />
-        <entry key="..\:/Users/Aleksey/AndroidStudioProjects/Interpretor/app/src/main/res/layout/fragment_workspace.xml" value="0.25416666666666665" />
-        <entry key="..\:/Users/Aleksey/AndroidStudioProjects/Interpretor/app/src/main/res/layout/input_view.xml" value="0.25416666666666665" />
-        <entry key="..\:/Users/Aleksey/AndroidStudioProjects/Interpretor/app/src/main/res/layout/output_view.xml" value="0.25416666666666665" />
         <entry key="..\:/projects/interpreter/app/src/main/res/drawable/home_buttons.xml" value="0.1" />
         <entry key="..\:/projects/interpreter/app/src/main/res/drawable/panel.xml" value="0.1" />
         <entry key="..\:/projects/interpreter/app/src/main/res/drawable/right_panel.xml" value="0.2075" />
@@ -32,13 +23,14 @@
         <entry key="..\:/projects/interpreter/app/src/main/res/drawable/workspace_back.xml" value="0.179" />
         <entry key="..\:/projects/interpreter/app/src/main/res/layout/activity_main.xml" value="0.12447916666666667" />
         <entry key="..\:/projects/interpreter/app/src/main/res/layout/block_row_view.xml" value="0.264" />
-        <entry key="..\:/projects/interpreter/app/src/main/res/layout/block_view.xml" value="0.264" />
+        <entry key="..\:/projects/interpreter/app/src/main/res/layout/block_view.xml" value="0.6" />
         <entry key="..\:/projects/interpreter/app/src/main/res/layout/fragment_blocks.xml" value="0.152" />
         <entry key="..\:/projects/interpreter/app/src/main/res/layout/fragment_home.xml" value="0.1265625" />
         <entry key="..\:/projects/interpreter/app/src/main/res/layout/fragment_right_panel.xml" value="0.2" />
         <entry key="..\:/projects/interpreter/app/src/main/res/layout/fragment_settings.xml" value="0.264" />
         <entry key="..\:/projects/interpreter/app/src/main/res/layout/fragment_workspace.xml" value="0.1" />
         <entry key="..\:/projects/interpreter/app/src/main/res/layout/list_of_blocks.xml" value="0.11200000000000002" />
+        <entry key="..\:/projects/interpreter/app/src/main/res/layout/output_view.xml" value="0.15036674816625917" />
         <entry key="..\:/projects/interpreter/app/src/main/res/layout/scroll_box.xml" value="0.1" />
         <entry key="..\:/projects/interpreter/app/src/main/res/layout/stack_for_worckspace.xml" value="0.12960760998810938" />
         <entry key="..\:/projects/interpreter/app/src/main/res/layout/stack_for_workspace.xml" value="0.1" />

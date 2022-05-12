@@ -2,6 +2,7 @@ package com.example.interpreter.customView.blocks
 
 import android.content.Context
 import android.util.AttributeSet
+import com.example.interpreter.Point
 import com.example.interpreter.customView.BlockView
 import com.example.interpreter.mainBlock.ioTypes.InputBoolean
 import com.example.interpreter.mainBlock.ioTypes.InputDouble
@@ -22,4 +23,5 @@ class BlockWhile @JvmOverloads constructor(
           addInput(listOf(InputBoolean("condition:", this), InputDouble("for test", this, true)))
 */
       }
+    
 }

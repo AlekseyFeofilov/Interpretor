@@ -2,6 +2,7 @@ package com.example.interpreter
 
 import android.annotation.SuppressLint
 import android.content.ClipData
+import android.content.Context
 import android.os.Build
 import android.os.Bundle
 import android.os.CountDownTimer
@@ -13,16 +14,22 @@ import android.view.View.*
 import android.widget.Button
 import android.widget.RadioButton
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.view.children
 import androidx.fragment.app.Fragment
+import com.example.interpreter.customView.BlockView
 import com.example.interpreter.customView.DrawView
+import com.example.interpreter.customView.InputView
+import com.example.interpreter.customView.OutputView
 import com.example.interpreter.customView.blocks.BlockWhile
 import com.example.interpreter.databinding.*
+import com.example.interpreter.vm.instruction.Bool
 
 
 var isConsoleHidden = true
 var isBlocksPanelHidden = true
 
 data class Point(var x:Float, var y:Float)
+data class Wire(var startBlockId: Int, var outputPoint: Point, var inputPoint: Point)
 
 class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
     private var touchPoint = Point(0f, 0f)
@@ -42,12 +49,19 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
     private lateinit var bindingListOfBlocks: ListOfBlocksBinding
     private lateinit var bindingScrollBox: ScrollBoxBinding
     
+    private val listOfBlocks = mutableListOf<View>()
+    private val listOfWires  = mutableListOf<Wire>()
+    
     private var location = Point(0f, 0f)
     private lateinit var draggingView: View
     
-    @SuppressLint("ClickableViewAccessibility")
+    private lateinit var myContext: Context
+    
+    @SuppressLint("ClickableViewAccessibility", "UseRequireInsteadOfGet")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        
+        myContext = context!!
         
         bindingWorkspace = FragmentWorkspaceBinding.bind(view)
         bindingConsole = FragmentRightPanelBinding.bind(view)
@@ -106,91 +120,168 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
         bindingStack.stackContainer.setOnDragListener(choiceDragListener())
         bindingStack.basketContainer.setOnDragListener(choiceDragListener())
     
-        canvas = DrawView(activity)
-        addCanvas(canvas)
-    
-    
-        val context = context
-        val newBlock = BlockWhile(context!!)
+        //canvas = DrawView(activity)
+        //addCanvas(canvas)
+        
+        var newBlock = BlockWhile(myContext)
         newBlock.findViewById<RadioButton>(R.id.outputRadioButton).setOnTouchListener(onTouchBlocksPoint())
+        newBlock.findViewById<RadioButton>(R.id.inputRadioButton).setOnTouchListener(onTouchBlocksPoint())
         bindingScrollBox.scrollBox.addView(newBlock)
         newBlock.setOnLongClickListener(choiceLongClickListener())
+        listOfBlocks.add(newBlock)
+    
+        newBlock = BlockWhile(myContext)
+        newBlock.findViewById<RadioButton>(R.id.outputRadioButton).setOnTouchListener(onTouchBlocksPoint())
+        newBlock.findViewById<RadioButton>(R.id.inputRadioButton).setOnTouchListener(onTouchBlocksPoint())
+        bindingScrollBox.scrollBox.addView(newBlock)
+        newBlock.setOnLongClickListener(choiceLongClickListener())
+        listOfBlocks.add(newBlock)
     }
     
-    private fun addCanvas(canvas: DrawView) {
-        val density = this.resources.displayMetrics.density
-        val params =
-            ConstraintLayout.LayoutParams((5000 * density).toInt(), (5000 * density).toInt())
-        bindingScrollBox.scrollBox.addView(canvas, params)
+    // generate and put in stack blocks
+    @SuppressLint("UseRequireInsteadOfGet", "ClickableViewAccessibility")
+    private fun createBlockByClickedButton(button: Button): BlockView =
+        //TODO: change body of "when" that it creates blocks not stubs
+        when (button) {
+            bindingListOfBlocks.VARIABLE -> {
+                //TODO: add new function whose will creates "views"
+                val newBlock = BlockWhile(myContext)
+                newBlock.findViewById<RadioButton>(R.id.outputRadioButton).setOnTouchListener(onTouchBlocksPoint())
+                newBlock.findViewById<RadioButton>(R.id.inputRadioButton).setOnTouchListener(onTouchBlocksPoint())
+                bindingStack.stackContainer.addView(newBlock)
+                newBlock.setOnLongClickListener(choiceLongClickListener())
+                listOfBlocks.add(newBlock)
+                newBlock
+            }
+            bindingListOfBlocks.IF -> {
+                val newBlock = BlockWhile(myContext)
+                newBlock.findViewById<RadioButton>(R.id.outputRadioButton).setOnTouchListener(onTouchBlocksPoint())
+                newBlock.findViewById<RadioButton>(R.id.inputRadioButton).setOnTouchListener(onTouchBlocksPoint())
+                bindingStack.stackContainer.addView(newBlock)
+                newBlock.setOnLongClickListener(choiceLongClickListener())
+                listOfBlocks.add(newBlock)
+                newBlock
+            }
+            bindingListOfBlocks.WHILE -> {
+                val newBlock = BlockWhile(myContext)
+                newBlock.findViewById<RadioButton>(R.id.outputRadioButton).setOnTouchListener(onTouchBlocksPoint())
+                newBlock.findViewById<RadioButton>(R.id.inputRadioButton).setOnTouchListener(onTouchBlocksPoint())
+                bindingStack.stackContainer.addView(newBlock)
+                newBlock.setOnLongClickListener(choiceLongClickListener())
+                listOfBlocks.add(newBlock)
+                newBlock
+            }
+            bindingListOfBlocks.MATH -> {
+                val newBlock = BlockWhile(myContext)
+                newBlock.findViewById<RadioButton>(R.id.outputRadioButton).setOnTouchListener(onTouchBlocksPoint())
+                newBlock.findViewById<RadioButton>(R.id.inputRadioButton).setOnTouchListener(onTouchBlocksPoint())
+                bindingStack.stackContainer.addView(newBlock)
+                newBlock.setOnLongClickListener(choiceLongClickListener())
+                listOfBlocks.add(newBlock)
+                newBlock
+            }
+            else -> {
+                val newBlock = BlockWhile(myContext)
+                newBlock.findViewById<RadioButton>(R.id.outputRadioButton).setOnTouchListener(onTouchBlocksPoint())
+                newBlock.findViewById<RadioButton>(R.id.inputRadioButton).setOnTouchListener(onTouchBlocksPoint())
+                bindingStack.stackContainer.addView(newBlock)
+                newBlock.setOnLongClickListener(choiceLongClickListener())
+                listOfBlocks.add(newBlock)
+                newBlock
+            }
+        }
+    
+    @SuppressLint("ClickableViewAccessibility")
+    private fun addBlockToStack(view: BlockView) {
+//        (view as BlockView).binding.listOfInputLinearLayout.children.forEach {
+//            it.setOnTouchListener(onTouchBlocksPoint())
+//        }
+        //view.findViewById<RadioButton>(R.id.outputRadioButton)
+        //    .setOnTouchListener(onTouchBlocksPoint())
+        //view.findViewById<RadioButton>(R.id.inputRadioButton)
+        //    .setOnTouchListener(onTouchBlocksPoint())
+//        bindingStack.stackContainer.addView(view)
+//        view.x += 20
+//        view.y += 20
+//        view.setOnLongClickListener(choiceLongClickListener())
+        //listOfBlocks.add(view)
+        //view.translationZ = 30f
     }
+    
+    
+    // add canvas for draw wires
+//    private fun addCanvas(canvas: DrawView) {
+//        val density = this.resources.displayMetrics.density
+//        val params =
+//            ConstraintLayout.LayoutParams((5000 * density).toInt(), (5000 * density).toInt())
+//        bindingScrollBox.scrollBox.addView(canvas, params)
+//        canvas.translationZ = 10000f
+//    }
+    
     @SuppressLint("ClickableViewAccessibility")
     private fun onTouchBlocksPoint() = OnTouchListener { view, event ->
         when (event.action) {
             MotionEvent.ACTION_DOWN -> {
-                touchPoint = Point(view.x + view.width/2 , view.y + view.height/2 + event.y)
-                canvas.down(event, touchPoint)
-                Log.i("hello", "down")
+                if(view is RadioButton) { // TODO: change for IO view
+                    touchPoint = getCoordinatesOfIOPoint(view)
+                }
             }
             MotionEvent.ACTION_MOVE -> {
-                canvas.move(event, touchPoint)
-                Log.i("hello", "move")
+                canvas.draw(listOfWires, Wire(
+                    0,
+                    Point(touchPoint.x + view.width/2, touchPoint.y + view.height/2),
+                    Point(event.x + touchPoint.x, event.y + touchPoint.y))
+                )
             }
             MotionEvent.ACTION_UP -> {
-                canvas.up(event, touchPoint)
-                Log.i("hello", "else")
+                if(view is RadioButton) {
+                    val dropView = findIOViewWhereMovingEnded(
+                        Point(
+                        event.x + touchPoint.x,
+                        event.y + touchPoint.y
+                        ))
+                    if(dropView != null) {
+                        listOfWires.add(Wire(
+                            0,
+                            Point(touchPoint.x + view.width/2, touchPoint.y + view.height/2),
+                            Point(
+                                getCoordinatesOfIOPoint(dropView).x + dropView.width/2,
+                                getCoordinatesOfIOPoint(dropView).y + dropView.height/2
+                            )))
+                    }
+                    canvas.draw(listOfWires)
+                }
             }
         }
         true
     }
     
-    // generate and put in stack blocks
-    private fun createBlockByClickedButton(button: Button): View =
-        //TODO: change body of "when" that it creates blocks not stubs
-        when (button) {
-            bindingListOfBlocks.VARIABLE -> {
-                //TODO: add new function whose will creates "views"
-                val newButton = Button(context)
-                newButton.background = resources.getDrawable(R.drawable.home_buttons)
-                newButton.text = "VAR"
-                newButton
-            }
-            bindingListOfBlocks.IF -> {
-                val newButton = Button(context)
-                newButton.background = resources.getDrawable(R.drawable.home_buttons)
-                newButton.text = "IF"
-                newButton
-            }
-            bindingListOfBlocks.WHILE -> {
-                val context = context
-                val newBlock = BlockWhile(context!!)
-                newBlock.findViewById<RadioButton>(R.id.outputRadioButton).setOnTouchListener(onTouchBlocksPoint())
-                newBlock
-            }
-            bindingListOfBlocks.MATH -> {
-                val newButton = Button(context)
-                newButton.background = resources.getDrawable(R.drawable.home_buttons)
-                newButton.text = "MATH"
-                newButton
-            }
-            else -> {
-                val newButton = Button(context)
-                newButton.background = resources.getDrawable(R.drawable.home_buttons)
-                newButton.text = "aboba"
-                newButton
+    private fun findIOViewWhereMovingEnded(point: Point): View? {
+        for(block in listOfBlocks) {
+            if(isInView(point, block.findViewById(R.id.inputRadioButton))) {
+                return block.findViewById(R.id.inputRadioButton)
             }
         }
+        return null
+    }
     
-    private fun addBlockToStack(view: View) {
-        //TODO: change function that it generates blocks with correct size
-        val params = ConstraintLayout.LayoutParams(
-            bindingStack.stackContainer.width - 40,
-            bindingStack.stackContainer.height - 40
-        )
-        bindingStack.stackContainer.addView(view, params)
-        view.x += 20
-        view.y += 20
-        view.setOnLongClickListener(choiceLongClickListener())
-        view.translationZ = 30f
+    private fun isInView(point: Point, view: View): Boolean {
+        val block = getCoordinatesOfIOPoint(view)
+        return (block.x <= point.x && point.x <= block.x + view.width &&
+                block.y <= point.y && point.y <= block.y + view.height)
+    }
+    
+    private fun getCoordinatesOfIOPoint(view: View): Point {
+        var x = view.x
+        x+=(view.parent as View).x
+        x += ((view.parent).parent as View).x
+        x += (((view.parent).parent).parent as View).x
+    
+        var y = view.y
+        y+=(view.parent as View).y
+        y += ((view.parent).parent as View).y
+        y += (((view.parent).parent).parent as View).y
+        return Point(x , y)
     }
     
     // drag-n-drop for blocks
@@ -206,14 +297,18 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
             view.startDragAndDrop(data, shadowBuilder, view, 0)
         }
         draggingView = view as View
+        Log.i("hello", "${draggingView}")
         true
     }
     
+    //private val deltaLocation = Point(0f, 0f)
     private fun choiceDragListener() = OnDragListener { view, event ->
         when (event.action) {
             //TODO: this fun is need refactoring
             DragEvent.ACTION_DRAG_STARTED -> {
-                draggingView.visibility = INVISIBLE
+                //deltaLocation.x = draggingView.x
+                //deltaLocation.y = draggingView.y
+                //draggingView.visibility = INVISIBLE
             }
             DragEvent.ACTION_DRAG_LOCATION -> {
                 if (view == bindingScrollBox.scrollBox) {
@@ -231,7 +326,7 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
                             }
                             bindingScrollBox.scrollBox -> {
                                 draggingView.translationZ = 30f
-                                draggingView.x = (location.x - draggingView.width / 2)
+                                draggingView.x = location.x - draggingView.width / 2
                                 draggingView.y = location.y - draggingView.height / 2
                             }
                         }
@@ -262,7 +357,7 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
                 }
             }
             DragEvent.ACTION_DRAG_ENDED -> {
-                draggingView.visibility = VISIBLE
+                //draggingView.visibility = VISIBLE
             }
         }
         true

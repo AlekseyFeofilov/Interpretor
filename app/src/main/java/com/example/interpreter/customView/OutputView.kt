@@ -3,6 +3,7 @@ package com.example.interpreter.customView
 import android.content.Context
 import android.view.LayoutInflater
 import android.widget.LinearLayout
+import com.example.interpreter.Point
 import com.example.interpreter.databinding.OutputViewBinding
 
 class OutputView(context: Context?) : LinearLayout(context) {
@@ -31,4 +32,6 @@ class OutputView(context: Context?) : LinearLayout(context) {
         if (!outputField) this.removeViewAt(1)
         if (!descriptionField) this.removeViewAt(0)
     }
+    
+    fun getCoordinatesInParent() = Point(this.x, this.y)
 }
