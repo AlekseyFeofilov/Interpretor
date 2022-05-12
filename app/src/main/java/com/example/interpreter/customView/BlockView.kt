@@ -20,7 +20,7 @@ open class BlockView @JvmOverloads constructor(
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0,
 ) : ConstraintLayout(context, attrs, defStyleAttr), IOContainer {
-    private val binding = BlockViewBinding.inflate(LayoutInflater.from(context), this)
+    val binding = BlockViewBinding.inflate(LayoutInflater.from(context), this)
     
     override val view = this
     override var inputs = mutableListOf<Pair<Input, Output?>>()

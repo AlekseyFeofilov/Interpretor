@@ -28,32 +28,33 @@
             app:layout_constraintLeft_toLeftOf="@id/listOfInputLinearLayout"
             app:layout_constraintRight_toRightOf="@id/listOfOutputLinearLayout" />
 
-        <LinearLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/codeDirectionLinearLayout"
             android:layout_width="0dp"
             android:layout_height="30dp"
             android:background="#222222"
-            android:orientation="horizontal"
             app:layout_constraintTop_toBottomOf="@id/headerTextView"
             app:layout_constraintLeft_toLeftOf="@id/listOfInputLinearLayout"
             app:layout_constraintRight_toRightOf="@id/listOfOutputLinearLayout">
 
             <RadioButton
                 android:id="@+id/inputRadioButton"
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
                 android:button="@android:drawable/ic_media_play"
-                android:buttonTint="@color/blocksButtonCircleCenterDown" />
+                android:buttonTint="@color/blocksButtonCircleCenterDown"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"/>
 
             <RadioButton
                 android:id="@+id/outputRadioButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="end|center"
                 android:button="@android:drawable/ic_media_play"
-                android:buttonTint="@color/blocksButtonCircleCenterDown" />
-        </LinearLayout>
+                android:buttonTint="@color/blocksButtonCircleCenterDown"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"/>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <LinearLayout
             android:id="@+id/listOfInputLinearLayout"

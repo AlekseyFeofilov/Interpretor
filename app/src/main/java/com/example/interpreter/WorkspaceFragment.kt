@@ -23,6 +23,7 @@ var isConsoleHidden = true
 var isBlocksPanelHidden = true
 
 data class Point(var x:Float, var y:Float)
+data class Wire(var startBlockId: Int, var outputPoint: Point, var inputPoint: Point)
 
 class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
     private var touchPoint = Point(0f, 0f)
@@ -44,6 +45,9 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
     
     private var location = Point(0f, 0f)
     private lateinit var draggingView: View
+    
+    private val listOfBlocks = mutableListOf<View>()
+    private val listOfWires  = mutableListOf<Wire>()
     
     @SuppressLint("ClickableViewAccessibility")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -109,9 +113,13 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
         canvas = DrawView(activity)
         addCanvas(canvas)
     
-    
         val context = context
-        val newBlock = BlockWhile(context!!)
+        var newBlock = BlockWhile(context!!)
+        newBlock.findViewById<RadioButton>(R.id.outputRadioButton).setOnTouchListener(onTouchBlocksPoint())
+        bindingScrollBox.scrollBox.addView(newBlock)
+        newBlock.setOnLongClickListener(choiceLongClickListener())
+    
+        newBlock = BlockWhile(context)
         newBlock.findViewById<RadioButton>(R.id.outputRadioButton).setOnTouchListener(onTouchBlocksPoint())
         bindingScrollBox.scrollBox.addView(newBlock)
         newBlock.setOnLongClickListener(choiceLongClickListener())
@@ -122,25 +130,73 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
         val params =
             ConstraintLayout.LayoutParams((5000 * density).toInt(), (5000 * density).toInt())
         bindingScrollBox.scrollBox.addView(canvas, params)
+        canvas.translationZ = 10000f
     }
     @SuppressLint("ClickableViewAccessibility")
     private fun onTouchBlocksPoint() = OnTouchListener { view, event ->
         when (event.action) {
             MotionEvent.ACTION_DOWN -> {
-                touchPoint = Point(view.x + view.width/2 , view.y + view.height/2 + event.y)
-                canvas.down(event, touchPoint)
-                Log.i("hello", "down")
+                if(view is RadioButton) { // TODO: change for IO view
+                    touchPoint = getCoordinatesOfIOPoint(view)
+                }
             }
             MotionEvent.ACTION_MOVE -> {
-                canvas.move(event, touchPoint)
-                Log.i("hello", "move")
+                canvas.draw(listOfWires, Wire(
+                    0,
+                    Point(touchPoint.x + view.width/2, touchPoint.y + view.height/2),
+                    Point(event.x + touchPoint.x, event.y + touchPoint.y))
+                )
             }
             MotionEvent.ACTION_UP -> {
-                canvas.up(event, touchPoint)
-                Log.i("hello", "else")
+                if(view is RadioButton) {
+                    val dropView = findIOViewWhereMovingEnded(
+                        Point(
+                            event.x + touchPoint.x,
+                            event.y + touchPoint.y
+                        ))
+                    if(dropView != null) {
+                        listOfWires.add(Wire(
+                            0,
+                            Point(touchPoint.x + view.width/2, touchPoint.y + view.height/2),
+                            Point(
+                                getCoordinatesOfIOPoint(dropView).x + dropView.width/2,
+                                getCoordinatesOfIOPoint(dropView).y + dropView.height/2
+                            )))
+                    }
+                    canvas.draw(listOfWires)
+                }
             }
         }
         true
+    }
+    
+    
+    private fun findIOViewWhereMovingEnded(point: Point): View? {
+        for(block in listOfBlocks) {
+            if(isInView(point, block.findViewById(R.id.inputRadioButton))) {
+                return block.findViewById(R.id.inputRadioButton)
+            }
+        }
+        return null
+    }
+    
+    private fun isInView(point: Point, view: View): Boolean {
+        val block = getCoordinatesOfIOPoint(view)
+        return (block.x <= point.x && point.x <= block.x + view.width &&
+                block.y <= point.y && point.y <= block.y + view.height)
+    }
+    
+    private fun getCoordinatesOfIOPoint(view: View): Point {
+        var x = view.x
+        x+=(view.parent as View).x
+        x += ((view.parent).parent as View).x
+        x += (((view.parent).parent).parent as View).x
+        
+        var y = view.y
+        y+=(view.parent as View).y
+        y += ((view.parent).parent as View).y
+        y += (((view.parent).parent).parent as View).y
+        return Point(x , y)
     }
     
     // generate and put in stack blocks
@@ -182,13 +238,10 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
     
     private fun addBlockToStack(view: View) {
         //TODO: change function that it generates blocks with correct size
-        val params = ConstraintLayout.LayoutParams(
-            bindingStack.stackContainer.width - 40,
-            bindingStack.stackContainer.height - 40
-        )
-        bindingStack.stackContainer.addView(view, params)
-        view.x += 20
-        view.y += 20
+        //val params = ConstraintLayout.LayoutParams(1000, 500)
+        bindingStack.stackContainer.addView(view)
+        //view.x += 20
+        //view.y += 20
         view.setOnLongClickListener(choiceLongClickListener())
         view.translationZ = 30f
     }
@@ -213,13 +266,13 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
         when (event.action) {
             //TODO: this fun is need refactoring
             DragEvent.ACTION_DRAG_STARTED -> {
-                draggingView.visibility = INVISIBLE
+                //draggingView.visibility = INVISIBLE
             }
             DragEvent.ACTION_DRAG_LOCATION -> {
-                if (view == bindingScrollBox.scrollBox) {
+                //if (view == bindingScrollBox.scrollBox) {
                     location.x = event.x
                     location.y = event.y
-                }
+                //}
             }
             DragEvent.ACTION_DROP -> {
                 when (view) {
@@ -262,7 +315,7 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
                 }
             }
             DragEvent.ACTION_DRAG_ENDED -> {
-                draggingView.visibility = VISIBLE
+                //draggingView.visibility = VISIBLE
             }
         }
         true
