@@ -110,9 +110,7 @@ class InputView constructor(context: Context?) : LinearLayout(context) {
         binding.inputLinearLayout.removeViews(start, count)
     }
     
-    ////////////////////////
-    
-    private var indicator = false
+/*    private var indicator = false
     
     private val connect = OnClickListener {
         it as RadioButton
@@ -128,5 +126,5 @@ class InputView constructor(context: Context?) : LinearLayout(context) {
     
     init {
         binding.inputRadioButton.setOnClickListener(connect)
-    }
+    }*/
 }
