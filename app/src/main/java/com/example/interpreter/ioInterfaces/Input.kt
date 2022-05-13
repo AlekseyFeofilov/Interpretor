@@ -2,16 +2,15 @@ package com.example.interpreter.ioInterfaces
 
 interface Input : IO {
     val isDefault: Boolean
+    val isLink: Boolean
     
-    //todo: apply color setting
-    val color: String
     val autocomplete: Boolean
     
     fun parseValue(value: String)
     fun clone(): Input
     
     override fun convertToString() =
-        "Input, $type, $description, $isDefault, ${getValue()}, $autocomplete"
+        "Input, $type, $description, $autocomplete, $isDefault, ${getValue()}"
     
     fun isEqual(input: Input) =
         this.isDefault == input.isDefault &&

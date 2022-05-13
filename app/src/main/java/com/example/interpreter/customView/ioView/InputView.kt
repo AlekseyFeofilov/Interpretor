@@ -1,6 +1,9 @@
 package com.example.interpreter.customView.ioView
 
 import android.content.Context
+import android.content.res.ColorStateList
+import android.graphics.Color
+import android.graphics.drawable.Drawable
 import android.text.InputType
 import android.view.LayoutInflater
 import android.view.View
@@ -8,6 +11,7 @@ import android.widget.AdapterView
 import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.RadioButton
+import androidx.core.content.ContextCompat
 import androidx.core.widget.doAfterTextChanged
 import com.example.interpreter.databinding.InputViewBinding
 import com.example.interpreter.ioInterfaces.IO
@@ -17,6 +21,12 @@ import com.example.interpreter.ioInterfaces.ioTypes.InputBoolean
 class InputView constructor(context: Context?) : LinearLayout(context) {
     private val binding = InputViewBinding.inflate(LayoutInflater.from(context), this)
     private var input: Input? = null
+    
+    companion object {
+        enum class Appearance {
+            Triangular, Standard,
+        }
+    }
     
     private fun setVisibility(view: View, visible: Boolean) {
         view.visibility = if (visible) View.VISIBLE else View.GONE
@@ -67,20 +77,43 @@ class InputView constructor(context: Context?) : LinearLayout(context) {
                     }
             }
             
-            override fun onNothingSelected(p0: AdapterView<*>?) { }
+            override fun onNothingSelected(p0: AdapterView<*>?) {}
         }
     }
     
-    private fun initDefaultEditText(type: Int){
+    private fun initDefaultEditText(type: Int) {
         binding.inputDefaultValueEditText.inputType = type
         binding.inputDefaultValueEditText.doAfterTextChanged {
             if (input!!.isEmpty()) input!!.parent.inputAutocomplete(input!!)
             input!!.parseValue(it.toString())
+            if (it.toString() == "") input!!.parent.removeCloneInput(input!!)
+        }
+    }
+    
+    private fun setColor() {
+        (binding.inputLinearLayout.getChildAt(0) as RadioButton).buttonTintList =
+            ColorStateList.valueOf(Color.parseColor(input!!.color))
+    }
+    
+    private fun setOutputAppearance(drawable: Drawable?) {
+        binding.inputRadioButton.buttonDrawable = drawable
+    }
+    
+    @Suppress("SameParameterValue")
+    private fun setLinkAppearance(appearance: Appearance) {
+        when (appearance) {
+            Appearance.Triangular -> setOutputAppearance(
+                ContextCompat.getDrawable(context, android.R.drawable.ic_media_play)
+            )
+            else -> {
+            
+            }
         }
     }
     
     fun initComponents(input: Input) {
         this.input = input
+        setColor()
         
         if (input.isDefault) {
             when (input.type) {
@@ -94,30 +127,32 @@ class InputView constructor(context: Context?) : LinearLayout(context) {
                 }
                 IO.Companion.Type.Double -> {
                     removeComponent(3)
-                    initDefaultEditText(InputType.TYPE_CLASS_NUMBER)
+                    initDefaultEditText(InputType.TYPE_NUMBER_FLAG_SIGNED or InputType.TYPE_NUMBER_FLAG_DECIMAL)
                 }
-                else -> { }
+                else -> {}
             }
         } else {
             removeComponent(2, 2)
         }
         
         if (input.description.isNullOrEmpty()) removeComponent(1)
-        //if (!inputField) removeComponent(0) todo: init objects
+        if (!input.isLink) binding.inputLinearLayout.getChildAt(0).visibility = View.GONE
+        if (input.type == IO.Companion.Type.Function) setLinkAppearance(Appearance.Triangular)
     }
     
     private fun removeComponent(start: Int, count: Int = 1) {
         binding.inputLinearLayout.removeViews(start, count)
     }
     
-/*    private var indicator = false
+    /////////////////////////////////////////////////
+    private var indicator = false
     
     private val connect = OnClickListener {
         it as RadioButton
         if (!indicator) {
-            input!!.parent.connectInput(input!!, input!!.parent.outputs[0].first, true)
+            input!!.parent.connectInput(input!!, input!!.parent.outputs[0].first)
         } else {
-            input!!.parent.disconnectInput(input!!, true)
+            input!!.parent.disconnectInput(input!!)
             it.isChecked = false
         }
         
@@ -126,5 +161,5 @@ class InputView constructor(context: Context?) : LinearLayout(context) {
     
     init {
         binding.inputRadioButton.setOnClickListener(connect)
-    }*/
+    }
 }

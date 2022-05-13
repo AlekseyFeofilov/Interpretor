@@ -8,6 +8,7 @@ class OutputFunction(
     override val description: String = "",
     override var parent: IOContainer
 ): Output {
+    override val color = "#8B80F9"
     override val type = IO.Companion.Type.Function
     var default: Unit? = null
     

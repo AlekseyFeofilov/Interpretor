@@ -1,7 +1,7 @@
 package com.example.interpreter.ioInterfaces
 
 import android.view.View
-import com.example.interpreter.ioInterfaces.ioTypes.InputBoolean
+import com.example.interpreter.ioInterfaces.ioTypes.*
 
 interface IOContainer {
     val view: View
@@ -23,14 +23,6 @@ interface IOContainer {
         )
     }
     
-    fun addInput(stringArray: Array<String>){
-        /*val input = when(stringArray[1]){
-            IO.Companion.Type.Boolean.toString() -> InputBoolean(stringArray[2], this, stringArray[3].toBoolean())
-        }*/
-        
-        //input.parse()
-    }
-    
     fun addInput(inputList: List<Input>, to: Input? = null, before: Boolean = true) {
         inputList.forEachIndexed { index, it ->
             addInput(
@@ -41,70 +33,88 @@ interface IOContainer {
         }
     }
     
-    fun inputAutocomplete(input: Input){
-        if(!input.autocomplete || !input.isEmpty()) return
+    //todo: complete for saving code
+    fun addInput(stringArray: Array<String>) {
+        val input: Input = when (stringArray[1]) {
+            IO.Companion.Type.Boolean.toString() ->
+                InputBoolean(
+                    stringArray[2],
+                    this,
+                    stringArray[3].toBoolean(),
+                    stringArray[4].toBoolean()
+                )
+            
+            IO.Companion.Type.String.toString() ->
+                InputString(
+                    stringArray[2],
+                    this,
+                    stringArray[3].toBoolean(),
+                    stringArray[4].toBoolean()
+                )
+            
+            IO.Companion.Type.Double.toString() ->
+                InputDouble(
+                    stringArray[2],
+                    this,
+                    stringArray[3].toBoolean(),
+                    stringArray[4].toBoolean()
+                )
+            
+            else ->
+                InputFunction(stringArray[2], this, stringArray[3].toBoolean())
+        }
+//              "Input, $type, $description, $autocomplete, $isDefault, ${getValue()}"
+        input.parseValue(stringArray[5])
+    }
+    
+    fun inputAutocomplete(input: Input) {
+        if (!input.autocomplete || !input.isEmpty()) return
         addInput(input.clone(), input, false)
     }
     
-    fun removeCloneInput(input: Input){
-        if (input.autocomplete && input.isEmpty()){
-            removeInput(input, false)
+    fun removeCloneInput(input: Input) {
+        if (input.autocomplete && input.isEmpty()) {
+            removeInput(input)
         }
     }
     
-    fun removeInput(input: Input, disconnectInput: Boolean = true) {
-        if(disconnectInput) { disconnectInput(input) }
-        
+    fun removeInput(input: Input) {
+        disconnectInput(input)
         inputs.remove(inputs[findIndexByInput(input)])
     }
     
     fun removeInput(inputList: List<Input>) {
         inputList.forEach {
-            disconnectInput(it)
             removeInput(it)
         }
     }
     
-    fun connectInput(input: Input, output: Output, connectOutput: Boolean = false) {
+    fun connectInput(input: Input, output: Output) {
         val index = findIndexByInput(input)
         
         if (index == -1 || inputs[index].second == output) return
         
         inputs[index] = inputs[index].copy(second = output)
+        inputAutocomplete(input)
         
-        if (input.autocomplete) {
-            inputAutocomplete(input)
-        }
-        
-        if (connectOutput) {
-            output.parent.connectOutput(output, input)
-        }
+        output.parent.connectOutput(output, input)
     }
     
-    fun disconnectInput(input: Input, disconnectOutput: Boolean = false) {
+    fun disconnectInput(input: Input) {
         val index = findIndexByInput(input)
         
         if (index == -1 || inputs[index].second == null) return
         
-        val pair = inputs[index]
-        
-        if(disconnectOutput) {
-            pair.second!!
-                .parent
-                .disconnectOutput(pair.second!!, input)
-        }
-        
-        if (input.autocomplete && input.isEmpty()) {
-            removeCloneInput(input)
-            return
-        }
-        
+        val output = inputs[index].second!!
         inputs[index] = inputs[index].copy(second = null)
+        removeCloneInput(input)
+        
+        output.parent.disconnectOutput(output, input)
     }
     
     fun addOutput(output: Output, to: Output? = null, before: Boolean = true) {
         val index = if (before) findIndexByOutput(to) else findIndexByOutput(to) + 1
-    
+        
         outputs.add(
             if (index != -1) index else outputs.size,
             Pair(output, listOf())
@@ -116,8 +126,28 @@ interface IOContainer {
             addOutput(
                 it,
                 if (index == 0) to else outputList[index - 1],
-                index == 0 && before)
+                index == 0 && before
+            )
         }
+    }
+    
+    //todo: complete for saving code
+    fun addOutput(stringArray: Array<String>) {
+        val output: Output = when (stringArray[1]) {
+            IO.Companion.Type.Boolean.toString() ->
+                OutputBoolean(stringArray[2], this)
+            
+            IO.Companion.Type.String.toString() ->
+                OutputString(stringArray[2], this)
+            
+            IO.Companion.Type.Double.toString() ->
+                OutputDouble(stringArray[2], this)
+            
+            else ->
+                OutputFunction(stringArray[2], this)
+        }
+        
+        
     }
     
     fun removeOutput(output: Output) {
@@ -127,41 +157,34 @@ interface IOContainer {
     
     fun removeOutput(outputList: List<Output>) {
         outputList.forEach {
-            disconnectOutputAll(it)
             removeOutput(it)
         }
     }
     
-    fun connectOutput(output: Output, input: Input, connectInput: Boolean = false) {
+    fun connectOutput(output: Output, input: Input) {
         val index = findIndexByOutput(output)
         
         if (index == -1 || input in outputs[index].second) return
         
         outputs[index] = outputs[index].copy(second = outputs[index].second + input)
-        
-        if(connectInput) {
-            input.parent.connectInput(input, output)
-        }
+        input.parent.connectInput(input, output)
     }
     
-    fun disconnectOutput(output: Output, input: Input, disconnectInput: Boolean = false) {
+    fun disconnectOutput(output: Output, input: Input) {
         val index = findIndexByOutput(output)
-    
-        if (index == -1 || input !in outputs[index].second) return
-    
-        outputs[index] = outputs[index].copy(second = outputs[index].second - input)
         
-        if(disconnectInput) {
-            input.parent.disconnectInput(input)
-        }
+        if (index == -1 || input !in outputs[index].second) return
+        
+        outputs[index] = outputs[index].copy(second = outputs[index].second - input)
+        input.parent.disconnectInput(input)
     }
     
     fun disconnectOutputAll(output: Output) {
         val index = findIndexByOutput(output)
         
-        outputs[index].second.forEach { it.parent.disconnectInput(it, true) }
-        
+        val listOfInput = outputs[index].second
         outputs[index] = Pair(output, listOf())
+        listOfInput.forEach { it.parent.disconnectInput(it) }
     }
     
     fun setHeader(name: String, colorHEX: String)

@@ -7,6 +7,15 @@
     <string name="before">before</string>
     <string name="after">after</string>
 
+    <string-array name="comparing">
+        <item><![CDATA[<]]></item>
+        <item><![CDATA[>]]></item>
+        <item><![CDATA[=]]></item>
+        <item><![CDATA[!=]]></item>
+        <item><![CDATA[<=]]></item>
+        <item><![CDATA[>=]]></item>
+    </string-array>
+
     <string-array name="booleanValue">
         <item>Bool</item>
         <item>True</item>

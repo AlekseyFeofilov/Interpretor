@@ -8,6 +8,7 @@ class OutputBoolean (
     override val description: String = "",
     override var parent: IOContainer
 ): Output {
+    override val color = "#6CD4FF"
     override val type = IO.Companion.Type.Boolean
     var default: Boolean? = null
     
