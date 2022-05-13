@@ -12,12 +12,14 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.View.*
 import android.widget.Button
+import android.widget.LinearLayout
 import android.widget.RadioButton
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.children
 import androidx.fragment.app.Fragment
 import com.example.interpreter.customView.BlockView
 import com.example.interpreter.customView.DrawView
+import com.example.interpreter.customView.Line
 import com.example.interpreter.customView.blocks.BlockWhile
 import com.example.interpreter.databinding.*
 
@@ -26,6 +28,7 @@ var isConsoleHidden = true
 var isBlocksPanelHidden = true
 
 data class Point(var x:Float, var y:Float)
+data class Wire(var startBlockId: Int, var finishBlockInd: Int, var outputPoint: Point, var inputPoint: Point)
 
 class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
     private var touchPoint = Point(0f, 0f)
@@ -45,8 +48,10 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
     private lateinit var bindingListOfBlocks: ListOfBlocksBinding
     private lateinit var bindingScrollBox: ScrollBoxBinding
     
-    private var location = Point(0f, 0f)
     private lateinit var draggingView: View
+    
+    private val listOfBlocks = mutableListOf<View>()
+    private val listOfWires = mutableListOf<Wire>()
     
     @SuppressLint("ClickableViewAccessibility")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -63,10 +68,10 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
         isBlocksPanelHidden = true
         
         // set on click listener for button that call panel with blocks
-        bindingBlocksPanel.closeButton.setOnClickListener { moveBlocksFragment(300) }
+        bindingBlocksPanel.closeButton.setOnClickListener { movePanelWithBlocks(300) }
         bindingBlocksPanel.blocksButton.setOnClickListener {
             if (isConsoleHidden) {
-                moveBlocksFragment(400)
+                movePanelWithBlocks(400)
             }
         }
         
@@ -79,19 +84,19 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
         
         // show or hide button that call or close console
         //if (isButtonForConsoleVisibility) {
-            bindingConsole.consoleButton.setOnClickListener {
-                if (isBlocksPanelHidden) {
-                    isPanelMoving = true
-                    isConsoleHidden = if (console.x > 0.6 * metrics.bounds.width()) {
-                        takeConsole( 200)
-                        false
-                    } else {
-                        hideConsole(bindingConsole.buttonPanel, 200)
-                        true
-                    }
-                    isPanelMoving = false
+        bindingConsole.consoleButton.setOnClickListener {
+            if (isBlocksPanelHidden) {
+                isPanelMoving = true
+                isConsoleHidden = if (console.x > 0.6 * metrics.bounds.width()) {
+                    takeConsole(200)
+                    false
+                } else {
+                    hideConsole(bindingConsole.buttonPanel, 200)
+                    true
                 }
+                isPanelMoving = false
             }
+        }
         //} else {
         //    bindingConsole.consoleButton.visibility = View.INVISIBLE
         //}
@@ -103,50 +108,196 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
             }
         }
         
-        
         // turn on drag-n-drop
         bindingScrollBox.scrollBox.setOnDragListener(choiceDragListener())
         bindingStack.stackContainer.setOnDragListener(choiceDragListener())
         bindingStack.basketContainer.setOnDragListener(choiceDragListener())
-    
+        
         canvas = DrawView(activity)
         addCanvas(canvas)
-    
-    
-        val context = context
-        val newBlock = BlockWhile(context!!)
-        newBlock.findViewById<RadioButton>(R.id.outputRadioButton).setOnTouchListener(onTouchBlocksPoint())
-        bindingScrollBox.scrollBox.addView(newBlock)
-        newBlock.setOnLongClickListener(choiceLongClickListener())
     }
     
     private fun addCanvas(canvas: DrawView) {
         val density = this.resources.displayMetrics.density
         val params =
-            ConstraintLayout.LayoutParams((5000 * density).toInt(), (5000 * density).toInt())
+            ConstraintLayout.LayoutParams((11000 * density).toInt(), (11000 * density).toInt())
         bindingScrollBox.scrollBox.addView(canvas, params)
+        canvas.translationZ = 10000f
     }
+    
     @SuppressLint("ClickableViewAccessibility")
     private fun onTouchBlocksPoint() = OnTouchListener { view, event ->
+        
         when (event.action) {
             MotionEvent.ACTION_DOWN -> {
-                touchPoint = Point(view.x + view.width/2 , view.y + view.height/2 + event.y)
-                canvas.down(event, touchPoint)
-                Log.i("hello", "down")
+                if (view is RadioButton) { // TODO: change for IO view
+                    touchPoint = getCoordinatesOfIOPointInScrollBox(view)
+                }
             }
             MotionEvent.ACTION_MOVE -> {
-                canvas.move(event, touchPoint)
-                Log.i("hello", "move")
+                canvas.draw(
+                    listOfWires, Wire(
+                        0, 0,
+                        Point(touchPoint.x + view.width / 2, touchPoint.y + view.height / 2),
+                        Point(event.x + touchPoint.x, event.y + touchPoint.y)
+                    )
+                )
             }
             MotionEvent.ACTION_UP -> {
-                canvas.up(event, touchPoint)
-                Log.i("hello", "else")
+                if (view is RadioButton) {
+                    val dropView = findInputViewWhereMovingEnded(
+                        Point(
+                            event.x + touchPoint.x,
+                            event.y + touchPoint.y
+                        )
+                    )
+                    if (dropView != null) {
+                    
+                    }
+                    canvas.draw(listOfWires)
+                }
             }
         }
         true
     }
     
+    private fun isCorrectWire(wire: Wire, startView: View, endView: View): Boolean {
+        val start = findBlockIndByIOView(startView)
+        val end = findBlockIndByIOView(endView)
+        var isAdded = false
+        var countWireForArrow = 0
+        if (start != end) {
+            val newWire = Wire(
+                start, end,
+                Point(
+                    touchPoint.x + startView.width / 2,
+                    touchPoint.y + startView.height / 2
+                ),
+                Point(
+                    getCoordinatesOfIOPointInScrollBox(endView).x + endView.width / 2,
+                    getCoordinatesOfIOPointInScrollBox(endView).y + endView.height / 2
+                )
+            )
+            for (i in listOfWires) {
+                if (i == newWire) {
+                    isAdded = true
+                    break
+                }
+            }
+        }
+        
+        for (i in (view as BlockView).binding.listOfOutputLinearLayout.children) {
+            if((i as BlockView).binding.outputRadioButton == startView) {
+            
+            }
+            if((i as BlockView).binding.inputRadioButton == endView) {
+            
+            }
+        }
+        
+        //if(!isAdded && isFirstWireForArrow)
+        return false
+    }
+    
+    
+    private fun isArrowHaveOneWire(arrow: View): Boolean {
+        for (i in listOfBlocks) {
+            if ((listOfBlocks as BlockView).binding.inputRadioButton == arrow) {
+                val coordinate = getCoordinatesOfIOPointInScrollBox(arrow)
+                for (j in listOfWires) {
+                    if (coordinate == j.inputPoint) {
+                        return true
+                    }
+                }
+            }
+            if ((listOfBlocks as BlockView).binding.outputRadioButton == arrow) {
+                val coordinate = getCoordinatesOfIOPointInScrollBox(arrow)
+                for (j in listOfWires) {
+                    if (coordinate == j.inputPoint) {
+                        return true
+                    }
+                }
+            }
+        }
+        return false
+    }
+    
+    private fun findBlockIndByIOView(view: View): Int {
+        for(id in 0 until listOfBlocks.size) {
+            if(view == (listOfBlocks[id] as BlockView).binding.inputRadioButton ||
+                    view == (listOfBlocks[id] as BlockView).binding.outputRadioButton) {
+                return id
+            }
+            for (i in (listOfBlocks[id] as BlockView).binding.listOfOutputLinearLayout.children) {
+                val button = ((i as LinearLayout).getChildAt(0) as LinearLayout).getChildAt(0)
+                if (button == view) {
+                    return id
+                }
+            }
+            for (i in (listOfBlocks[id] as BlockView).binding.listOfInputLinearLayout.children) {
+                val button = ((i as LinearLayout).getChildAt(0) as LinearLayout).getChildAt(0)
+                if (button == view) {
+                    return id
+                }
+            }
+        }
+        return 0
+    }
+    
+    private fun findInputViewWhereMovingEnded(point: Point): View? {
+        for(id in 0 until listOfBlocks.size) {
+            if(isInView(point, (listOfBlocks[id] as BlockView).binding.inputRadioButton)) {
+                return (listOfBlocks[id] as BlockView).binding.inputRadioButton
+            }
+            for (i in (listOfBlocks[id] as BlockView).binding.listOfInputLinearLayout.children) {
+                val button = ((i as LinearLayout).getChildAt(0) as LinearLayout).getChildAt(0)
+                if (isInView(point, button)) {
+                    return button
+                }
+            }
+//            for (i in (listOfBlocks[id] as BlockView).binding.listOfInputLinearLayout.children) {
+//                if (isInView(point, i)) {
+//                    Log.i("hello", "${(i as LinearLayout).getChildAt(0)}")
+//                    return i
+//                }
+//            }
+        }
+        return null
+    }
+    
+    private fun isInView(point: Point, view: View): Boolean {
+        val block = getCoordinatesOfIOPointInScrollBox(view)
+        return (block.x <= point.x && point.x <= block.x + view.width &&
+                block.y <= point.y && point.y <= block.y + view.height)
+    }
+    
+    
+    private fun getCoordinatesOfIOPointInScrollBox(view:View): Point {
+        val point = Point(0f, 0f)
+        var buffView = view
+        while(buffView != bindingScrollBox.scrollBox) {
+            point.x += buffView.x
+            point.y += buffView.y
+            buffView = (buffView.parent as View)
+        }
+        return point
+    }
+    
+//    private fun getCoordinatesOfIOPoint(view: View): Point {
+//        var x = view.x
+//        x+=(view.parent as View).x
+//        x += ((view.parent).parent as View).x
+//        x += (((view.parent).parent).parent as View).x
+//
+//        var y = view.y
+//        y+=(view.parent as View).y
+//        y += ((view.parent).parent as View).y
+//        y += (((view.parent).parent).parent as View).y
+//        return Point(x , y)
+//    }
+    
     // generate and put in stack blocks
+    @SuppressLint("UseRequireInsteadOfGet")
     private fun createBlockByClickedButton(button: Button): View =
         //TODO: change body of "when" that it creates blocks not stubs
         when (button) {
@@ -164,9 +315,7 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
                 newButton
             }
             bindingListOfBlocks.WHILE -> {
-                val context = context
-                val newBlock = BlockWhile(context!!)
-                newBlock.findViewById<RadioButton>(R.id.outputRadioButton).setOnTouchListener(onTouchBlocksPoint())
+                var newBlock = BlockWhile(context!!)
                 newBlock
             }
             bindingListOfBlocks.MATH -> {
@@ -183,18 +332,24 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
             }
         }
     
+    @SuppressLint("ClickableViewAccessibility")
     private fun addBlockToStack(view: View) {
-        //TODO: change function that it generates blocks with correct size
-        val params = ConstraintLayout.LayoutParams(
-            bindingStack.stackContainer.width - 40,
-            bindingStack.stackContainer.height - 40
-        )
-        bindingStack.stackContainer.addView(view, params)
-        view.x += 20
-        view.y += 20
+        bindingStack.stack.addView(view)
+        view.findViewById<RadioButton>(R.id.outputRadioButton).setOnTouchListener(onTouchBlocksPoint())
+        //TODO: add listener for IO points
+//        (view as BlockView).binding.listOfOutputLinearLayout.children.forEach {
+//            it.setOnTouchListener(onTouchBlocksPoint())
+//        }
+        for (i in (view as BlockView).binding.listOfOutputLinearLayout.children) {
+            val button = ((i as LinearLayout).getChildAt(0) as LinearLayout).getChildAt(1)
+            button.setOnTouchListener(onTouchBlocksPoint())
+        }
+        //
         view.setOnLongClickListener(choiceLongClickListener())
         view.translationZ = 30f
+        listOfBlocks.add(view)
     }
+    
     
     // drag-n-drop for blocks
     @SuppressLint("ClickableViewAccessibility")
@@ -212,64 +367,123 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
         true
     }
     
+    private var location = Point(0f, 0f)
+    private var deltaLocation = Point(0f, 0f)
     private fun choiceDragListener() = OnDragListener { view, event ->
         when (event.action) {
-            //TODO: this fun is need refactoring
             DragEvent.ACTION_DRAG_STARTED -> {
-                draggingView.visibility = INVISIBLE
+                //draggingView.visibility = INVISIBLE
             }
             DragEvent.ACTION_DRAG_LOCATION -> {
-                if (view == bindingScrollBox.scrollBox) {
                     location.x = event.x
                     location.y = event.y
-                }
             }
             DragEvent.ACTION_DROP -> {
+                deltaLocation.x = location.x - draggingView.width/2  - draggingView.x
+                deltaLocation.y = location.y - draggingView.height/2 - draggingView.y
                 when (view) {
-                    draggingView.parent -> {
-                        when (view) {
-                            bindingStack.stackContainer -> {
-                                draggingView.x = 20f
-                                draggingView.y = 20f
-                            }
-                            bindingScrollBox.scrollBox -> {
-                                draggingView.translationZ = 30f
-                                draggingView.x = (location.x - draggingView.width / 2)
-                                draggingView.y = location.y - draggingView.height / 2
-                            }
-                        }
-                    }
                     bindingStack.basketContainer -> {
-                        when(draggingView.parent) {
-                            bindingScrollBox.scrollBox -> {
-                                bindingScrollBox.scrollBox.removeView(draggingView)
-                            }
-                            bindingStack.stackContainer-> {
-                                bindingStack.stackContainer.removeView(draggingView)
-                            }
-                        }
+                        removeWiresToBlock(draggingView)
+                        correctIndexes(draggingView)
+                        removeBlock(draggingView)
+                        canvas.draw(listOfWires)
                     }
                     bindingStack.stackContainer -> {
-                        bindingScrollBox.scrollBox.removeView(draggingView)
-                        bindingStack.stackContainer.addView(draggingView)
-                        draggingView.x = 20f
-                        draggingView.y = 20f
+                        moveToStack(draggingView)
+                        removeWiresToBlock(draggingView)
+                        canvas.draw(listOfWires)
                     }
                     bindingScrollBox.scrollBox -> {
-                        bindingStack.stackContainer.removeView(draggingView)
-                        bindingScrollBox.scrollBox.addView(draggingView)
-                        draggingView.translationZ = 30f
-                        draggingView.x = location.x - draggingView.width / 2
-                        draggingView.y = location.y - draggingView.height / 2
+                        moveToScrollBox(draggingView, location)
+                        moveWiresToBlock(draggingView, deltaLocation)
+                        canvas.draw(listOfWires)
                     }
                 }
             }
             DragEvent.ACTION_DRAG_ENDED -> {
-                draggingView.visibility = VISIBLE
+                //draggingView.visibility = VISIBLE
             }
         }
         true
     }
+    
+    private fun correctIndexes(view: View) {
+        val ind = findBlockIndByView(view)
+        for(i in listOfWires.size - 1 downTo 0) {
+            if(listOfWires[i].startBlockId >= ind) {
+                listOfWires[i].startBlockId--
+            }
+            if(listOfWires[i].finishBlockInd >= ind) {
+                listOfWires[i].finishBlockInd--
+            }
+        }
+    }
+    
+    private fun removeBlock(view: View) {
+        when(view.parent) {
+            bindingScrollBox.scrollBox -> {
+                bindingScrollBox.scrollBox.removeView(view)
+            }
+            bindingStack.stack -> {
+                bindingStack.stack.removeView(view)
+            }
+        }
+        listOfBlocks.remove(view)
+    }
+    
+    private fun moveToScrollBox(view: View, location: Point) {
+        view.x = 0f
+        view.y = 0f
+        if(view.parent != bindingScrollBox.scrollBox) {
+            bindingStack.stack.removeView(view)
+            bindingScrollBox.scrollBox.addView(view)
+        }
+        view.x = location.x - view.width / 2
+        view.y = location.y - view.height / 2
+    }
+    
+    private fun moveToStack(view: View) {
+        if(view.parent != bindingStack.stack) {
+            bindingScrollBox.scrollBox.removeView(view)
+            bindingStack.stack.addView(view)
+        }
+        view.x = 0f
+        view.y = 0f
+    }
+    
+    private fun findBlockIndByView(view: View): Int {
+        var ind = 0
+        for(i in 0 until listOfBlocks.size) {
+            if(view == listOfBlocks[i]) {
+                ind = i
+                break
+            }
+        }
+        return ind
+    }
+    
+    private fun removeWiresToBlock(view: View) {
+        val ind = findBlockIndByView(view)
+        for(i in listOfWires.size - 1 downTo 0) {
+            if(listOfWires[i].startBlockId == ind || listOfWires[i].finishBlockInd == ind) {
+                listOfWires.removeAt(i)
+            }
+        }
+    }
+    
+    private fun moveWiresToBlock(view: View, delta: Point) {
+        val ind = findBlockIndByView(view)
+        for(i in listOfWires) {
+            if(i.startBlockId == ind) {
+                i.outputPoint.x += delta.x
+                i.outputPoint.y += delta.y
+            } else if(i.finishBlockInd == ind) {
+                i.inputPoint.x += delta.x
+                i.inputPoint.y += delta.y
+            }
+        }
+    }
+    
 
     // animation for ui: console and down panel
 //    @SuppressLint("ClickableViewAccessibility", "SetTextI18n")
@@ -302,7 +516,7 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
 //        } else true
 //    }
     
-    private fun moveBlocksFragment(time: Long) {
+    private fun movePanelWithBlocks(time: Long) {
         isMovingScreenOn = true
         isBlocksPanelHidden = if (isBlocksPanelHidden) {
             val from = Point(blocksPanel.x, blocksPanel.y)
@@ -310,6 +524,7 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
             moveContainer(from, to, time, blocksPanel)
             false
         } else {
+            
             val from = Point(blocksPanel.x, blocksPanel.y)
             val to = Point(blocksPanel.x, metrics.bounds.height().toFloat())
             moveContainer(from, to, time, blocksPanel)
