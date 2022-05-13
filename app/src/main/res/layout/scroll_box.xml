@@ -44,7 +44,7 @@
                         android:layout_width="2000dp"
                         android:layout_height="2000dp">
 
-                        <com.example.interpreter.customView.blocks.BlockWhile
+                        <com.example.interpreter.customView.blocks.WhileBlock
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="2000dp"

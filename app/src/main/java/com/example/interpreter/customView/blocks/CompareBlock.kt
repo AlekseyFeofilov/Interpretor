@@ -2,23 +2,23 @@ package com.example.interpreter.customView.blocks
 
 import android.R
 import android.content.Context
-import android.net.wifi.WifiConfiguration.AuthAlgorithm.strings
 import android.util.AttributeSet
 import android.widget.ArrayAdapter
 import android.widget.LinearLayout
 import android.widget.Spinner
-import com.example.interpreter.customView.BlockView
-import com.example.interpreter.ioInterfaces.Input
+import com.example.interpreter.customView.blockView.BlockView
 import com.example.interpreter.ioInterfaces.ioTypes.InputBoolean
 import com.example.interpreter.ioInterfaces.ioTypes.InputDouble
-import java.util.Comparator.comparing
 
 
-class Compare @JvmOverloads constructor(
+class CompareBlock @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0,
 ) : BlockView(context, attrs, defStyleAttr) {
+    override fun compile() {
+        super.compile()
+    }
     private fun setSpinner() {
         val comparing = arrayListOf("<", ">", "=", "!=", "<=", ">=")
         

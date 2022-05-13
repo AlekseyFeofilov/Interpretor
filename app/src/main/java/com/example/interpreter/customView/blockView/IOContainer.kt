@@ -1,6 +1,9 @@
-package com.example.interpreter.ioInterfaces
+package com.example.interpreter.customView.blockView
 
 import android.view.View
+import com.example.interpreter.ioInterfaces.IO
+import com.example.interpreter.ioInterfaces.Input
+import com.example.interpreter.ioInterfaces.Output
 import com.example.interpreter.ioInterfaces.ioTypes.*
 
 interface IOContainer {
