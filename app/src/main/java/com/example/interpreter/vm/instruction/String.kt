@@ -2,14 +2,13 @@ package com.example.interpreter.vm.instruction
 
 import com.example.interpreter.vm.Env
 import com.example.interpreter.vm.awaitLR
-import kotlinx.serialization.Contextual
-import kotlinx.serialization.SerialName
-import kotlinx.serialization.Serializable
-import kotlinx.serialization.Transient
+import kotlinx.serialization.*
+import kotlinx.serialization.descriptors.*
+import kotlinx.serialization.encoding.*
 import java.lang.Error
 
 @Suppress("FunctionName", "RemoveRedundantQualifierName")
-@Serializable
+@Serializable(with = String.Serializer::class)
 class String : Instruction {
     @SerialName("_isBasic")
     override val isBasic: Boolean = true
@@ -17,7 +16,38 @@ class String : Instruction {
     @Transient
     private var value: @Contextual Any = ""
     
-    @SerialName("value")
+    class Serializer : KSerializer<String> {
+        override val descriptor: SerialDescriptor = buildClassSerialDescriptor(String::class.qualifiedName ?: "*EMPTY qualifiedName*") {
+            element<kotlin.Int>("id")
+            element<kotlin.Boolean>("_isBasic")
+            element<kotlin.String>("value")
+        }
+        
+        override fun serialize(encoder: Encoder, value: String) {
+            encoder.encodeStructure(descriptor){
+                encodeIntElement(descriptor, 0, value.id)
+                encodeBooleanElement(descriptor, 1, value.isBasic)
+                encodeStringElement(descriptor, 2, value.v)
+            }
+        }
+        
+        override fun deserialize(decoder: Decoder): String {
+            return decoder.decodeStructure(descriptor){
+                var value = ""
+                
+                while (true) {
+                    when (val index = decodeElementIndex(descriptor)) {
+                        0 -> value = decodeStringElement(descriptor, 2)
+                        CompositeDecoder.DECODE_DONE -> break
+                        else -> error("Unexpected index: $index")
+                    }
+                }
+                
+                String(value)
+            }
+        }
+    }
+    
     val v: kotlin.String
         get() = _toString(value)
     

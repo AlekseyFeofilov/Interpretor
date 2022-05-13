@@ -3,11 +3,12 @@ package com.example.interpreter.vm.instruction
 import com.example.interpreter.vm.Env
 import com.example.interpreter.vm.awaitLR
 import kotlinx.serialization.*
+import kotlinx.serialization.descriptors.*
+import kotlinx.serialization.encoding.*
 import java.lang.Error
-import kotlin.Number
 
 @Suppress("RemoveRedundantQualifierName", "FunctionName")
-@Serializable
+@Serializable(with = Number.Serializer::class)
 open class Number : Instruction {
     @SerialName("_isBasic")
     override val isBasic: Boolean = true
@@ -15,7 +16,38 @@ open class Number : Instruction {
     @Transient
     private var value: @Contextual Any = 0.0
     
-    @SerialName("value")
+    class Serializer : KSerializer<Number>{
+        override val descriptor: SerialDescriptor = buildClassSerialDescriptor(Number::class.qualifiedName ?: "*EMPTY qualifiedName*") {
+            element<kotlin.Int>("id")
+            element<kotlin.Boolean>("_isBasic")
+            element<kotlin.Double>("value")
+        }
+    
+        override fun serialize(encoder: Encoder, value: Number) {
+            encoder.encodeStructure(descriptor){
+                encodeIntElement(descriptor, 0, value.id)
+                encodeBooleanElement(descriptor, 1, value.isBasic)
+                encodeDoubleElement(descriptor, 2, value.v)
+            }
+        }
+    
+        override fun deserialize(decoder: Decoder): Number {
+            return decoder.decodeStructure(descriptor){
+                var value = 0.0
+                
+                while (true) {
+                    when (val index = decodeElementIndex(descriptor)) {
+                        0 -> value = decodeDoubleElement(descriptor, 2)
+                        CompositeDecoder.DECODE_DONE -> break
+                        else -> error("Unexpected index: $index")
+                    }
+                }
+                
+                Number(value)
+            }
+        }
+    }
+    
     val v: kotlin.Double
         get() = _toNumber(value)
     

@@ -2,14 +2,13 @@ package com.example.interpreter.vm.instruction
 
 import com.example.interpreter.vm.Env
 import com.example.interpreter.vm.awaitLR
-import kotlinx.serialization.Contextual
-import kotlinx.serialization.SerialName
-import kotlinx.serialization.Serializable
-import kotlinx.serialization.Transient
+import kotlinx.serialization.*
+import kotlinx.serialization.descriptors.*
+import kotlinx.serialization.encoding.*
 import java.lang.Error
 
 @Suppress("RemoveRedundantQualifierName", "FunctionName")
-@Serializable
+@Serializable(with = Bool.Serializer::class)
 open class Bool : Instruction {
     @SerialName("_isBasic")
     override val isBasic: Boolean = true
@@ -17,7 +16,38 @@ open class Bool : Instruction {
     @Transient
     private var value: @Contextual Any = false
     
-    @SerialName("value")
+    class Serializer : KSerializer<Bool> {
+        override val descriptor: SerialDescriptor = buildClassSerialDescriptor(Bool::class.qualifiedName ?: "*EMPTY qualifiedName*") {
+            element<kotlin.Int>("id")
+            element<kotlin.Boolean>("_isBasic")
+            element<kotlin.Boolean>("value")
+        }
+        
+        override fun serialize(encoder: Encoder, value: Bool) {
+            encoder.encodeStructure(descriptor){
+                encodeIntElement(descriptor, 0, value.id)
+                encodeBooleanElement(descriptor, 1, value.isBasic)
+                encodeBooleanElement(descriptor, 2, value.v)
+            }
+        }
+        
+        override fun deserialize(decoder: Decoder): Bool {
+            return decoder.decodeStructure(descriptor){
+                var value = false
+                
+                while (true) {
+                    when (val index = decodeElementIndex(descriptor)) {
+                        0 -> value = decodeBooleanElement(descriptor, 2)
+                        CompositeDecoder.DECODE_DONE -> break
+                        else -> error("Unexpected index: $index")
+                    }
+                }
+    
+                Bool(value)
+            }
+        }
+    }
+    
     val v: kotlin.Boolean
         get() = _toBool(value)
     
