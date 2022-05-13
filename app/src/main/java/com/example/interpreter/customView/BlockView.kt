@@ -5,7 +5,10 @@ import android.content.Context
 import android.graphics.Color
 import android.util.AttributeSet
 import android.view.*
+import android.widget.LinearLayout
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.view.forEach
+import androidx.core.view.forEachIndexed
 import androidx.core.view.marginEnd
 import com.example.interpreter.customView.ioView.InputView
 import com.example.interpreter.customView.ioView.OutputView
@@ -40,7 +43,7 @@ open class BlockView @JvmOverloads constructor(
     override fun addOutput(output: Output, to: Output?, before: Boolean) {
         super.addOutput(output, to, before)
         val row = OutputView(context)
-    
+        
         row.initComponents(output)
         row.setDescription(output.description)
         binding.listOfOutputLinearLayout.addView(row, findIndexByOutput(output))
@@ -58,10 +61,10 @@ open class BlockView @JvmOverloads constructor(
     
     override fun connectInput(input: Input, output: Output) {
         super.connectInput(input, output)
-    
+        
         val row = binding.listOfInputLinearLayout.getChildAt(findIndexByInput(input)) as InputView
         
-        if(input.isDefault){
+        if (input.isDefault) {
             row.hideDefaultValue()
         }
     }
@@ -69,11 +72,11 @@ open class BlockView @JvmOverloads constructor(
     override fun disconnectInput(input: Input) {
         super.disconnectInput(input)
         
-        if(findIndexByInput(input) == -1) return
+        if (findIndexByInput(input) == -1) return
         
         val row = binding.listOfInputLinearLayout.getChildAt(findIndexByInput(input)) as InputView
-    
-        if(input.isDefault){
+        
+        if (input.isDefault) {
             row.showDefaultValue()
         }
     }
@@ -83,7 +86,40 @@ open class BlockView @JvmOverloads constructor(
         binding.headerTextView.setBackgroundColor(Color.parseColor(colorHEX))
     }
     
-    init{
+    private fun findInputByInputRadioButton(view: View): Input? {
+        binding.listOfInputLinearLayout.forEachIndexed { index, it ->
+            if (
+                ((it as LinearLayout)
+                    .getChildAt(0) as LinearLayout)
+                    .getChildAt(0) == view
+            ) {
+                return inputs[index].first
+            }
+        }
+        return null
+    }
+    
+    private fun findOutputByOutputRadioButton(view: View): Output? {
+        binding.listOfOutputLinearLayout.forEachIndexed { index, it ->
+            if (
+                ((it as LinearLayout)
+                    .getChildAt(0) as LinearLayout)
+                    .getChildAt(0) == view
+            ) {
+                return outputs[index].first
+            }
+        }
+        return null
+    }
+    
+    fun isOutputComplete(output: View) =
+        findIndexByOutput(findOutputByOutputRadioButton(output)) == 0 &&
+                outputs[0].second.isNotEmpty()
+    
+    fun isInputComplete(input: View) =
+        inputs[findIndexByInput(findInputByInputRadioButton(input))].second != null
+    
+    init {
         addInput(InputFunction("before", this))
         addOutput(OutputFunction("after", this))
     }
