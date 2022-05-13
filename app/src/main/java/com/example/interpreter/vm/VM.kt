@@ -65,7 +65,7 @@ class VM {
         
         val env = Env()
         
-        this.block = Executor(env, listOf(
+        this.block = Executor(env, listOf<Instruction>(
             SetVar("two", Number(6.0), true),
             math,
             math2,

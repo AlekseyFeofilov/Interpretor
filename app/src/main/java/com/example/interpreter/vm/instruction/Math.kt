@@ -47,7 +47,7 @@ class Math : Instruction {
             if(v1 !is Number){
                 if(v1 is String){
                     return try {
-                        env[v1.value].toNumber()
+                        env[v1.toString()].toNumber()
                     }catch (e: NumberFormatException){
                         Double.NaN
                     }

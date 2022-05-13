@@ -2,9 +2,7 @@ package com.example.interpreter.vm.instruction
 
 import com.example.interpreter.vm.Env
 import com.example.interpreter.vm.awaitLR
-import kotlinx.serialization.Contextual
-import kotlinx.serialization.SerialName
-import kotlinx.serialization.Serializable
+import kotlinx.serialization.*
 import java.lang.Error
 import kotlin.Number
 
@@ -14,7 +12,12 @@ open class Number : Instruction {
     @SerialName("_isBasic")
     override val isBasic: Boolean = true
     
-    val value: @Contextual Any
+    @Transient
+    private var value: @Contextual Any = 0.0
+    
+    @SerialName("value")
+    val v: kotlin.Double
+        get() = _toNumber(value)
     
     override fun exec(env: Env) = sequence<Instruction> { yield(this@Number) }.iterator()
     override fun toNumber(): Double = _toNumber(value)
@@ -29,7 +32,7 @@ open class Number : Instruction {
         throw Error("Runtime Error 'to number' instruction not entry")
     }
     
-    constructor(value: kotlin.Double) : super() {
+    constructor(value: kotlin.Double = 0.0) : super() {
         this.value = value
     }
     
