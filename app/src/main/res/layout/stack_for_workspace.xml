@@ -8,7 +8,7 @@
     tools:parentTag="androidx.constraintlayout.widget.ConstraintLayout">
 
     <FrameLayout
-
+        android:id="@+id/stackContainer"
         android:layout_height="0dp"
         android:layout_width="0dp"
         android:translationZ="20dp"
@@ -22,7 +22,8 @@
             android:layout_height="match_parent"
             android:layout_margin="8dp">
             <LinearLayout
-                android:id="@+id/stackContainer"
+                android:id="@+id/stack"
+                android:gravity="center"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:orientation="horizontal">
