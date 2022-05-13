@@ -11,12 +11,14 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.View.*
 import android.widget.Button
+import android.widget.LinearLayout
 import android.widget.RadioButton
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.children
 import androidx.fragment.app.Fragment
 import com.example.interpreter.customView.BlockView
 import com.example.interpreter.customView.DrawView
+import com.example.interpreter.customView.Line
 import com.example.interpreter.customView.blocks.BlockWhile
 import com.example.interpreter.databinding.*
 
@@ -48,7 +50,7 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
     private lateinit var draggingView: View
     
     private val listOfBlocks = mutableListOf<View>()
-    private val listOfWires  = mutableListOf<Wire>()
+    private val listOfWires = mutableListOf<Wire>()
     
     @SuppressLint("ClickableViewAccessibility")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -81,19 +83,19 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
         
         // show or hide button that call or close console
         //if (isButtonForConsoleVisibility) {
-            bindingConsole.consoleButton.setOnClickListener {
-                if (isBlocksPanelHidden) {
-                    isPanelMoving = true
-                    isConsoleHidden = if (console.x > 0.6 * metrics.bounds.width()) {
-                        takeConsole( 200)
-                        false
-                    } else {
-                        hideConsole(bindingConsole.buttonPanel, 200)
-                        true
-                    }
-                    isPanelMoving = false
+        bindingConsole.consoleButton.setOnClickListener {
+            if (isBlocksPanelHidden) {
+                isPanelMoving = true
+                isConsoleHidden = if (console.x > 0.6 * metrics.bounds.width()) {
+                    takeConsole(200)
+                    false
+                } else {
+                    hideConsole(bindingConsole.buttonPanel, 200)
+                    true
                 }
+                isPanelMoving = false
             }
+        }
         //} else {
         //    bindingConsole.consoleButton.visibility = View.INVISIBLE
         //}
@@ -109,7 +111,7 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
         bindingScrollBox.scrollBox.setOnDragListener(choiceDragListener())
         bindingStack.stackContainer.setOnDragListener(choiceDragListener())
         bindingStack.basketContainer.setOnDragListener(choiceDragListener())
-    
+        
         canvas = DrawView(activity)
         addCanvas(canvas)
     }
@@ -117,59 +119,39 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
     private fun addCanvas(canvas: DrawView) {
         val density = this.resources.displayMetrics.density
         val params =
-            ConstraintLayout.LayoutParams((5000 * density).toInt(), (5000 * density).toInt())
+            ConstraintLayout.LayoutParams((11000 * density).toInt(), (11000 * density).toInt())
         bindingScrollBox.scrollBox.addView(canvas, params)
         canvas.translationZ = 10000f
     }
     
     @SuppressLint("ClickableViewAccessibility")
     private fun onTouchBlocksPoint() = OnTouchListener { view, event ->
+        
         when (event.action) {
             MotionEvent.ACTION_DOWN -> {
-                if(view is RadioButton) { // TODO: change for IO view
-                    touchPoint = getCoordinatesOfIOPoint(view)
+                if (view is RadioButton) { // TODO: change for IO view
+                    touchPoint = getCoordinatesOfIOPointInScrollBox(view)
                 }
             }
             MotionEvent.ACTION_MOVE -> {
-                canvas.draw(listOfWires, Wire(
-                    0, 0,
-                    Point(touchPoint.x + view.width/2, touchPoint.y + view.height/2),
-                    Point(event.x + touchPoint.x, event.y + touchPoint.y))
+                canvas.draw(
+                    listOfWires, Wire(
+                        0, 0,
+                        Point(touchPoint.x + view.width / 2, touchPoint.y + view.height / 2),
+                        Point(event.x + touchPoint.x, event.y + touchPoint.y)
+                    )
                 )
             }
             MotionEvent.ACTION_UP -> {
-                if(view is RadioButton) {
+                if (view is RadioButton) {
                     val dropView = findInputViewWhereMovingEnded(
                         Point(
                             event.x + touchPoint.x,
                             event.y + touchPoint.y
-                        ))
-                    if(dropView != null) {
-                        val start = findBlockIndByIOView(view)
-                        val finish = findBlockIndByIOView(dropView)
-                        if(start != finish) {
-                            var isAdded = false
-                            val newWire = Wire(
-                                start, finish,
-                                Point(
-                                    touchPoint.x + view.width / 2,
-                                    touchPoint.y + view.height / 2
-                                ),
-                                Point(
-                                    getCoordinatesOfIOPoint(dropView).x + dropView.width / 2,
-                                    getCoordinatesOfIOPoint(dropView).y + dropView.height / 2
-                                )
-                            )
-                            for(i in listOfWires) {
-                                if(i == newWire) {
-                                    isAdded = true
-                                    break
-                                }
-                            }
-                            if(!isAdded) {
-                                listOfWires.add(newWire)
-                            }
-                        }
+                        )
+                    )
+                    if (dropView != null) {
+                    
                     }
                     canvas.draw(listOfWires)
                 }
@@ -178,6 +160,66 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
         true
     }
     
+    private fun isCorrectWire(wire: Wire, startView: View, endView: View): Boolean {
+        val start = findBlockIndByIOView(startView)
+        val end = findBlockIndByIOView(endView)
+        var isAdded = false
+        var countWireForArrow = 0
+        if (start != end) {
+            val newWire = Wire(
+                start, end,
+                Point(
+                    touchPoint.x + startView.width / 2,
+                    touchPoint.y + startView.height / 2
+                ),
+                Point(
+                    getCoordinatesOfIOPointInScrollBox(endView).x + endView.width / 2,
+                    getCoordinatesOfIOPointInScrollBox(endView).y + endView.height / 2
+                )
+            )
+            for (i in listOfWires) {
+                if (i == newWire) {
+                    isAdded = true
+                    break
+                }
+            }
+        }
+        
+        for (i in (view as BlockView).binding.listOfOutputLinearLayout.children) {
+            if((i as BlockView).binding.outputRadioButton == startView) {
+            
+            }
+            if((i as BlockView).binding.inputRadioButton == endView) {
+            
+            }
+        }
+        
+        //if(!isAdded && isFirstWireForArrow)
+        return false
+    }
+    
+    
+    private fun isArrowHaveOneWire(arrow: View): Boolean {
+        for (i in listOfBlocks) {
+            if ((listOfBlocks as BlockView).binding.inputRadioButton == arrow) {
+                val coordinate = getCoordinatesOfIOPointInScrollBox(arrow)
+                for (j in listOfWires) {
+                    if (coordinate == j.inputPoint) {
+                        return true
+                    }
+                }
+            }
+            if ((listOfBlocks as BlockView).binding.outputRadioButton == arrow) {
+                val coordinate = getCoordinatesOfIOPointInScrollBox(arrow)
+                for (j in listOfWires) {
+                    if (coordinate == j.inputPoint) {
+                        return true
+                    }
+                }
+            }
+        }
+        return false
+    }
     
     private fun findBlockIndByIOView(view: View): Int {
         for(id in 0 until listOfBlocks.size) {
@@ -186,52 +228,72 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
                 return id
             }
             for (i in (listOfBlocks[id] as BlockView).binding.listOfOutputLinearLayout.children) {
-                if (i == view) {
+                val button = ((i as LinearLayout).getChildAt(0) as LinearLayout).getChildAt(0)
+                if (button == view) {
                     return id
                 }
             }
             for (i in (listOfBlocks[id] as BlockView).binding.listOfInputLinearLayout.children) {
-                if (i == view) {
+                val button = ((i as LinearLayout).getChildAt(0) as LinearLayout).getChildAt(0)
+                if (button == view) {
                     return id
                 }
             }
         }
-        Log.e("findBlockIndByIOView", "block is not find")
         return 0
     }
     
     private fun findInputViewWhereMovingEnded(point: Point): View? {
         for(id in 0 until listOfBlocks.size) {
-            if(view == (listOfBlocks[id] as BlockView).binding.inputRadioButton) {
-                return listOfBlocks[id]
+            if(isInView(point, (listOfBlocks[id] as BlockView).binding.inputRadioButton)) {
+                return (listOfBlocks[id] as BlockView).binding.inputRadioButton
             }
             for (i in (listOfBlocks[id] as BlockView).binding.listOfInputLinearLayout.children) {
-                if (isInView(point, i)) {
-                    return i
+                val button = ((i as LinearLayout).getChildAt(0) as LinearLayout).getChildAt(0)
+                if (isInView(point, button)) {
+                    return button
                 }
             }
+//            for (i in (listOfBlocks[id] as BlockView).binding.listOfInputLinearLayout.children) {
+//                if (isInView(point, i)) {
+//                    Log.i("hello", "${(i as LinearLayout).getChildAt(0)}")
+//                    return i
+//                }
+//            }
         }
         return null
     }
     
     private fun isInView(point: Point, view: View): Boolean {
-        val block = getCoordinatesOfIOPoint(view)
+        val block = getCoordinatesOfIOPointInScrollBox(view)
         return (block.x <= point.x && point.x <= block.x + view.width &&
                 block.y <= point.y && point.y <= block.y + view.height)
     }
     
-    private fun getCoordinatesOfIOPoint(view: View): Point {
-        var x = view.x
-        x+=(view.parent as View).x
-        x += ((view.parent).parent as View).x
-        x += (((view.parent).parent).parent as View).x
-        
-        var y = view.y
-        y+=(view.parent as View).y
-        y += ((view.parent).parent as View).y
-        y += (((view.parent).parent).parent as View).y
-        return Point(x , y)
+    
+    private fun getCoordinatesOfIOPointInScrollBox(view:View): Point {
+        val point = Point(0f, 0f)
+        var buffView = view
+        while(buffView != bindingScrollBox.scrollBox) {
+            point.x += buffView.x
+            point.y += buffView.y
+            buffView = (buffView.parent as View)
+        }
+        return point
     }
+    
+//    private fun getCoordinatesOfIOPoint(view: View): Point {
+//        var x = view.x
+//        x+=(view.parent as View).x
+//        x += ((view.parent).parent as View).x
+//        x += (((view.parent).parent).parent as View).x
+//
+//        var y = view.y
+//        y+=(view.parent as View).y
+//        y += ((view.parent).parent as View).y
+//        y += (((view.parent).parent).parent as View).y
+//        return Point(x , y)
+//    }
     
     // generate and put in stack blocks
     @SuppressLint("UseRequireInsteadOfGet")
@@ -274,8 +336,12 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
         bindingStack.stack.addView(view)
         view.findViewById<RadioButton>(R.id.outputRadioButton).setOnTouchListener(onTouchBlocksPoint())
         //TODO: add listener for IO points
-        (view as BlockView).binding.listOfOutputLinearLayout.children.forEach {
-            it.setOnTouchListener(onTouchBlocksPoint())
+//        (view as BlockView).binding.listOfOutputLinearLayout.children.forEach {
+//            it.setOnTouchListener(onTouchBlocksPoint())
+//        }
+        for (i in (view as BlockView).binding.listOfOutputLinearLayout.children) {
+            val button = ((i as LinearLayout).getChildAt(0) as LinearLayout).getChildAt(1)
+            button.setOnTouchListener(onTouchBlocksPoint())
         }
         //
         view.setOnLongClickListener(choiceLongClickListener())
