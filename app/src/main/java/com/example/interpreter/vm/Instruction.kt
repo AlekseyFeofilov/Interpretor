@@ -1,16 +1,24 @@
-package com.example.interpreter.vm
+package com.example.interpreter.vm.instruction
 
+import com.example.interpreter.vm.Env
+import com.example.interpreter.vm.Executor
 import java.lang.Error
+import kotlin.String
+import kotlinx.serialization.Serializable
 
-//import kotlinx.serialization.Serializable
-
-//@Serializable
-abstract class Instruction {
-    open val type: String = javaClass.simpleName
+@Serializable
+sealed class Instruction {
+//    @SerialName("class_type")
+    companion object{
+        var _id = 0
+    }
+    
+    open val types: String = javaClass.simpleName
     open val isBasic: Boolean = false
+    open val id = _id++
     open var blocks: List<Executor>? = null
     
-    val TAG: String = "VM_INSTRUCTION[$type]"
+    val TAG: String = "VM_INSTRUCTION[$types]"
     
     abstract fun exec(env: Env): Iterator<Instruction>
     
