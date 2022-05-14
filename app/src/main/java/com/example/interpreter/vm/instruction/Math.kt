@@ -1,5 +1,6 @@
 package com.example.interpreter.vm.instruction
 
+import com.example.interpreter.vm.Compiler
 import com.example.interpreter.vm.Env
 import com.example.interpreter.vm.awaitLR
 import kotlinx.serialization.Polymorphic
@@ -517,7 +518,7 @@ class Math : Instruction {
         }
         
         fun push(value: Double){
-            stack.add(TNumber(Number(value)))
+            stack.add(TNumber(Number(Compiler.FCompiler(), value)))
         }
     }
     
@@ -525,13 +526,13 @@ class Math : Instruction {
 //        val ret = TRuntime(tokens).exec(env)
 //        Log.i(TAG + "DEMO", ret.toString())
         yield(this@Math)
-        yield(Object(hashMapOf(
+        yield(Object(Compiler.FCompiler(),
             "out" to TRuntime(tokens).exec(env)
-        )))
+        ))
     }.iterator()
     
     @Throws(Error::class)
-    constructor(math: List<Token>): super() {
+    constructor(compiler: Compiler, math: List<Token>): super(compiler) {
         val calcQueue = mutableListOf<Any>()
         val operatorStack = mutableListOf<Any>()
     
@@ -580,7 +581,7 @@ class Math : Instruction {
     }
     
     @Throws(Error::class)
-    constructor(math: kotlin.String): super() {
+    constructor(compiler: Compiler, math: kotlin.String): super(compiler) {
         var results: MatchResult? = """(?:\s+)?([-+]?\d*\.?\d*(?:[eE][-+]?\d+)?)(?:\s+)?([A-Za-z][A-Za-z\d]*)?(?:\s+)?([^A-Za-z\d\s]*)(?:\s+)?""".toRegex().find(math)
         
         val calcQueue = mutableListOf<Any>()
@@ -588,7 +589,7 @@ class Math : Instruction {
         
         while(results != null) {
             if(results.groups[1]?.value.let { it != null && it != "" }){
-                calcQueue.add(TNumber(Number(results.groups[1]!!.value.toDouble())))
+                calcQueue.add(TNumber(Number(compiler, results.groups[1]!!.value.toDouble())))
             }
             
             @Suppress("NestedLambdaShadowedImplicitParameter")
@@ -598,11 +599,11 @@ class Math : Instruction {
                 val reflectOP: Any? = if(i.second){
                     when {
                         i.first == "PI" -> {
-                            calcQueue.add(TNumber(Number(PI)))
+                            calcQueue.add(TNumber(Number(compiler, PI)))
                             continue
                         }
                         i.first == "E" -> {
-                            calcQueue.add(TNumber(Number(E)))
+                            calcQueue.add(TNumber(Number(compiler, E)))
                             continue
                         }
                         TFunc1.functions.containsKey(i.first) -> {
@@ -612,7 +613,7 @@ class Math : Instruction {
                             TFunc2(i.first!!)
                         }
                         else -> {
-                            calcQueue.add(TVar(String(i.first!!)))
+                            calcQueue.add(TVar(String(compiler, i.first!!)))
                             continue
                         }
                     }

@@ -1,12 +1,15 @@
 package com.example.interpreter.vm.instruction
 
+import com.example.interpreter.vm.Compiler
 import com.example.interpreter.vm.Env
 import com.example.interpreter.vm.Executor
 import com.example.interpreter.vm.yieldAllLR
 import kotlinx.serialization.Serializable
 
 @Serializable
-class If(private val block: List<Executor>) : Instruction(block) {
+class If : Instruction {
+    private val block: List<Executor>
+    
     override fun exec(env: Env) = sequence<Instruction> {
         yield(this@If)
         
@@ -16,4 +19,6 @@ class If(private val block: List<Executor>) : Instruction(block) {
             yieldAllLR(blocks?.getOrNull(1)?.exec() ?: throw Error("Runtime error 'if[1]' not body"))
         }else yieldAllLR(blocks?.getOrNull(2)?.exec() ?: throw Error("Runtime error 'if[2]' not else"))
     }.iterator()
+    
+    constructor(compiler: Compiler, block: List<Executor>) : super(compiler, block) { this.block = block }
 }

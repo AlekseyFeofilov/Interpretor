@@ -51,36 +51,38 @@ class VM {
 //        Log.i("VM", this.Tree[1].Type ?: "")
 //        Log.i("VM", this.Tree[2].Type ?: "")
 //        Log.i("VM", Json.encodeToString(this.Tree))
-    
-        val math = Math("sin PI min cos PI")
-        val math2 = Math(listOf(
+        
+        val compiler = Compiler.FCompiler()
+        
+        val math = Math(compiler, "sin PI min cos PI")
+        val math2 = Math(compiler, listOf(
             Math.TLBrk(),
-            Math.TRegister(Register(math, "out")),
+            Math.TRegister(Register(compiler, math, "out")),
             Math.TPlus(),
-            Math.TRegister(Register(math, "out")),
+            Math.TRegister(Register(compiler, math, "out")),
             Math.TRBrk(),
             Math.TMul(),
-            Math.TNumber(Number(2.0))
+            Math.TNumber(Number(compiler, 2.0))
         ))
         
         val env = Env()
         
         this.block = Executor(env, listOf<Instruction>(
-            SetVar("two", Number(6.0), true),
+            SetVar(compiler, "two", Number(compiler, 6.0), true),
             math,
             math2,
-            SetVar("da", Register(math, "out"), true),
-            SetVar("da1", Register(math2, "out"), true),
-            Print(GetVar("two")),
-            Print(GetVar("da")),
-            Print(GetVar("da1")),
-            If(listOf<Executor>(
-                Executor(Env(env), listOf(Bool(Register(math, "out", env)))),
-                Executor(Env(env), listOf(Print(String("if true")))),
-                Executor(Env(env), listOf(Print(String("if false")))),
+            SetVar(compiler, "da", Register(compiler, math, "out"), true),
+            SetVar(compiler, "da1", Register(compiler, math2, "out"), true),
+            Print(compiler, GetVar(compiler, "two")),
+            Print(compiler, GetVar(compiler, "da")),
+            Print(compiler, GetVar(compiler, "da1")),
+            If(compiler, listOf<Executor>(
+                Executor(Env(env), listOf(Bool(compiler, Register(compiler, math, "out", env)))),
+                Executor(Env(env), listOf(Print(compiler, String(compiler, "if true")))),
+                Executor(Env(env), listOf(Print(compiler, String(compiler, "if false")))),
             )),
-            Number(),
-            Nop()
+            Number(compiler),
+            Nop(compiler)
         ))
         
 //        Log.i("VM", Json.encodeToString(math))
@@ -252,20 +254,20 @@ class VM {
 
 @Suppress("RemoveRedundantQualifierName")
 suspend fun kotlin.sequences.SequenceScope<Instruction>.yieldAllLR(iterator: Iterator<Instruction>): Instruction {
-    var last: Instruction = Nop()
+    var last: Instruction? = null
     
     while (iterator.hasNext()){
         last = iterator.next()
         yield(last)
     }
     
-    return last
+    return last ?: Nop(Compiler.FCompiler())
 }
 
 fun awaitLR(iterator: Iterator<Instruction>): Instruction {
-    var last: Instruction = Nop()
+    var last: Instruction? = null
     
     while (iterator.hasNext()) last = iterator.next()
     
-    return last
+    return last ?: Nop(Compiler.FCompiler())
 }

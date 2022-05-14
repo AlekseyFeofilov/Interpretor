@@ -1,5 +1,6 @@
 package com.example.interpreter.vm.instruction
 
+import com.example.interpreter.vm.Compiler
 import com.example.interpreter.vm.Env
 import com.example.interpreter.vm.yieldAllLR
 import kotlinx.serialization.Serializable
@@ -26,5 +27,5 @@ class While : Instruction {
         yield(this@While)
     }.iterator()
     
-    constructor() : super() { TODO("NOT READY") }
+    constructor(compiler: Compiler) : super(compiler) { TODO("NOT READY") }
 }

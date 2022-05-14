@@ -1,5 +1,6 @@
 package com.example.interpreter.vm.instruction
 
+import com.example.interpreter.vm.Compiler
 import com.example.interpreter.vm.Env
 import com.example.interpreter.vm.Executor
 import java.lang.Error
@@ -28,8 +29,10 @@ sealed class Instruction {
     open fun toNumber(): Double = throw Error("Is not a number")
     override fun toString(): String = throw Error("Is not a string")
     
-    constructor()
-    constructor(blocks: List<Executor>){
+    @Suppress("UNUSED_PARAMETER")
+    constructor(compiler: Compiler)
+    @Suppress("UNUSED_PARAMETER")
+    constructor(compiler: Compiler, blocks: List<Executor>){
         this.blocks = blocks
     }
 }

@@ -1,6 +1,7 @@
 package com.example.interpreter.vm.instruction
 
 import com.example.interpreter.vm.Env
+import com.example.interpreter.vm.Compiler
 import com.example.interpreter.vm.awaitLR
 import kotlinx.serialization.*
 import kotlinx.serialization.descriptors.*
@@ -43,7 +44,7 @@ open class Bool : Instruction {
                     }
                 }
     
-                Bool(value)
+                Bool(Compiler.FCompiler(), value)
             }
         }
     }
@@ -60,17 +61,17 @@ open class Bool : Instruction {
         if(value is Boolean) return value
         if(value is Number) return value.toNumber() != 0.0
         if(value is String) return value.toString().isNotEmpty()
-        if(value is Object) return value.value.values.any()
+        if(value is Object) return value.v.values.any()
         if(value is Register) return _toBool(awaitLR(value.exec()))
         
         throw Error("Runtime Error 'to bool' instruction not entry")
     }
     
-    constructor(value: kotlin.Boolean) : super() {
+    constructor(compiler: Compiler, value: kotlin.Boolean) : super(compiler) {
         this.value = value
     }
     
-    constructor(value: Instruction) : super(){
+    constructor(compiler: Compiler, value: Instruction) : super(compiler){
         this.value = value
     }
 }

@@ -1,6 +1,7 @@
 package com.example.interpreter.vm.instruction
 
 import com.example.interpreter.vm.Env
+import com.example.interpreter.vm.Compiler
 import com.example.interpreter.vm.awaitLR
 import kotlinx.serialization.*
 import kotlinx.serialization.descriptors.*
@@ -43,7 +44,7 @@ open class Number : Instruction {
                     }
                 }
                 
-                Number(value)
+                Number(Compiler.FCompiler(), value)
             }
         }
     }
@@ -64,11 +65,12 @@ open class Number : Instruction {
         throw Error("Runtime Error 'to number' instruction not entry")
     }
     
-    constructor(value: kotlin.Double = 0.0) : super() {
+    
+    constructor(compiler: Compiler, value: kotlin.Double = 0.0) : super(compiler) {
         this.value = value
     }
     
-    constructor(value: Instruction) : super(){
+    constructor(compiler: Compiler, value: Instruction) : super(compiler){
         this.value = value
     }
 }
