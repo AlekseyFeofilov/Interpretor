@@ -133,22 +133,6 @@ open class BlockView @JvmOverloads constructor(
         return list
     }
     
-    fun isTwoIOViewInBlock(first: View, second: View): Boolean {
-        var flag1 = false
-        var flag2 = false
-        for(i in getListOfInputView()) {
-            if(first == i || second == i) {
-                flag1 = true
-            }
-        }
-        for(i in getListOfOutputView()) {
-            if(first == i || second == i) {
-                flag2 = true
-            }
-        }
-        return (flag1 && flag2)
-    }
-    
     fun isOutputComplete(output: View) =
         findIndexByOutput(findOutputByOutputRadioButton(output)) == 0 &&
                 outputs[0].second.isNotEmpty()

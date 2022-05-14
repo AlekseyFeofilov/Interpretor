@@ -45,6 +45,7 @@ class DrawView(context: Context?) : View(context) {
         for(i in list) {
             listOfWires.add(i)
         }
+        
         invalidate()
     }
     
@@ -64,10 +65,21 @@ class DrawView(context: Context?) : View(context) {
         
         
         for(i in listOfWires) {
+            if(!i.isVisible) continue
             point1 = Point(i.outputPoint.x.toInt(), i.outputPoint.y.toInt())
             point2 = Point(i.outputPoint.x.toInt() + 400, i.outputPoint.y.toInt())
             point3 = Point(i.inputPoint.x.toInt() - 400, i.inputPoint.y.toInt())
             point4 = Point(i.inputPoint.x.toInt(), i.inputPoint.y .toInt())
+            if(i.startBlock != i.endBlock) {
+                point1.x += i.startBlock.x.toInt()
+                point1.y += i.startBlock.y.toInt()
+                point2.x += i.startBlock.x.toInt()
+                point2.y += i.startBlock.y.toInt()
+                point3.x += i.endBlock.x.toInt()
+                point3.y += i.endBlock.y.toInt()
+                point4.x += i.endBlock.x.toInt()
+                point4.y += i.endBlock.y.toInt()
+            }
 //            path.reset()
 //            path.moveTo(i.outputPoint.x, i.outputPoint.y)
 //            cubicTo(
@@ -88,14 +100,6 @@ class DrawView(context: Context?) : View(context) {
         }
     }
     
-    private fun cubicTo(pointt2: Point, pointt3: Point, pointt4: Point) {
-        path.cubicTo(
-            pointt2.x.toFloat(), pointt2.y.toFloat(),
-            pointt3.x.toFloat(), pointt3.y.toFloat(),
-            pointt4.x.toFloat(), pointt4.y.toFloat()
-        )
-    }
-    
     private fun cubicTo() {
         path.cubicTo(
             point2.x.toFloat(), point2.y.toFloat(),
@@ -104,27 +108,27 @@ class DrawView(context: Context?) : View(context) {
         )
     }
     
-    fun down(event: MotionEvent, touchPoint: com.example.interpreter.Point) {
-        Log.i("hello2", "down")
-        position.startX = touchPoint.x
-        position.startY = touchPoint.y
-    }
-    fun move(event: MotionEvent, touchPoint: com.example.interpreter.Point) {
-        //Log.i("hello2", "move")
-        position.curX = event.x + touchPoint.x
-        position.curY = event.y + touchPoint.y
-        
-        draw(
-            Point(position.startX.toInt(), position.startY.toInt()),
-            Point(position.startX.toInt() + 400, position.startY.toInt()),
-            Point(position.curX.toInt() - 400, position.curY.toInt()),
-            Point(position.curX.toInt(), position.curY.toInt()),
-            true)
-    }
-    fun up(event: MotionEvent, touchPoint: com.example.interpreter.Point) {
-        Log.i("hello", "up")
-        //TODO("redraw old lines")
-    }
+//    fun down(event: MotionEvent, touchPoint: com.example.interpreter.Point) {
+//        Log.i("hello2", "down")
+//        position.startX = touchPoint.x
+//        position.startY = touchPoint.y
+//    }
+//    fun move(event: MotionEvent, touchPoint: com.example.interpreter.Point) {
+//        //Log.i("hello2", "move")
+//        position.curX = event.x + touchPoint.x
+//        position.curY = event.y + touchPoint.y
+//
+//        draw(
+//            Point(position.startX.toInt(), position.startY.toInt()),
+//            Point(position.startX.toInt() + 400, position.startY.toInt()),
+//            Point(position.curX.toInt() - 400, position.curY.toInt()),
+//            Point(position.curX.toInt(), position.curY.toInt()),
+//            true)
+//    }
+//    fun up(event: MotionEvent, touchPoint: com.example.interpreter.Point) {
+//        Log.i("hello", "up")
+//        //TODO("redraw old lines")
+//    }
 
 //    private val touchListener = OnTouchListener { it, event ->
 //        when (event.action) {
