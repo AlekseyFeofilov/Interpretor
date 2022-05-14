@@ -20,7 +20,7 @@ import androidx.fragment.app.Fragment
 import com.example.interpreter.customView.BlockView
 import com.example.interpreter.customView.DrawView
 import com.example.interpreter.customView.Line
-import com.example.interpreter.customView.blocks.BlockWhile
+import com.example.interpreter.customView.blocks.*
 import com.example.interpreter.databinding.*
 
 
@@ -28,7 +28,7 @@ var isConsoleHidden = true
 var isBlocksPanelHidden = true
 
 data class Point(var x:Float, var y:Float)
-data class Wire(var startBlockId: Int, var finishBlockInd: Int, var outputPoint: Point, var inputPoint: Point)
+data class Wire(var startBlockInd: Int, var finishBlockInd: Int, var outputPoint: Point, var inputPoint: Point)
 
 class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
     private var touchPoint = Point(0f, 0f)
@@ -130,7 +130,7 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
         
         when (event.action) {
             MotionEvent.ACTION_DOWN -> {
-                if (view is RadioButton) { // TODO: change for IO view
+                if (view is RadioButton) {
                     touchPoint = getCoordinatesOfIOPointInScrollBox(view)
                 }
             }
@@ -145,98 +145,75 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
             }
             MotionEvent.ACTION_UP -> {
                 if (view is RadioButton) {
-                    val dropView = findInputViewWhereMovingEnded(
-                        Point(
+                    if (findOutputViewWhereMovingEnded(
+                            Point(
                             event.x + touchPoint.x,
-                            event.y + touchPoint.y
+                            event.y + touchPoint.y)) == view) {
+                        removeWireForIOPoint(view)
+                    } else {
+                        val dropView = findInputViewWhereMovingEnded(
+                            Point(
+                                event.x + touchPoint.x,
+                                event.y + touchPoint.y
+                            )
                         )
-                    )
-                    if (dropView != null) {
-                    
+                        if (dropView != null) {
+                            for (i in listOfBlocks) {
+                                val newWire = Wire(
+                                    findBlockIndByIOView(view),
+                                    findBlockIndByIOView(dropView),
+                                    Point(
+                                        getCoordinatesOfIOPointInScrollBox(view).x + view.width / 2,
+                                        getCoordinatesOfIOPointInScrollBox(view).y + view.height / 2
+                                    ),
+                                    Point(
+                                        getCoordinatesOfIOPointInScrollBox(dropView).x + dropView.width / 2,
+                                        getCoordinatesOfIOPointInScrollBox(dropView).y + dropView.height / 2
+                                    )
+                                )
+                                if ((!(i as BlockView).isTwoIOViewInBlock(view, dropView)
+                                            && !(listOfBlocks[newWire.startBlockInd] as BlockView).isOutputComplete(
+                                        view
+                                    )
+                                            && !(listOfBlocks[newWire.finishBlockInd] as BlockView).isInputComplete(
+                                        dropView
+                                    ))
+                                ) {
+                                    (listOfBlocks[newWire.startBlockInd] as BlockView).connectOutput(
+                                        (listOfBlocks[newWire.startBlockInd] as BlockView).findOutputByOutputRadioButton(
+                                            view
+                                        )!!,
+                                        (listOfBlocks[newWire.finishBlockInd] as BlockView).findInputByInputRadioButton(
+                                            dropView
+                                        )!!,
+                                    )
+                                    //(listOfBlocks[newWire.finishBlockInd] as BlockView).isInputComplete(dropView)
+                                    listOfWires.add(newWire)
+                                }
+                            }
+                        }
                     }
-                    canvas.draw(listOfWires)
                 }
+                canvas.draw(listOfWires)
             }
+            else -> canvas.draw(listOfWires)
         }
         true
     }
     
-    private fun isCorrectWire(wire: Wire, startView: View, endView: View): Boolean {
-        val start = findBlockIndByIOView(startView)
-        val end = findBlockIndByIOView(endView)
-        var isAdded = false
-        var countWireForArrow = 0
-        if (start != end) {
-            val newWire = Wire(
-                start, end,
-                Point(
-                    touchPoint.x + startView.width / 2,
-                    touchPoint.y + startView.height / 2
-                ),
-                Point(
-                    getCoordinatesOfIOPointInScrollBox(endView).x + endView.width / 2,
-                    getCoordinatesOfIOPointInScrollBox(endView).y + endView.height / 2
-                )
-            )
-            for (i in listOfWires) {
-                if (i == newWire) {
-                    isAdded = true
-                    break
-                }
-            }
-        }
-        
-        for (i in (view as BlockView).binding.listOfOutputLinearLayout.children) {
-            if((i as BlockView).binding.outputRadioButton == startView) {
-            
-            }
-            if((i as BlockView).binding.inputRadioButton == endView) {
-            
-            }
-        }
-        
-        //if(!isAdded && isFirstWireForArrow)
-        return false
-    }
+    private fun removeWireForIOPoint(view: View) {
     
-    
-    private fun isArrowHaveOneWire(arrow: View): Boolean {
-        for (i in listOfBlocks) {
-            if ((listOfBlocks as BlockView).binding.inputRadioButton == arrow) {
-                val coordinate = getCoordinatesOfIOPointInScrollBox(arrow)
-                for (j in listOfWires) {
-                    if (coordinate == j.inputPoint) {
-                        return true
-                    }
-                }
-            }
-            if ((listOfBlocks as BlockView).binding.outputRadioButton == arrow) {
-                val coordinate = getCoordinatesOfIOPointInScrollBox(arrow)
-                for (j in listOfWires) {
-                    if (coordinate == j.inputPoint) {
-                        return true
-                    }
-                }
-            }
-        }
-        return false
     }
     
     private fun findBlockIndByIOView(view: View): Int {
         for(id in 0 until listOfBlocks.size) {
-            if(view == (listOfBlocks[id] as BlockView).binding.inputRadioButton ||
-                    view == (listOfBlocks[id] as BlockView).binding.outputRadioButton) {
-                return id
-            }
-            for (i in (listOfBlocks[id] as BlockView).binding.listOfOutputLinearLayout.children) {
-                val button = ((i as LinearLayout).getChildAt(0) as LinearLayout).getChildAt(0)
-                if (button == view) {
+            for (input in (listOfBlocks[id] as BlockView).getListOfInputView()) {
+                if (input == view) {
                     return id
                 }
             }
-            for (i in (listOfBlocks[id] as BlockView).binding.listOfInputLinearLayout.children) {
-                val button = ((i as LinearLayout).getChildAt(0) as LinearLayout).getChildAt(0)
-                if (button == view) {
+            for (output in (listOfBlocks[id] as BlockView).getListOfOutputView()) {
+                if (output == view) {
                     return id
                 }
             }
@@ -244,23 +221,28 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
         return 0
     }
     
-    private fun findInputViewWhereMovingEnded(point: Point): View? {
+    private fun findOutputViewWhereMovingEnded(point: Point): View? {
         for(id in 0 until listOfBlocks.size) {
-            if(isInView(point, (listOfBlocks[id] as BlockView).binding.inputRadioButton)) {
-                return (listOfBlocks[id] as BlockView).binding.inputRadioButton
-            }
-            for (i in (listOfBlocks[id] as BlockView).binding.listOfInputLinearLayout.children) {
-                val button = ((i as LinearLayout).getChildAt(0) as LinearLayout).getChildAt(0)
-                if (isInView(point, button)) {
-                    return button
+            for (block in listOfBlocks) {
+                for(output in (block as BlockView).getListOfOutputView()) {
+                    if (isInView(point, output)) {
+                        return output
+                    }
                 }
             }
-//            for (i in (listOfBlocks[id] as BlockView).binding.listOfInputLinearLayout.children) {
-//                if (isInView(point, i)) {
-//                    Log.i("hello", "${(i as LinearLayout).getChildAt(0)}")
-//                    return i
-//                }
-//            }
+        }
+        return null
+    }
+    
+    private fun findInputViewWhereMovingEnded(point: Point): View? {
+        for(id in 0 until listOfBlocks.size) {
+            for (block in listOfBlocks) {
+                for(input in (block as BlockView).getListOfInputView()) {
+                    if (isInView(point, input)) {
+                        return input
+                    }
+                }
+            }
         }
         return null
     }
@@ -283,52 +265,33 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
         return point
     }
     
-//    private fun getCoordinatesOfIOPoint(view: View): Point {
-//        var x = view.x
-//        x+=(view.parent as View).x
-//        x += ((view.parent).parent as View).x
-//        x += (((view.parent).parent).parent as View).x
-//
-//        var y = view.y
-//        y+=(view.parent as View).y
-//        y += ((view.parent).parent as View).y
-//        y += (((view.parent).parent).parent as View).y
-//        return Point(x , y)
-//    }
-    
     // generate and put in stack blocks
     @SuppressLint("UseRequireInsteadOfGet")
     private fun createBlockByClickedButton(button: Button): View =
-        //TODO: change body of "when" that it creates blocks not stubs
         when (button) {
-            bindingListOfBlocks.VARIABLE -> {
-                //TODO: add new function whose will creates "views"
-                val newButton = Button(context)
-                newButton.background = resources.getDrawable(R.drawable.home_buttons)
-                newButton.text = "VAR"
-                newButton
-            }
-            bindingListOfBlocks.IF -> {
-                val newButton = Button(context)
-                newButton.background = resources.getDrawable(R.drawable.home_buttons)
-                newButton.text = "IF"
+            bindingListOfBlocks.ASSIGN -> {
+                val newButton = Assign(context!!)
                 newButton
             }
             bindingListOfBlocks.WHILE -> {
-                var newBlock = BlockWhile(context!!)
+                val newBlock = BlockWhile(context!!)
                 newBlock
             }
-            bindingListOfBlocks.MATH -> {
-                val newButton = Button(context)
-                newButton.background = resources.getDrawable(R.drawable.home_buttons)
-                newButton.text = "MATH"
-                newButton
+            bindingListOfBlocks.COMPARE -> {
+                val newBlock = Compare(context!!)
+                newBlock
+            }
+            bindingListOfBlocks.IF -> {
+                val newBlock = If(context!!)
+                newBlock
+            }
+            bindingListOfBlocks.INIT -> {
+                val newBlock = Initialization(context!!)
+                newBlock
             }
             else -> {
-                val newButton = Button(context)
-                newButton.background = resources.getDrawable(R.drawable.home_buttons)
-                newButton.text = "aboba"
-                newButton
+                val newBlock = Initialization(context!!)
+                newBlock
             }
         }
     
@@ -336,15 +299,14 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
     private fun addBlockToStack(view: View) {
         bindingStack.stack.addView(view)
         view.findViewById<RadioButton>(R.id.outputRadioButton).setOnTouchListener(onTouchBlocksPoint())
-        //TODO: add listener for IO points
-//        (view as BlockView).binding.listOfOutputLinearLayout.children.forEach {
-//            it.setOnTouchListener(onTouchBlocksPoint())
-//        }
         for (i in (view as BlockView).binding.listOfOutputLinearLayout.children) {
             val button = ((i as LinearLayout).getChildAt(0) as LinearLayout).getChildAt(1)
             button.setOnTouchListener(onTouchBlocksPoint())
         }
-        //
+        for(i in view.getListOfInputView()) {
+            i.setOnClickListener { removeWireForIOPoint(i) }
+        }
+        
         view.setOnLongClickListener(choiceLongClickListener())
         view.translationZ = 30f
         listOfBlocks.add(view)
@@ -410,8 +372,8 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
     private fun correctIndexes(view: View) {
         val ind = findBlockIndByView(view)
         for(i in listOfWires.size - 1 downTo 0) {
-            if(listOfWires[i].startBlockId >= ind) {
-                listOfWires[i].startBlockId--
+            if(listOfWires[i].startBlockInd >= ind) {
+                listOfWires[i].startBlockInd--
             }
             if(listOfWires[i].finishBlockInd >= ind) {
                 listOfWires[i].finishBlockInd--
@@ -428,7 +390,20 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
                 bindingStack.stack.removeView(view)
             }
         }
+        removeAllConnects(view)
         listOfBlocks.remove(view)
+    }
+    
+    private fun removeAllConnects(block: View) {
+        for(i in (block as BlockView).inputs) {
+            block.disconnectInput(i.first)
+            //removeWireForIOPoint(i.first.view)
+    
+        }
+        for(i in (block as BlockView).outputs) {
+            block.disconnectOutputAll(i.first)
+            //removeWireForIOPoint(i.first)
+        }
     }
     
     private fun moveToScrollBox(view: View, location: Point) {
@@ -465,7 +440,7 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
     private fun removeWiresToBlock(view: View) {
         val ind = findBlockIndByView(view)
         for(i in listOfWires.size - 1 downTo 0) {
-            if(listOfWires[i].startBlockId == ind || listOfWires[i].finishBlockInd == ind) {
+            if(listOfWires[i].startBlockInd == ind || listOfWires[i].finishBlockInd == ind) {
                 listOfWires.removeAt(i)
             }
         }
@@ -474,7 +449,7 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
     private fun moveWiresToBlock(view: View, delta: Point) {
         val ind = findBlockIndByView(view)
         for(i in listOfWires) {
-            if(i.startBlockId == ind) {
+            if(i.startBlockInd == ind) {
                 i.outputPoint.x += delta.x
                 i.outputPoint.y += delta.y
             } else if(i.finishBlockInd == ind) {

@@ -7,6 +7,7 @@ import android.util.AttributeSet
 import android.view.*
 import android.widget.LinearLayout
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.view.children
 import androidx.core.view.forEach
 import androidx.core.view.forEachIndexed
 import androidx.core.view.marginEnd
@@ -86,7 +87,7 @@ open class BlockView @JvmOverloads constructor(
         binding.headerTextView.setBackgroundColor(Color.parseColor(colorHEX))
     }
     
-    private fun findInputByInputRadioButton(view: View): Input? {
+    fun findInputByInputRadioButton(view: View): Input? {
         binding.listOfInputLinearLayout.forEachIndexed { index, it ->
             if (
                 ((it as LinearLayout)
@@ -99,17 +100,53 @@ open class BlockView @JvmOverloads constructor(
         return null
     }
     
-    private fun findOutputByOutputRadioButton(view: View): Output? {
+    fun findOutputByOutputRadioButton(view: View): Output? {
         binding.listOfOutputLinearLayout.forEachIndexed { index, it ->
             if (
                 ((it as LinearLayout)
                     .getChildAt(0) as LinearLayout)
-                    .getChildAt(0) == view
+                    .getChildAt(1) == view
             ) {
                 return outputs[index].first
             }
         }
         return null
+    }
+    
+    fun getListOfInputView(): MutableList<View> {
+        val list = mutableListOf<View>()
+        binding.listOfInputLinearLayout.forEachIndexed { index, it ->
+            for (i in binding.listOfInputLinearLayout.children) {
+                list.add(((i as LinearLayout).getChildAt(0) as LinearLayout).getChildAt(0))
+            }
+        }
+        return list
+    }
+    
+    fun getListOfOutputView(): MutableList<View> {
+        val list = mutableListOf<View>()
+        binding.listOfOutputLinearLayout.forEachIndexed { index, it ->
+            for (i in binding.listOfOutputLinearLayout.children) {
+                list.add(((i as LinearLayout).getChildAt(0) as LinearLayout).getChildAt(1))
+            }
+        }
+        return list
+    }
+    
+    fun isTwoIOViewInBlock(first: View, second: View): Boolean {
+        var flag1 = false
+        var flag2 = false
+        for(i in getListOfInputView()) {
+            if(first == i || second == i) {
+                flag1 = true
+            }
+        }
+        for(i in getListOfOutputView()) {
+            if(first == i || second == i) {
+                flag2 = true
+            }
+        }
+        return (flag1 && flag2)
     }
     
     fun isOutputComplete(output: View) =
