@@ -110,6 +110,7 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
         bindingScrollBox.scrollBox.setOnDragListener(dropListener())
         bindingStack.stackContainer.setOnDragListener(dropListener())
         bindingStack.basketContainer.setOnDragListener(dropListener())
+        bindingBlocksPanel.panel.setOnDragListener(dropListener())
         
         canvas = DrawView(activity)
         addCanvas(canvas)
@@ -134,7 +135,7 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
                 if (calculateDistanceBetweenPoints(
                         touchPoint,
                         currentPoint
-                    ) >= fromView.height / 2
+                    ) >= 1.5*fromView.height
                 ) {
                     drawWireInMove(fromView, touchPoint, currentPoint)
                 }
@@ -144,6 +145,12 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
                     Point(event.x + touchPoint.x, event.y + touchPoint.y)
                 )
                 if (toView == null) {
+                    canvas.draw(listOfWires)
+                    return@OnTouchListener true
+                }
+                if (toView == fromView) {
+                    disconnectWireByIO(fromView)
+                    removeWireByIO(fromView)
                     canvas.draw(listOfWires)
                     return@OnTouchListener true
                 }
@@ -158,13 +165,40 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
                 
                 val currentPoint = Point(event.x + touchPoint.x, event.y + touchPoint.y)
                 drawWireInMove(fromView, touchPoint, currentPoint)
-                addNewWire(fromView, toView)
+                makeConnect(fromView, toView)
                 
                 canvas.draw(listOfWires)
             }
             else -> canvas.draw(listOfWires)
         }
         true
+    }
+    
+    private fun makeConnect(first: View, second: View) {
+        var input = second
+        var output = first
+        if (isInputInBlock(first)) {
+            input = first
+            output = second
+        }
+        
+        if(!listOfBlocks[findBlockIndByIOView(input)].isInputComplete(input) &&
+            !listOfBlocks[findBlockIndByIOView(output)].isOutputComplete(output)) {
+            addNewWire(input, output)
+        }
+        else if(listOfBlocks[findBlockIndByIOView(input)].isInputComplete(input) &&
+            !listOfBlocks[findBlockIndByIOView(output)].isOutputComplete(output)) {
+            disconnectWireByIO(input)
+            removeWireByIO(input)
+            addNewWire(input, output)
+        }
+        else if(!listOfBlocks[findBlockIndByIOView(input)].isInputComplete(input) &&
+            listOfBlocks[findBlockIndByIOView(output)].isOutputComplete(output)) {
+            disconnectWireByIO(output)
+            removeWireByIO(output)
+            addNewWire(input, output)
+        }
+        
     }
     
     private fun isInputAndOutput(first: View, second: View): Boolean =
@@ -229,6 +263,12 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
             for (input in block.getListOfInputView()) {
                 if (input == view) return true
             }
+        }
+        return false
+    }
+    private fun isInputInBlock(view: View, block: BlockView): Boolean {
+        for (input in block.getListOfInputView()) {
+            if (input == view) return true
         }
         return false
     }
@@ -372,7 +412,7 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
             DragEvent.ACTION_DROP -> {
                 when (view) {
                     bindingStack.basketContainer -> {
-                        removeWiresToBlock(draggingView as BlockView)
+                        removeAllWiresToBlock(draggingView as BlockView)
                         removeBlockFromScreen(draggingView as BlockView)
                         canvas.draw(listOfWires)
                     }
@@ -405,11 +445,36 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
     }
     
     private fun disconnectAllWires(block: BlockView) {
-    
+        for(i in block.getListOfInputView()) {
+            disconnectWireByIO(i, block)
+        }
+        for(i in block.getListOfOutputView()) {
+            disconnectWireByIO(i, block)
+        }
     }
     
     private fun disconnectWireByIO(IO: View) {
+        val block = listOfBlocks[findBlockIndByIOView(IO)]
+        disconnectWireByIO(IO, block)
+    }
+    private fun disconnectWireByIO(IO: View, block: BlockView) {
+        if(isInputInBlock(IO, block)) block.disconnectInput(block.findInputByInputRadioButton(IO)!!)
+        else block.disconnectOutputAll(block.findOutputByOutputRadioButton(IO)!!)
+    }
     
+    private fun removeWireByIO(IO: View) {
+        val block = listOfBlocks[findBlockIndByIOView(IO)]
+        removeWireByIO(IO, block)
+    }
+    private fun removeWireByIO(IO: View, block: BlockView) {
+        val point = getCoordinatesOfIOPoint(IO, block)
+        point.x += IO.width/2
+        point.y += IO.height/2
+        for(i in listOfWires.size - 1 downTo 0) {
+            if(listOfWires[i].inputPoint == point || listOfWires[i].outputPoint == point) {
+                listOfWires.removeAt(i)
+            }
+        }
     }
     
     private fun moveToScrollBox(block: BlockView, location: Point) {
@@ -440,16 +505,7 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
         }
     }
     
-    private fun findBlockIndByView(view: View): Int {
-        for (i in 0 until listOfBlocks.size) {
-            if (view == listOfBlocks[i]) {
-                return i
-            }
-        }
-        return 0
-    }
-    
-    private fun removeWiresToBlock(block: BlockView) {
+    private fun removeAllWiresToBlock(block: BlockView) {
         for (i in listOfWires.size - 1 downTo 0) {
             if (listOfWires[i].startBlock == block || listOfWires[i].endBlock == block) {
                 listOfWires.removeAt(i)
