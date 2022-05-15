@@ -126,6 +126,7 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
     
     @SuppressLint("ClickableViewAccessibility")
     private fun onTouchIO() = OnTouchListener { fromView, event ->
+        if(!isInScrollBox(fromView)) return@OnTouchListener true
         when (event.action) {
             MotionEvent.ACTION_DOWN -> {
                 touchPoint = getCoordinatesOfIOPoint(fromView, bindingScrollBox.scrollBox)
@@ -172,6 +173,15 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
             else -> canvas.draw(listOfWires)
         }
         true
+    }
+    
+    private fun isInScrollBox(view: View): Boolean {
+        var buffView = view
+        while(buffView != bindingWorkspace.root) {
+            if(buffView == bindingScrollBox.scrollBox) return true
+            buffView = buffView.parent as View
+        }
+        return false
     }
     
     private fun makeConnect(first: View, second: View) {
@@ -337,6 +347,7 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
         while (buffView != bindingScrollBox.scrollBox) {
             point.x += buffView.x
             point.y += buffView.y
+            if(buffView.parent == bindingWorkspace.root) break
             buffView = (buffView.parent as View)
             if (buffView == endParent) break
         }
