@@ -483,7 +483,9 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
         point.x += IO.width/2
         point.y += IO.height/2
         for(i in listOfWires.size - 1 downTo 0) {
-            if(listOfWires[i].inputPoint == point || listOfWires[i].outputPoint == point) {
+
+            if((listOfWires[i].inputPoint == point && listOfWires[i].endBlock == block) ||
+                (listOfWires[i].outputPoint == point && listOfWires[i].startBlock == block)) {
                 listOfWires.removeAt(i)
             }
         }
