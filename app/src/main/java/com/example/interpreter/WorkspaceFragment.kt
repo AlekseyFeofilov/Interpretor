@@ -406,11 +406,12 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
     }
     
     private fun dropListener() = OnDragListener { view, event ->
-        view.translationZ = translationForBlocks
+        if(view is BlockView) view.translationZ = translationForBlocks
         translationForBlocks++
         when (event.action) {
             DragEvent.ACTION_DROP -> {
                 when (view) {
+                    bindingBlocksPanel.panel -> { return@OnDragListener true }
                     bindingStack.basketContainer -> {
                         removeAllWiresToBlock(draggingView as BlockView)
                         removeBlockFromScreen(draggingView as BlockView)
