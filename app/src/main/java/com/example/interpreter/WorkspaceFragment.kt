@@ -17,7 +17,7 @@ import android.widget.RadioButton
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.children
 import androidx.fragment.app.Fragment
-import com.example.interpreter.customView.BlockView
+import com.example.interpreter.customView.blockView.BlockView
 import com.example.interpreter.customView.DrawView
 import com.example.interpreter.customView.Line
 import com.example.interpreter.customView.blocks.*
@@ -271,27 +271,27 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
     private fun createBlockByClickedButton(button: Button): View =
         when (button) {
             bindingListOfBlocks.ASSIGN -> {
-                val newButton = Assign(context!!)
+                val newButton = AssignBlock(context!!)
                 newButton
             }
             bindingListOfBlocks.WHILE -> {
-                val newBlock = BlockWhile(context!!)
+                val newBlock = WhileBlock(context!!)
                 newBlock
             }
             bindingListOfBlocks.COMPARE -> {
-                val newBlock = Compare(context!!)
+                val newBlock = CompareBlock(context!!)
                 newBlock
             }
             bindingListOfBlocks.IF -> {
-                val newBlock = If(context!!)
+                val newBlock = IfBlock(context!!)
                 newBlock
             }
             bindingListOfBlocks.INIT -> {
-                val newBlock = Initialization(context!!)
+                val newBlock = InitializationBlock(context!!)
                 newBlock
             }
             else -> {
-                val newBlock = Initialization(context!!)
+                val newBlock = InitializationBlock(context!!)
                 newBlock
             }
         }

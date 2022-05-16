@@ -48,7 +48,7 @@ open class Compiler {
     operator fun set(name: kotlin.String, value: Any) {}
     
     constructor(value: BlockView?) {
-        if(value == null) throw Error("TODO")
+//        if(value == null) throw Error("TODO")
     }
     
     fun compile(): Executor{
