@@ -37,7 +37,7 @@ class InputView constructor(context: Context?) : LinearLayout(context) {
         
         if (input!!.isDefault) {
             setVisibility(
-                if (input!!.type == IO.Companion.Type.Boolean) binding.inputBooleanSpinner
+                if (input!!.type == IO.Type.Boolean) binding.inputBooleanSpinner
                 else binding.inputDefaultValueEditText,
                 visible
             )
@@ -117,15 +117,15 @@ class InputView constructor(context: Context?) : LinearLayout(context) {
         
         if (input.isDefault) {
             when (input.type) {
-                IO.Companion.Type.Boolean -> {
+                IO.Type.Boolean -> {
                     removeComponent(2)
                     initInputBooleanSpinner()
                 }
-                IO.Companion.Type.String -> {
+                IO.Type.String -> {
                     removeComponent(3)
                     initDefaultEditText(InputType.TYPE_CLASS_TEXT)
                 }
-                IO.Companion.Type.Double -> {
+                IO.Type.Double -> {
                     removeComponent(3)
                     initDefaultEditText(InputType.TYPE_NUMBER_FLAG_SIGNED or InputType.TYPE_NUMBER_FLAG_DECIMAL)
                 }
@@ -137,7 +137,7 @@ class InputView constructor(context: Context?) : LinearLayout(context) {
         
         if (input.description.isNullOrEmpty()) removeComponent(1)
         if (!input.isLink) binding.inputLinearLayout.getChildAt(0).visibility = View.GONE
-        if (input.type == IO.Companion.Type.Function) setLinkAppearance(Appearance.Triangular)
+        if (input.type == IO.Type.Function) setLinkAppearance(Appearance.Triangular)
     }
     
     private fun removeComponent(start: Int, count: Int = 1) {

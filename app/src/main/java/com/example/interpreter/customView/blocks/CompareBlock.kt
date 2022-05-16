@@ -7,6 +7,7 @@ import android.widget.ArrayAdapter
 import android.widget.LinearLayout
 import android.widget.Spinner
 import com.example.interpreter.customView.blockView.BlockView
+import com.example.interpreter.ioInterfaces.IO
 import com.example.interpreter.ioInterfaces.ioTypes.InputBoolean
 import com.example.interpreter.ioInterfaces.ioTypes.InputDouble
 
@@ -16,9 +17,9 @@ class CompareBlock @JvmOverloads constructor(
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0,
 ) : BlockView(context, attrs, defStyleAttr) {
-    override fun compile() {
+    /*override fun compile() {
         super.compile()
-    }
+    }*/
     private fun setSpinner() {
         val comparing = arrayListOf("<", ">", "=", "!=", "<=", ">=")
         
@@ -33,10 +34,10 @@ class CompareBlock @JvmOverloads constructor(
     }
     
     init {
-        addInput(InputDouble("Compare this:", this))
-        val input = InputBoolean("By sign:", this, isLink = false)
+        addInput(InputDouble(IO.Name.First, this, "Compare this:"))
+        val input = InputBoolean(IO.Name.By, this, "By sign:", isLink = false)
         addInput(input)
-        addInput(InputDouble("With this:", this))
+        addInput(InputDouble(IO.Name.Second, this, "With this:"))
         
         setHeader("Compare", "#EC8532")
         

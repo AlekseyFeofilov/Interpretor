@@ -5,11 +5,12 @@ import com.example.interpreter.customView.blockView.IOContainer
 import com.example.interpreter.ioInterfaces.Output
 
 class OutputString(
-    override val description: String = "",
-    override var parent: IOContainer
+    override val name: IO.Name,
+    override var parent: IOContainer,
+    override val description: String = ""
 ) : Output {
     override val color = "#AB954D"
-    override val type = IO.Companion.Type.String
+    override val type = IO.Type.String
     var default: String? = null
     
     override fun getValue() = default

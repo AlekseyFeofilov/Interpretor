@@ -5,12 +5,13 @@ import com.example.interpreter.customView.blockView.IOContainer
 import com.example.interpreter.ioInterfaces.Input
 
 class InputFunction(
-    override val description: String = "",
+    override val name: IO.Name,
     override var parent: IOContainer,
+    override val description: String = "",
     override val autocomplete: Boolean = false,
     override val isLink: Boolean = true
 ) : Input {
-    override val type = IO.Companion.Type.Function
+    override val type = IO.Type.Function
     override val isDefault = false
     override val color = "#8B80F9"
     var default: Unit? = null
@@ -18,7 +19,7 @@ class InputFunction(
     override fun parseValue(value: String) { }
     
     override fun clone(): Input {
-        return InputFunction(description, parent, autocomplete, isLink)
+        return InputFunction(name, parent, description, autocomplete, isLink)
     }
     
     override fun getValue() = default
