@@ -4,13 +4,14 @@ import com.example.interpreter.ioInterfaces.IO
 import com.example.interpreter.customView.blockView.IOContainer
 import com.example.interpreter.ioInterfaces.Output
 
-class OutputBoolean (
+open class OutputBoolean (
+    override val name: IO.Name,
+    override var parent: IOContainer,
     override val description: String = "",
-    override var parent: IOContainer
+    val default: Boolean? = null
 ): Output {
     override val color = "#6CD4FF"
-    override val type = IO.Companion.Type.Boolean
-    var default: Boolean? = null
+    override val type = IO.Type.Boolean
     
     override fun getValue() = default
 }

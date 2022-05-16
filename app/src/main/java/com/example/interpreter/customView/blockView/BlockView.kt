@@ -9,10 +9,14 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import com.example.interpreter.customView.ioView.InputView
 import com.example.interpreter.customView.ioView.OutputView
 import com.example.interpreter.databinding.BlockViewBinding
+import com.example.interpreter.ioInterfaces.IO
 import com.example.interpreter.ioInterfaces.Input
 import com.example.interpreter.ioInterfaces.Output
 import com.example.interpreter.ioInterfaces.ioTypes.InputFunction
 import com.example.interpreter.ioInterfaces.ioTypes.OutputFunction
+import com.example.interpreter.vm.Compiler
+import com.example.interpreter.vm.instruction.Instruction
+import io.ktor.util.*
 import java.util.concurrent.Executor
 
 @SuppressLint("ClickableViewAccessibility")
@@ -20,29 +24,33 @@ abstract class BlockView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0,
-) : ConstraintLayout(context, attrs, defStyleAttr), IOContainer, Compiler, InstructionContainer {
+) : ConstraintLayout(context, attrs, defStyleAttr), IOContainer {
     val binding = BlockViewBinding.inflate(LayoutInflater.from(context), this)
     
     override val view = this
+    //todo: remake to hash of <Input, InputView> and <Input, OutputView> to optimal searching
     override var inputs = mutableListOf<Pair<Input, Output?>>()
     override var outputs = mutableListOf<Pair<Output, List<Input>>>()
-    override var executors = mutableListOf<Executor>()
     
-    override fun typeMismatch() {
+    //todo: error alert in time on type mismatch
+    
+    private fun typeMismatch() {
         inputs.forEach {
             if (it.second != null && it.first.type != it.second!!.type)
                 throw Error("type misMatch: required ${it.first.type} but found ${it.second!!.type}")
         }
     }
     
-    override fun checkError() {
+    open fun checkError() {
         typeMismatch()
     }
     
-    override fun compile() {
+    open fun compile(compiler: Compiler): List<Instruction> {
         checkError()
+        return listOf()
     }
     
+    //todo: add fake output by default
     override fun addInput(input: Input, to: Input?, before: Boolean) {
         super.addInput(input, to, before)
         val row = InputView(context)
@@ -98,8 +106,81 @@ abstract class BlockView @JvmOverloads constructor(
         binding.headerTextView.setBackgroundColor(Color.parseColor(colorHEX))
     }
     
+    fun getInputs(): HashMap<Input, Output> {
+        val result = hashMapOf<Input, Output>()
+        
+        inputs.forEach {
+            when {
+                it.second != null -> result[it.first] = it.second!!
+                it.first.getValue() != null -> TODO("add fake output")
+            }
+        }
+        
+        return result
+    }
+    
+    fun getOutputs(): HashMap<Output, List<Input>> {
+        val result = hashMapOf<Output, List<Input>>()
+        
+        outputs.forEach {
+            if (it.second.isNotEmpty()) {
+                result[it.first] = it.second
+            }
+        }
+        
+        return result
+    }
+
+    fun getInputsHash(): HashMap<IO.Name, Any> {
+        val result = hashMapOf<IO.Name, Any>()
+        
+        inputs.forEach { pair ->
+            when {
+                result.containsKey(pair.first.name) -> {  }
+                !(pair.second != null || pair.first.getValue() != null) -> {  }
+                !pair.first.autocomplete -> {
+                    result[pair.first.name] = pair.first
+                }
+                pair.first.autocomplete -> {
+                    result[pair.first.name] = inputs.filter { it.first.name ==  pair.first.name }.map { it.first }
+                }
+            }
+        }
+        
+        return result
+    }
+    
+/*    fun getInputsHash(): HashMap<IO.Name, List<Input>> {
+        val result = hashMapOf<IO.Name, List<Input>>()
+        
+        inputs.forEach { pair ->
+            if (!result.containsKey(pair.first.name) &&
+                (pair.second != null || pair.first.getValue() != null)
+            ) {
+                result[pair.first.name] =
+                    inputs.filter { it.first.name == pair.first.name }.map { it.first }
+            }
+        }
+        
+        return result
+    }*/
+    
+    fun getOutputsHash(): HashMap<IO.Name, Output> {
+        return HashMap<IO.Name, Output>().apply {
+            outputs.forEach { if (it.second.isNotEmpty()) this[it.first.name] = it.first }
+        }
+    }
+    
+    fun getLinkInput(input: Input): Output? {
+        return inputs[findIndexByInput(input)].second
+    }
+    
+    fun getLinkOutput(output: Output): List<Input> {
+        return outputs[findIndexByOutput(output)].second
+    }
+    
     init {
-        addInput(InputFunction("before", this))
-        addOutput(OutputFunction("after", this))
+        addInput(InputFunction(IO.Name.From, this, "before"))
+        addOutput(OutputFunction(IO.Name.To, this, "after"))
     }
 }

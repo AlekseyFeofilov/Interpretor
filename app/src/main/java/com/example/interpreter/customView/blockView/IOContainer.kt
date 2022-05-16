@@ -36,10 +36,10 @@ interface IOContainer {
         }
     }
     
-    //todo: complete for saving code
+/*    //todo: complete for saving code
     fun addInput(stringArray: Array<String>) {
         val input: Input = when (stringArray[1]) {
-            IO.Companion.Type.Boolean.toString() ->
+            IO.Type.Boolean.toString() ->
                 InputBoolean(
                     stringArray[2],
                     this,
@@ -47,7 +47,7 @@ interface IOContainer {
                     stringArray[4].toBoolean()
                 )
             
-            IO.Companion.Type.String.toString() ->
+            IO.Type.String.toString() ->
                 InputString(
                     stringArray[2],
                     this,
@@ -55,7 +55,7 @@ interface IOContainer {
                     stringArray[4].toBoolean()
                 )
             
-            IO.Companion.Type.Double.toString() ->
+            IO.Type.Double.toString() ->
                 InputDouble(
                     stringArray[2],
                     this,
@@ -68,7 +68,7 @@ interface IOContainer {
         }
 //              "Input, $type, $description, $autocomplete, $isDefault, ${getValue()}"
         input.parseValue(stringArray[5])
-    }
+    }*/
     
     fun inputAutocomplete(input: Input) {
         if (!input.autocomplete || !input.isEmpty()) return
@@ -134,16 +134,15 @@ interface IOContainer {
         }
     }
     
-    //todo: complete for saving code
-    fun addOutput(stringArray: Array<String>) {
+/*    fun addOutput(stringArray: Array<String>) {
         val output: Output = when (stringArray[1]) {
-            IO.Companion.Type.Boolean.toString() ->
+            IO.Type.Boolean.toString() ->
                 OutputBoolean(stringArray[2], this)
             
-            IO.Companion.Type.String.toString() ->
+            IO.Type.String.toString() ->
                 OutputString(stringArray[2], this)
             
-            IO.Companion.Type.Double.toString() ->
+            IO.Type.Double.toString() ->
                 OutputDouble(stringArray[2], this)
             
             else ->
@@ -151,7 +150,7 @@ interface IOContainer {
         }
         
         
-    }
+    }*/
     
     fun removeOutput(output: Output) {
         disconnectOutputAll(output)
