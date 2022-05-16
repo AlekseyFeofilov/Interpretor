@@ -11,16 +11,8 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
         <Button
-            android:id="@+id/VARIABLE"
-            android:text="variable"
-            android:textSize="36sp"
-            android:layout_width="match_parent"
-            android:layout_height="120dp"
-            android:layout_margin="8dp"
-            android:background="@drawable/home_buttons"/>
-        <Button
-            android:id="@+id/IF"
-            android:text="if"
+            android:id="@+id/ASSIGN"
+            android:text="ASSIGN"
             android:textSize="36sp"
             android:layout_width="match_parent"
             android:layout_height="150dp"
@@ -28,15 +20,39 @@
             android:background="@drawable/home_buttons"/>
         <Button
             android:id="@+id/WHILE"
-            android:text="while"
+            android:text="WHILE"
             android:textSize="36sp"
             android:layout_width="match_parent"
             android:layout_height="150dp"
             android:layout_margin="8dp"
             android:background="@drawable/home_buttons"/>
         <Button
-            android:id="@+id/MATH"
-            android:text="math"
+            android:id="@+id/COMPARE"
+            android:text="COMPARE"
+            android:textSize="36sp"
+            android:layout_width="match_parent"
+            android:layout_height="150dp"
+            android:layout_margin="8dp"
+            android:background="@drawable/home_buttons"/>
+        <Button
+            android:id="@+id/IF"
+            android:text="IF"
+            android:textSize="36sp"
+            android:layout_width="match_parent"
+            android:layout_height="150dp"
+            android:layout_margin="8dp"
+            android:background="@drawable/home_buttons"/>
+        <Button
+            android:id="@+id/INIT"
+            android:text="INIT"
+            android:textSize="36sp"
+            android:layout_width="match_parent"
+            android:layout_height="150dp"
+            android:layout_margin="8dp"
+            android:background="@drawable/home_buttons"/>
+        <Button
+            android:id="@+id/ABOBA"
+            android:text="ABOBA"
             android:textSize="36sp"
             android:layout_width="match_parent"
             android:layout_height="150dp"
