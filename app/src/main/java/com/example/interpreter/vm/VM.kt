@@ -87,7 +87,7 @@ class VM {
         
 //        Log.i("VM", Json.encodeToString(math))
         
-        start(true)
+        start()
     }
     
     fun start(debug: Boolean = false){

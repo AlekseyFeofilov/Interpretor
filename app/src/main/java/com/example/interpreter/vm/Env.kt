@@ -17,7 +17,7 @@ class Env {
     
     constructor()
     
-    constructor(Env: Env) {
+    constructor(Env: Env?) {
         this.env = Env
     }
     
