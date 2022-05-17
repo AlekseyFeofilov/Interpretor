@@ -8,8 +8,9 @@ import com.example.interpreter.ioInterfaces.ioTypes.*
 
 interface IOContainer {
     val view: View
-    var inputs: MutableList<Pair<Input, Output?>>
-    var outputs: MutableList<Pair<Output, List<Input>>>
+    
+    val inputs: MutableList<Pair<Input, Output>>
+    val outputs: MutableList<Pair<Output, List<Input>>>
     
     fun findIndexByInput(element: Input?) =
         inputs.indexOf(inputs.find { it.first == element })
@@ -22,7 +23,7 @@ interface IOContainer {
         
         inputs.add(
             if (position != -1) position else inputs.size,
-            Pair(input, null)
+            Pair(input, input.generateCoupleOutput())
         )
     }
     
@@ -106,10 +107,10 @@ interface IOContainer {
     fun disconnectInput(input: Input) {
         val index = findIndexByInput(input)
         
-        if (index == -1 || inputs[index].second == null) return
+        if (index == -1 || inputs[index].second.name == IO.Name.Fake) return
         
-        val output = inputs[index].second!!
-        inputs[index] = inputs[index].copy(second = null)
+        val output = inputs[index].second
+        inputs[index] = inputs[index].copy(second = inputs[index].first.generateCoupleOutput())
         removeCloneInput(input)
         
         output.parent.disconnectOutput(output, input)

@@ -13,6 +13,7 @@ interface IO {
         Condition, True, False,
         First, Second,
         Variable, Value,
+        Fake,
     }
     
     val name: Name

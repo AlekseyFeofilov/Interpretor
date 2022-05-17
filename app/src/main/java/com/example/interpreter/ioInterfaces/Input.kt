@@ -9,6 +9,7 @@ interface Input : IO {
     //todo: don't parse value, it's compiler job
     fun parseValue(value: String)
     fun clone(): Input
+    fun generateCoupleOutput(): Output
     
     override fun convertToString() =
         "Input, $name, $type, $description, $autocomplete, $isDefault, ${getValue()}"
@@ -22,6 +23,5 @@ interface Input : IO {
     
     fun isEmpty() = getValue() == null
     
-    //todo: generate method to add Output by Input (with match type) and vise versa
     //todo: not parse value from editText, but keep link to this editText so compiler will have access to this view to get string and parse it itself
 }
