@@ -1,8 +1,15 @@
 package com.example.interpreter.ioInterfaces.ioTypes
 
+import android.content.Context
+import android.util.AttributeSet
 import com.example.interpreter.ioInterfaces.IO
 import com.example.interpreter.customView.blockView.IOContainer
 import com.example.interpreter.ioInterfaces.Input
+import com.example.interpreter.ioInterfaces.Output
+import com.example.interpreter.customView.blockView.BlockView
+import com.example.interpreter.vm.Compiler
+import com.example.interpreter.vm.instruction.Bool
+import com.example.interpreter.vm.instruction.Instruction
 
 class InputBoolean(
     override val name: IO.Name,
@@ -23,4 +30,23 @@ class InputBoolean(
     }
     
     override fun getValue() = default
+    
+    override fun generateCoupleOutput(): Output {
+        return OutputBoolean(IO.Name.Fake, FakeBlock(parent.view.context))
+    }
+    
+    private class FakeBlock @JvmOverloads constructor(
+        context: Context, attrs: AttributeSet? = null
+    ) : BlockView(context, attrs) {
+        override fun init() {
+        
+        }
+        
+        override fun compile(compiler: Compiler): List<Instruction> {
+            return listOf(Bool(
+                compiler,
+                outputs[1].first.getValue() as Boolean
+            ))
+        }
+    }
 }

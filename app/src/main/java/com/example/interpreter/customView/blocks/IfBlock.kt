@@ -6,6 +6,7 @@ import com.example.interpreter.customView.blockView.BlockView
 import com.example.interpreter.ioInterfaces.IO
 import com.example.interpreter.ioInterfaces.ioTypes.InputBoolean
 import com.example.interpreter.ioInterfaces.ioTypes.InputFunction
+import com.example.interpreter.ioInterfaces.ioTypes.OutputFunction
 import com.example.interpreter.vm.instruction.Instruction
 
 class IfBlock @JvmOverloads constructor(
