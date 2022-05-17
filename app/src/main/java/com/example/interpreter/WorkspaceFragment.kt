@@ -407,8 +407,7 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
     private fun dragListener() = OnLongClickListener { view ->
         val data = ClipData.newPlainText("", "")
         val shadowBuilder = DragShadowBuilder(view)
-        translationForBlocks++
-        if(view is BlockView) view.translationZ = translationForBlocks
+        
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
             @Suppress("DEPRECATION")
             view.startDrag(data, shadowBuilder, view, 0)
@@ -420,6 +419,8 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
     }
     
     private fun dropListener() = OnDragListener { view, event ->
+        if(view is BlockView) view.translationZ = translationForBlocks
+        translationForBlocks++
         when (event.action) {
             DragEvent.ACTION_DROP -> {
                 when (view) {

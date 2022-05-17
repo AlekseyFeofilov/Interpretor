@@ -6,6 +6,7 @@ import java.lang.Error
 
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
+import kotlin.reflect.KClass
 
 @Suppress("MemberVisibilityCanBePrivate")
 @Serializable
@@ -13,6 +14,7 @@ class Env {
     @Transient
     val register = hashMapOf<Instruction, Instruction>()
     val vars = hashMapOf<String, Instruction>()
+    val compileTimeDefineVars = hashMapOf<String, KClass<Instruction>>()
     var env: Env? = null
     
     constructor()
@@ -42,6 +44,7 @@ class Env {
 //        }else throw Error("Runtime Error (Env new var [${item}] is already defined)")
     }
     
+    
     private fun regRecursiveSearchEnv(item: Instruction): Env?{
         var parent: Env = this
     
@@ -63,6 +66,30 @@ class Env {
     fun reg(item: Instruction, value: Instruction){
         if(value !is Object) return
         register[item] = value
+    }
+    
+    
+    private fun defineRecursiveSearchEnv(item: String): Env?{
+        var parent: Env = this
+        
+        while(!parent.compileTimeDefineVars.containsKey(item)){
+            if(parent.env != null) {
+                parent = parent.env!!
+            }else return null
+        }
+        
+        return parent
+    }
+    
+    fun define(item: String): KClass<Instruction>?{
+        val currEnv = defineRecursiveSearchEnv(item) ?: return null
+        
+        return currEnv.compileTimeDefineVars[item]
+    }
+    
+    fun define(item: String, value: KClass<Instruction>){
+        if(value !is Object) return
+        compileTimeDefineVars[item] = value
     }
     
     fun clear(){

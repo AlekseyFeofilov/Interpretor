@@ -10,6 +10,7 @@ open class Register : Instruction {
     private val objItem: kotlin.String
     private val env: Env?
     
+    //todo: recursive unregistering, return any, but not register
     override fun exec(env: Env) = sequence<Instruction> {
         val reg = env.reg(value) ?: throw Error("Execution failed, register is null")
         

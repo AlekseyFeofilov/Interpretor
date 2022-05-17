@@ -116,67 +116,6 @@ abstract class BlockView @JvmOverloads constructor(
         binding.headerTextView.setBackgroundColor(Color.parseColor(colorHEX))
     }
     
-    fun getInputsConnecting(): HashMap<Input, Output> {
-        val result = hashMapOf<Input, Output>()
-        
-        inputs.forEach {
-            if (it.second.name != IO.Name.Fake || it.first.getValue() != null) {
-                result[it.first] = it.second
-            }
-        }
-        
-        return result
-    }
-    
-    fun getOutputsConnecting(): HashMap<Output, List<Input>> {
-        val result = hashMapOf<Output, List<Input>>()
-        
-        outputs.forEach {
-            if (it.second.isNotEmpty()) {
-                result[it.first] = it.second
-            }
-        }
-        
-        return result
-    }
-    
-    fun getInputsHash(): HashMap<IO.Name, Any> {
-        val result = hashMapOf<IO.Name, Any>()
-        
-        inputs.forEach { pair ->
-            when {
-                result.containsKey(pair.first.name) -> {
-                }
-                !(pair.second.name != IO.Name.Fake || pair.first.getValue() != null) -> {
-                }
-                !pair.first.autocomplete -> {
-                    result[pair.first.name] = pair.first
-                }
-                pair.first.autocomplete -> {
-                    result[pair.first.name] =
-                        inputs.filter { it.first.name == pair.first.name }.map { it.first }
-                }
-            }
-        }
-        
-        return result
-    }
-    
-    fun getOutputsHash(): HashMap<IO.Name, Output> {
-        return HashMap<IO.Name, Output>().apply {
-            outputs.forEach { if (it.second.isNotEmpty()) this[it.first.name] = it.first }
-        }
-    }
-    
-    fun getLinkInput(input: Input): Output {
-        return inputs[findIndexByInput(input)].second
-    }
-    
-    fun getLinkOutput(output: Output): List<Input> {
-        return outputs[findIndexByOutput(output)].second
-    }
-    
-    
     fun findInputByInputRadioButton(view: View): Input? {
         binding.listOfInputLinearLayout.forEachIndexed { index, it ->
             if (
@@ -245,7 +184,6 @@ abstract class BlockView @JvmOverloads constructor(
     
     fun isInputComplete(input: View) =
         inputs[findIndexByInput(findInputByInputRadioButton(input))].second.name != IO.Name.Fake
-    
     
     init {
         init()
