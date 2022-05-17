@@ -192,7 +192,7 @@ class VM {
                         resources("web/static")
                     }
                 }
-            }.start()
+            }//.start() //todo: server for debug, double start crash app, port already in use
 
 //        var i = 0
             var pause: Boolean = debug

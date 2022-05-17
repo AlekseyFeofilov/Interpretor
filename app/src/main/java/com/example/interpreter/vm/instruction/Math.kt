@@ -1,11 +1,21 @@
 package com.example.interpreter.vm.instruction
 
+import android.util.Log
 import com.example.interpreter.vm.Compiler
 import com.example.interpreter.vm.Env
 import com.example.interpreter.vm.awaitLR
+import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Polymorphic
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.modules.subclass
 import kotlinx.serialization.Serializable
-import java.lang.Error
+import kotlinx.serialization.descriptors.SerialDescriptor
+import kotlinx.serialization.descriptors.buildClassSerialDescriptor
+import kotlinx.serialization.descriptors.element
+import kotlinx.serialization.encoding.*
+import kotlinx.serialization.modules.SerializersModule
+import kotlinx.serialization.modules.polymorphic
+import kotlin.Error
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 import kotlin.reflect.KProperty1
@@ -15,10 +25,58 @@ import kotlin.math.*
 
 @Serializable
 @Suppress("UNUSED", "UNUSED_PARAMETER", "MemberVisibilityCanBePrivate", "PropertyName",
-    "RemoveRedundantQualifierName"
+    "RemoveRedundantQualifierName", "SERIALIZER_TYPE_INCOMPATIBLE"
 )
 class Math : Instruction {
     private var tokens: MutableList<@Polymorphic Any>
+    
+//    class Serializer : KSerializer<Math> {
+//        override val descriptor: SerialDescriptor = buildClassSerialDescriptor(Math::class.qualifiedName ?: "*EMPTY qualifiedName*") {
+//            element<Int>("id")
+//            element<Boolean>("_isBasic")
+//            element<MutableList<Any>>("tokens")
+//        }
+//
+//        override fun serialize(encoder: Encoder, value: Math) {
+//            encoder.encodeStructure(descriptor){
+//                encodeIntElement(descriptor, 0, value.id)
+//                encodeBooleanElement(descriptor, 1, value.isBasic)
+////                enco(descriptor, 2, value.v)
+//            }
+//        }
+//
+//        override fun deserialize(decoder: Decoder): Math {
+//            return decoder.decodeStructure(descriptor){
+//                var value = 0.0
+//
+//                while (true) {
+//                    when (val index = decodeElementIndex(descriptor)) {
+//                        0 -> value = decodeDoubleElement(descriptor, 2)
+//                        CompositeDecoder.DECODE_DONE -> break
+//                        else -> error("Unexpected index: $index")
+//                    }
+//                }
+//
+//                Math(Compiler.FCompiler(), "")
+//            }
+//        }
+//    }
+    
+//    class Serializer : KSerializer<Token> {
+//        override val descriptor: SerialDescriptor = buildClassSerialDescriptor(this::class.qualifiedName ?: "*EMPTY qualifiedName*") {
+//            element<kotlin.String>("TAG")
+//        }
+//
+//        override fun serialize(encoder: Encoder, value: Token) {
+//            encoder.encodeStructure(descriptor){
+//                encodeStringElement(descriptor, 0, value.TAG)
+//            }
+//        }
+//
+//        override fun deserialize(decoder: Decoder): Token {
+//            throw Error("not deserialize")
+//        }
+//    }
     
     companion object {
         @JvmStatic fun getStaticFunc(obj: KClass<*>, name: kotlin.String): KFunction<*> {
@@ -60,6 +118,39 @@ class Math : Instruction {
         }
     
         val reflectMap = mutableMapOf<kotlin.String, KClass<*>>()
+        val module = SerializersModule {
+            polymorphic(Any::class) {
+                subclass(TNumber::class)
+                subclass(TVar::class)
+                subclass(TRegister::class)
+                subclass(TFunc1::class)
+                subclass(TFunc2::class)
+                subclass(TLogicNot::class)
+                subclass(TBitNot::class)
+                subclass(TPow::class)
+                subclass(TMul::class)
+                subclass(TDiv::class)
+                subclass(TMod::class)
+                subclass(TPlus::class)
+                subclass(TMinus::class)
+                subclass(TShl::class)
+                subclass(TShr::class)
+                subclass(TUShr::class)
+                subclass(TLogicLess::class)
+                subclass(TLogicLessEQ::class)
+                subclass(TLogicGreater::class)
+                subclass(TLogicGreaterEQ::class)
+                subclass(TLogicEqual::class)
+                subclass(TLogicEqualNot::class)
+                subclass(TBitAnd::class)
+                subclass(TBitXor::class)
+                subclass(TBitOr::class)
+                subclass(TLogicAnd::class)
+                subclass(TLogicOr::class)
+                subclass(TLBrk::class)
+                subclass(TRBrk::class)
+            }
+        }
         
         init {
             for(tokens in Math::class.nestedClasses) {
@@ -72,6 +163,9 @@ class Math : Instruction {
         }
     }
     
+    
+    @Serializable
+    @SerialName("Token")
     abstract class Token{
         val TAG: kotlin.String = javaClass.simpleName
         
@@ -80,6 +174,8 @@ class Math : Instruction {
         }
     }
     
+    @Serializable
+    @SerialName("TokenOP")
     abstract class TokenOP : Token(){
         companion object{
             const val operator = ""
@@ -89,10 +185,14 @@ class Math : Instruction {
         open fun exec(rt: TRuntime, env: Env): Any? = null
     }
     
+    @Serializable
+    @SerialName("TNumber")
     class TNumber(val value: Number) : Token(){
         override fun toInstruction(): Instruction = value
     }
     
+    @Serializable
+    @SerialName("TRegister")
     class TRegister(val value: Register) : Token(){
         fun toToken(env: Env): Token{
             val ret = awaitLR(value.exec(env))
@@ -104,10 +204,14 @@ class Math : Instruction {
         }
     }
     
+    @Serializable
+    @SerialName("TVar")
     class TVar(val value: String) : Token(){
         override fun toInstruction(): Instruction = value
     }
     
+    @Serializable
+    @SerialName("TFunc1")
     class TFunc1(val value: kotlin.String): TokenOP(){
         companion object{
             const val operator = ""
@@ -138,6 +242,8 @@ class Math : Instruction {
         }
     }
     
+    @Serializable
+    @SerialName("TFunc2")
     class TFunc2(val value: kotlin.String): TokenOP(){
         companion object{
             const val operator = ""
@@ -158,6 +264,8 @@ class Math : Instruction {
         }
     }
     
+    @Serializable
+    @SerialName("TLogicNot")
     class TLogicNot : TokenOP(){
         companion object{
             const val operator = "!"
@@ -171,6 +279,8 @@ class Math : Instruction {
         }
     }
     
+    @Serializable
+    @SerialName("TBitNot")
     class TBitNot : TokenOP(){
         companion object{
             const val operator = "~"
@@ -184,6 +294,8 @@ class Math : Instruction {
         }
     }
     
+    @Serializable
+    @SerialName("TPow")
     class TPow : TokenOP(){
         companion object{
             const val operator = "**"
@@ -198,6 +310,8 @@ class Math : Instruction {
         }
     }
     
+    @Serializable
+    @SerialName("TMul")
     class TMul : TokenOP(){
         companion object{
             const val operator = "*"
@@ -212,6 +326,8 @@ class Math : Instruction {
         }
     }
     
+    @Serializable
+    @SerialName("TDiv")
     class TDiv : TokenOP(){
         companion object{
             const val operator = "/"
@@ -226,6 +342,8 @@ class Math : Instruction {
         }
     }
     
+    @Serializable
+    @SerialName("TMod")
     class TMod : TokenOP(){
         companion object{
             const val operator = "%"
@@ -240,6 +358,8 @@ class Math : Instruction {
         }
     }
     
+    @Serializable
+    @SerialName("TPlus")
     class TPlus : TokenOP(){
         companion object{
             const val operator = "+"
@@ -254,6 +374,8 @@ class Math : Instruction {
         }
     }
     
+    @Serializable
+    @SerialName("TMinus")
     class TMinus : TokenOP(){
         companion object{
             const val operator = "-"
@@ -268,6 +390,8 @@ class Math : Instruction {
         }
     }
     
+    @Serializable
+    @SerialName("TShl")
     class TShl : TokenOP(){
         companion object{
             const val operator = "<<"
@@ -282,6 +406,8 @@ class Math : Instruction {
         }
     }
     
+    @Serializable
+    @SerialName("TShr")
     class TShr : TokenOP(){
         companion object{
             const val operator = ">>"
@@ -296,6 +422,8 @@ class Math : Instruction {
         }
     }
     
+    @Serializable
+    @SerialName("TUShr")
     class TUShr : TokenOP(){
         companion object{
             const val operator = ">>>"
@@ -310,6 +438,8 @@ class Math : Instruction {
         }
     }
     
+    @Serializable
+    @SerialName("TLogicLess")
     class TLogicLess : TokenOP(){
         companion object{
             const val operator = "<"
@@ -324,6 +454,8 @@ class Math : Instruction {
         }
     }
     
+    @Serializable
+    @SerialName("TLogicLessEQ")
     class TLogicLessEQ : TokenOP(){
         companion object{
             const val operator = "<="
@@ -338,6 +470,8 @@ class Math : Instruction {
         }
     }
     
+    @Serializable
+    @SerialName("TLogicGreater")
     class TLogicGreater : TokenOP(){
         companion object{
             const val operator = ">"
@@ -352,6 +486,8 @@ class Math : Instruction {
         }
     }
     
+    @Serializable
+    @SerialName("TLogicGreaterEQ")
     class TLogicGreaterEQ : TokenOP(){
         companion object{
             const val operator = ">="
@@ -366,6 +502,8 @@ class Math : Instruction {
         }
     }
     
+    @Serializable
+    @SerialName("TLogicEqual")
     class TLogicEqual : TokenOP(){
         companion object{
             const val operator = "=="
@@ -380,6 +518,8 @@ class Math : Instruction {
         }
     }
     
+    @Serializable
+    @SerialName("TLogicEqualNot")
     class TLogicEqualNot : TokenOP(){
         companion object{
             const val operator = "!="
@@ -394,6 +534,8 @@ class Math : Instruction {
         }
     }
     
+    @Serializable
+    @SerialName("TBitAnd")
     class TBitAnd : TokenOP(){
         companion object{
             const val operator = "&"
@@ -408,6 +550,8 @@ class Math : Instruction {
         }
     }
     
+    @Serializable
+    @SerialName("TBitXor")
     class TBitXor : TokenOP(){
         companion object{
             const val operator = "^"
@@ -422,6 +566,8 @@ class Math : Instruction {
         }
     }
     
+    @Serializable
+    @SerialName("TBitOr")
     class TBitOr : TokenOP(){
         companion object{
             const val operator = "|"
@@ -436,6 +582,8 @@ class Math : Instruction {
         }
     }
     
+    @Serializable
+    @SerialName("TLogicAnd")
     class TLogicAnd : TokenOP(){
         companion object{
             const val operator = "&&"
@@ -450,6 +598,8 @@ class Math : Instruction {
         }
     }
     
+    @Serializable
+    @SerialName("TLogicOr")
     class TLogicOr : TokenOP(){
         companion object{
             const val operator = "||"
@@ -464,6 +614,8 @@ class Math : Instruction {
         }
     }
     
+    @Serializable
+    @SerialName("TLBrk")
     class TLBrk : TokenOP(){
         companion object{
             const val operator = "("
@@ -475,6 +627,8 @@ class Math : Instruction {
         }
     }
     
+    @Serializable
+    @SerialName("TRBrk")
     class TRBrk : TokenOP(){
         companion object{
             const val operator = ")"

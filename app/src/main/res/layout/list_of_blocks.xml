@@ -58,5 +58,13 @@
             android:layout_height="150dp"
             android:layout_margin="8dp"
             android:background="@drawable/home_buttons"/>
+        <Button
+            android:id="@+id/BOOL"
+            android:text="BOOL"
+            android:textSize="36sp"
+            android:layout_width="match_parent"
+            android:layout_height="150dp"
+            android:layout_margin="8dp"
+            android:background="@drawable/home_buttons"/>
     </LinearLayout>
 </merge>

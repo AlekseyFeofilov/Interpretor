@@ -24,7 +24,7 @@ class IfBlock @JvmOverloads constructor(
     
     private fun getInputExecutor(name: IO.Name, compiler: Compiler): Executor {
         compiler.push()
-        compiler[name]
+            compiler[name]
         return compiler.pop()
     }
     

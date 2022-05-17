@@ -17,4 +17,5 @@ open class Int : Instruction {
     override fun toString(): kotlin.String = value.toString()
     
     constructor(compiler: Compiler, value: kotlin.Int) : super(compiler) { this.value = value }
+    //todo two constrictor (compiler, instruction)
 }

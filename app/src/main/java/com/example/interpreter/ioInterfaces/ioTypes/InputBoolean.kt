@@ -33,20 +33,23 @@ class InputBoolean(
     override fun getValue() = default
     
     override fun generateCoupleOutput(): Output {
-        return OutputBoolean(IO.Name.Fake, FakeBlock(parent.view.context), input = this)
+        return OutputBoolean(IO.Name.Fake, FakeBlock(parent.view.context, input = this), input = this)
     }
     
     private class FakeBlock @JvmOverloads constructor(
-        context: Context, attrs: AttributeSet? = null
+        context: Context, attrs: AttributeSet? = null, val input: InputBoolean
     ) : BlockView(context, attrs) {
+    
         override fun init() {
         
         }
         
         override fun compile(compiler: Compiler): List<Instruction> {
+            android.util.Log.i("Input Bool", outputs.toString())
             return listOf(Bool(
                 compiler,
-                outputs[1].first.input!!.getValue() as Boolean
+                input.getValue() ?: false
+//                outputs[1].first.input!!.getValue() as Boolean
             ))
         }
     }

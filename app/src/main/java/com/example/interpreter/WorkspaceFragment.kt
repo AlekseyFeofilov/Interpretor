@@ -369,30 +369,13 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
     @SuppressLint("UseRequireInsteadOfGet")
     private fun createBlockByClickedButton(view: View): BlockView =
         when (view) {
-            bindingListOfBlocks.ASSIGN -> {
-                val newButton = AssignBlock(context!!)
-                newButton
-            }
-            bindingListOfBlocks.WHILE -> {
-                val newBlock = WhileBlock(context!!)
-                newBlock
-            }
-            bindingListOfBlocks.COMPARE -> {
-                val newBlock = CompareBlock(context!!)
-                newBlock
-            }
-            bindingListOfBlocks.IF -> {
-                val newBlock = IfBlock(context!!)
-                newBlock
-            }
-            bindingListOfBlocks.INIT -> {
-                val newBlock = InitializationBlock(context!!)
-                newBlock
-            }
-            else -> {
-                val newBlock = InitializationBlock(context!!)
-                newBlock
-            }
+            bindingListOfBlocks.ASSIGN -> { AssignBlock(context!!) }
+            bindingListOfBlocks.WHILE -> { WhileBlock(context!!) }
+            bindingListOfBlocks.COMPARE -> { CompareBlock(context!!) }
+            bindingListOfBlocks.IF -> { IfBlock(context!!) }
+            bindingListOfBlocks.INIT -> { InitializationBlock(context!!) }
+            bindingListOfBlocks.BOOL -> { BoolBlock(context!!) }
+            else -> { InitializationBlock(context!!) }
         }
     
     @SuppressLint("ClickableViewAccessibility")

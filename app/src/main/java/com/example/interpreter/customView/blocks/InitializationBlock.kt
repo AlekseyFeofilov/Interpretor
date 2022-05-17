@@ -25,6 +25,7 @@ class InitializationBlock @JvmOverloads constructor(
         val initializationList = mutableListOf<Instruction>()
         
         inputs.forEach { it ->
+            if(it.first !is InputString) return@forEach
             val value = (it.first as InputString).default
             
             if (value != null) {

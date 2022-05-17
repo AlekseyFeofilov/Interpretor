@@ -22,7 +22,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
         metrics = WindowMetricsCalculator.getOrCreate()
             .computeCurrentWindowMetrics(this)
-        
-        val test: VM = VM()
+
+//        val test: VM = VM()
     }
 }
