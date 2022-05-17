@@ -7,7 +7,7 @@
     <FrameLayout
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:padding="8dp"
+        android:layout_marginBottom="132dp"
         app:layout_constraintTop_toTopOf="@id/topBorderWorkspace"
         app:layout_constraintEnd_toEndOf="@id/endBorderWorkspace"
         app:layout_constraintBottom_toBottomOf="@id/BottomBorderWorkspace"
@@ -64,24 +64,24 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.05"
+        app:layout_constraintGuide_percent="0"
         android:id="@+id/topBorderWorkspace"/>
     <androidx.constraintlayout.widget.Guideline
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.75"
+        app:layout_constraintGuide_percent="0.98"
         android:id="@+id/BottomBorderWorkspace"/>
     <androidx.constraintlayout.widget.Guideline
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.05"
+        app:layout_constraintGuide_percent="0"
         android:id="@+id/startBorderWorkspace"/>
     <androidx.constraintlayout.widget.Guideline
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.95"
+        app:layout_constraintGuide_percent="1"
         android:id="@+id/endBorderWorkspace"/>
 </merge>

@@ -23,22 +23,22 @@ class DrawView(context: Context?) : View(context) {
     private var point4 = Point(0, 0)
     private var listOfWires = mutableListOf<Wire>()
     
-    var position = Position(0f, 0f, 0f, 0f)
+//    var position = Position(0f, 0f, 0f, 0f)
+//
+//    private fun saveLine(point1: Point, point2: Point, point3: Point, point4: Point){
+//        connections.add(Line(point1, point2, point3, point4))
+//    }
     
-    private fun saveLine(point1: Point, point2: Point, point3: Point, point4: Point){
-        connections.add(Line(point1, point2, point3, point4))
-    }
-    
-    fun draw(point1: Point, point2: Point, point3: Point, point4: Point, withFlush: Boolean) {
-        this.point1 = point1
-        this.point2 = point2
-        this.point3 = point3
-        this.point4 = point4
-        
-        if(withFlush) {
-            invalidate()
-        }
-    }
+//    fun draw(point1: Point, point2: Point, point3: Point, point4: Point, withFlush: Boolean) {
+//        this.point1 = point1
+//        this.point2 = point2
+//        this.point3 = point3
+//        this.point4 = point4
+//
+//        if(withFlush) {
+//            invalidate()
+//        }
+//    }
     
     fun draw(list: MutableList<Wire>) {
         listOfWires = mutableListOf()
@@ -146,7 +146,7 @@ class DrawView(context: Context?) : View(context) {
 //    }
     
     init {
-        p.strokeWidth = 10f
+        p.strokeWidth = 15f
         //this.setOnTouchListener(touchListener)
     }
 }

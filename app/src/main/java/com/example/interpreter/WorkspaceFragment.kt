@@ -17,8 +17,11 @@ import com.example.interpreter.customView.DrawView
 import com.example.interpreter.customView.blocks.*
 import com.example.interpreter.customView.blocks.WhileBlock
 import com.example.interpreter.databinding.*
+import com.example.interpreter.vm.VM
 import kotlin.math.pow
 import kotlin.math.sqrt
+import kotlin.random.Random
+import com.example.interpreter.vm.Compiler
 
 
 var isConsoleHidden = true
@@ -31,6 +34,8 @@ data class Wire(var isVisible: Boolean,
 
 class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
     private var touchPoint = Point(0f, 0f)
+    
+    private val scaleInStack = 0.5f
     
     private var isPanelMoving = false
     private var isMovingScreenOn = true
@@ -110,9 +115,13 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
         
         // turn on drag-n-drop
         bindingScrollBox.scrollBox.setOnDragListener(dropListener())
-        bindingStack.stackContainer.setOnDragListener(dropListener())
+        bindingStack.stack.setOnDragListener(dropListener())
         bindingStack.basketContainer.setOnDragListener(dropListener())
         bindingBlocksPanel.panel.setOnDragListener(dropListener())
+        
+        bindingWorkspace.compile.setOnClickListener{
+            VM(Compiler(listOfBlocks[0]).compile()).start()
+        }
         
         canvas = DrawView(activity)
         addCanvas(canvas)
@@ -398,6 +407,8 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
         block.setOnLongClickListener(dragListener())
         block.translationZ = translationForBlocks
         translationForBlocks++
+        block.scaleX *= scaleInStack
+        block.scaleY *= scaleInStack
         listOfBlocks.add(block)
     }
     
@@ -430,19 +441,38 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
                         removeBlockFromScreen(draggingView as BlockView)
                         canvas.draw(listOfWires)
                     }
-                    bindingStack.stackContainer -> {
-                        moveToStack(draggingView as BlockView)
+                    bindingStack.stack -> {
+                        moveToStack(draggingView as BlockView, Point(event.x, event.y))
+                        correctNearBorder(draggingView as BlockView)
                         canvas.draw(listOfWires)
                     }
                     bindingScrollBox.scrollBox -> {
                         moveToScrollBox(draggingView as BlockView, Point(event.x, event.y))
+                        //correctNearBorder(draggingView as BlockView)
                         canvas.draw(listOfWires)
                     }
                 }
                 
+                
             }
         }
         true
+    }
+    
+    private fun correctNearBorder(block: BlockView) {
+        val parent = block.parent
+        var scale = scaleInStack
+        if(parent == bindingScrollBox.scrollBox) scale = 1f
+        if(parent is ConstraintLayout) {
+            when {
+                block.x < 0 -> block.x = 0f
+                block.x + block.width * scale > parent.width -> block.x = parent.width - block.width * scale
+            }
+            when {
+                block.y < 0 -> block.y = 0f
+                block.y + block.height * scale > parent.height -> block.y = parent.height - block.height * scale
+            }
+        }
     }
     
     private fun removeBlockFromScreen(block: BlockView) {
@@ -497,23 +527,35 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
         if (block.parent != bindingScrollBox.scrollBox) {
             bindingStack.stack.removeView(block)
             bindingScrollBox.scrollBox.addView(block)
-            changeVisibilityForBlock(block)
+            changeVisibilityWiresForBlock(block)
+            for(i in listOfBlocks) {
+                if(i == block) {
+                    i.scaleX /= scaleInStack
+                    i.scaleY /= scaleInStack
+                }
+            }
         }
         block.x = location.x - block.width / 2
         block.y = location.y - block.height / 2
     }
     
-    private fun moveToStack(block: BlockView) {
+    private fun moveToStack(block: BlockView, location: Point) {
         if (block.parent != bindingStack.stack) {
             bindingScrollBox.scrollBox.removeView(block)
             bindingStack.stack.addView(block)
-            changeVisibilityForBlock(block)
+            changeVisibilityWiresForBlock(block)
+            for(i in listOfBlocks) {
+                if(i == block) {
+                    i.scaleX *= scaleInStack
+                    i.scaleY *= scaleInStack
+                }
+            }
         }
-        block.x = 0f
-        block.y = 0f
+        block.x = location.x - block.width / 2
+        block.y = location.y - block.height / 2
     }
     
-    private fun changeVisibilityForBlock(block: BlockView) {
+    private fun changeVisibilityWiresForBlock(block: BlockView) {
         for(i in listOfWires) {
             if(i.startBlock == block || i.endBlock == block) {
                 i.isVisible = !i.isVisible
@@ -564,7 +606,7 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
         isMovingScreenOn = true
         isBlocksPanelHidden = if (isBlocksPanelHidden) {
             val from = Point(blocksPanel.x, blocksPanel.y)
-            val to = Point(blocksPanel.x, 0.03f * metrics.bounds.height())
+            val to = Point(blocksPanel.x, 0.02f * metrics.bounds.height())
             moveContainer(from, to, time, blocksPanel)
             false
         } else {

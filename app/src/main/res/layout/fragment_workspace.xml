@@ -5,9 +5,22 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@color/background">
 
+    <include layout="@layout/stack_for_workspace"/>
     <include layout="@layout/fragment_blocks" />
     <include layout="@layout/fragment_right_panel"/>
-    <include layout="@layout/stack_for_workspace"/>
     <include layout="@layout/scroll_box"/>
+
+    <Button
+        android:id="@+id/compile"
+        android:layout_height="60dp"
+        android:layout_width="0dp"
+        android:text="compile"
+        android:textSize="8sp"
+        android:layout_marginBottom="64dp"
+        android:translationZ="90dp"
+        app:layout_constraintDimensionRatio="1:1"
+        android:background="@drawable/button_call_to_console"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

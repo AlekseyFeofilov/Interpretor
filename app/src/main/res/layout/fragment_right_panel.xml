@@ -59,17 +59,19 @@
         android:layout_width="0dp"
         android:text="cons_"
         android:textSize="11sp"
+        android:layout_marginBottom="64dp"
+        android:translationZ="90dp"
         app:layout_constraintDimensionRatio="1:1"
         android:background="@drawable/button_call_to_console"
-        app:layout_constraintTop_toTopOf="@id/topBorderCallButton"
+        app:layout_constraintBottom_toBottomOf="@id/BottomBorderCallButton"
         app:layout_constraintEnd_toEndOf="@id/startBorderConsole"/>
 
     <androidx.constraintlayout.widget.Guideline
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.77"
-        android:id="@+id/topBorderCallButton"/>
+        app:layout_constraintGuide_percent="0.98"
+        android:id="@+id/BottomBorderCallButton"/>
 
 
     <androidx.constraintlayout.widget.Guideline
@@ -94,7 +96,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.95"
+        app:layout_constraintGuide_percent="0.98"
         android:id="@+id/startBorderConsole"/>
 
 </merge>
