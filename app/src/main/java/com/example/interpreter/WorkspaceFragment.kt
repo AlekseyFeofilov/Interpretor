@@ -408,7 +408,7 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
         val data = ClipData.newPlainText("", "")
         val shadowBuilder = DragShadowBuilder(view)
         translationForBlocks++
-        view.translationZ = translationForBlocks
+        if(view is BlockView) view.translationZ = translationForBlocks
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
             @Suppress("DEPRECATION")
             view.startDrag(data, shadowBuilder, view, 0)
