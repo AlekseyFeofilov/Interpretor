@@ -32,11 +32,7 @@ abstract class BlockView @JvmOverloads constructor(
     val binding = BlockViewBinding.inflate(LayoutInflater.from(context), this)
     
     override val view = this
-    
-    //todo: remake to hash of <Input, InputView> and <Input, OutputView> to optimal searching
-    private val inputViewHash = hashMapOf<Input, InputView>()
-    private val outputViewHash = hashMapOf<Output, OutputView>()
-    
+
     override val inputs = mutableListOf<Pair<Input, Output>>()
     override val outputs = mutableListOf<Pair<Output, List<Input>>>()
     
@@ -60,7 +56,6 @@ abstract class BlockView @JvmOverloads constructor(
     final override fun addInput(input: Input, to: Input?, before: Boolean) {
         super.addInput(input, to, before)
         val row = InputView(context)
-        inputViewHash[input] = row
     
         row.initComponents(input)
         row.setDescription(input.description)
@@ -70,22 +65,26 @@ abstract class BlockView @JvmOverloads constructor(
     final override fun addOutput(output: Output, to: Output?, before: Boolean) {
         super.addOutput(output, to, before)
         val row = OutputView(context)
-        outputViewHash[output] = row
+        val params = LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.WRAP_CONTENT,
+            LinearLayout.LayoutParams.WRAP_CONTENT
+        ).apply {
+            weight = 1.0f
+            gravity = Gravity.CENTER or Gravity.END
+        }
         
         row.initComponents(output)
         row.setDescription(output.description)
-        binding.listOfOutputLinearLayout.addView(row, findIndexByOutput(output))
+        binding.listOfOutputLinearLayout.addView(row, findIndexByOutput(output), params)
     }
     
     override fun removeInput(input: Input) {
         binding.listOfInputLinearLayout.removeViewAt(findIndexByInput(input))
-        inputViewHash.remove(input)
         super.removeInput(input)
     }
     
     override fun removeOutput(output: Output) {
         binding.listOfOutputLinearLayout.removeViewAt(findIndexByOutput(output))
-        outputViewHash.remove(output)
         super.removeOutput(output)
     }
     

@@ -9,7 +9,7 @@ interface IO {
     
     enum class Name {
         From, To, By,
-        Double, String, Boolean,
+        Double, String, Boolean, Int,
         Condition, True, False,
         First, Second,
         Variable, Value,

@@ -60,6 +60,11 @@
                     uncomment to look how does it seem
             -->
             <!--<com.example.interpreter.customView.ioView.OutputView
+                android:layout_gravity="center|end"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <com.example.interpreter.customView.ioView.OutputView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />-->
         </LinearLayout>

@@ -17,7 +17,7 @@ class WhileBlock @JvmOverloads constructor(
     
     init {
         addInput(InputBoolean(IO.Name.Condition, this, "condition: Boolean", isDefault = false))
-        addInput(InputFunction(IO.Name.True, this, "action"))
+        addOutput(OutputFunction(IO.Name.True, this, "action"))
         setHeader("While", "#6B8C9E")
     }
 }

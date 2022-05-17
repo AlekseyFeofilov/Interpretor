@@ -33,6 +33,7 @@ class InitializationBlock @JvmOverloads constructor(
                 initializations.forEach { initialization ->
                     var instruction = when (it.first.name) {
                         IO.Name.Double -> Number(compiler)
+                        IO.Name.Int -> Int(compiler, 0)
                         IO.Name.String -> String(compiler, "")
                         else -> Bool(compiler, true)
                     }
@@ -45,7 +46,7 @@ class InitializationBlock @JvmOverloads constructor(
                     if (assignment.groups[2]?.value.let { it != null && it != "" }) {
                         if (assignment.groups[3]?.value.let { it != null && it != "" }) {
                             instruction = when (it.first.name) {
-                                IO.Name.Double -> Math(compiler, assignment.groups[3]!!.value)
+                                IO.Name.Double, IO.Name.Int -> Math(compiler, assignment.groups[3]!!.value)
                                 IO.Name.String -> String(compiler, assignment.groups[3]!!.value)
                                 else -> Bool(compiler, assignment.groups[3]!!.value.matches("""\s*true\s*""".toRegex()))
                             }
@@ -61,6 +62,7 @@ class InitializationBlock @JvmOverloads constructor(
     }
     
     init {
+        addInput(InputString(IO.Name.Double, this, "Int:",true, isLink = false))
         addInput(InputString(IO.Name.Double, this, "Double:",true, isLink = false))
         addInput(InputString(IO.Name.String, this, "String:",true, isLink = false))
         addInput(InputString(IO.Name.Boolean, this, "Boolean:", true, isLink = false))

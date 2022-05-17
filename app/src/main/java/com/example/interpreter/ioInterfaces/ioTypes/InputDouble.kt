@@ -45,7 +45,7 @@ class InputDouble(
     override fun getValue() = default
     
     override fun generateCoupleOutput(): Output {
-        return OutputDouble(IO.Name.Fake, FakeBlock(parent.view.context))
+        return OutputDouble(IO.Name.Fake, FakeBlock(parent.view.context), input = this)
     }
     
     private class FakeBlock @JvmOverloads constructor(
@@ -59,7 +59,7 @@ class InputDouble(
             return listOf(
                 Number(
                 compiler,
-                outputs[1].first.getValue() as Double
+                    outputs[1].first.input!!.getValue() as Double
             ))
         }
     }

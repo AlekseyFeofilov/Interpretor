@@ -2,6 +2,7 @@ package com.example.interpreter.ioInterfaces.ioTypes
 
 import android.content.Context
 import android.util.AttributeSet
+import android.widget.EditText
 import com.example.interpreter.ioInterfaces.IO
 import com.example.interpreter.customView.blockView.IOContainer
 import com.example.interpreter.ioInterfaces.Input
@@ -32,7 +33,7 @@ class InputBoolean(
     override fun getValue() = default
     
     override fun generateCoupleOutput(): Output {
-        return OutputBoolean(IO.Name.Fake, FakeBlock(parent.view.context))
+        return OutputBoolean(IO.Name.Fake, FakeBlock(parent.view.context), input = this)
     }
     
     private class FakeBlock @JvmOverloads constructor(
@@ -45,7 +46,7 @@ class InputBoolean(
         override fun compile(compiler: Compiler): List<Instruction> {
             return listOf(Bool(
                 compiler,
-                outputs[1].first.getValue() as Boolean
+                outputs[1].first.input!!.getValue() as Boolean
             ))
         }
     }
