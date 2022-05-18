@@ -50,7 +50,7 @@ class InputBoolean(
             android.util.Log.i("Input Bool", outputs.toString())
             return listOf(Bool(
                 compiler,
-                input.getValue() ?: false
+                input.getValue() ?: throw Error("Internal error (compiler got empty input)")
 //                outputs[0].first.input!!.getValue() as Boolean
             ))
         }

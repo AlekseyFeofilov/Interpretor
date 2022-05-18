@@ -35,8 +35,8 @@ class IfBlock @JvmOverloads constructor(
     
     init {
         addInput(InputBoolean(IO.Name.Condition, this, "Condition", isDefault = false))
-        addOutput(OutputFunction(IO.Name.True, this, "If condition = true"))
-        addOutput(OutputFunction(IO.Name.False, this, "Else"))
+        addInput(InputFunction(IO.Name.True, this, "If condition = true"))
+        addInput(InputFunction(IO.Name.False, this, "Else"))
         
         setHeader("If", "#0B6E4F")
     }
