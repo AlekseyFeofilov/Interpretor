@@ -21,6 +21,7 @@ import com.example.interpreter.ioInterfaces.Output
 import com.example.interpreter.ioInterfaces.ioTypes.InputFunction
 import com.example.interpreter.ioInterfaces.ioTypes.OutputFunction
 import com.example.interpreter.vm.Compiler
+import com.example.interpreter.vm.Executor
 import com.example.interpreter.vm.instruction.Instruction
 
 @SuppressLint("ClickableViewAccessibility")
@@ -183,6 +184,12 @@ abstract class BlockView @JvmOverloads constructor(
     
     fun isInputComplete(input: View) =
         inputs[findIndexByInput(findInputByInputRadioButton(input))].second.name != IO.Name.Fake
+    
+    fun getInputExecutor(name: IO.Name, compiler: Compiler): Executor {
+        compiler.push()
+        compiler[name]
+        return compiler.pop()
+    }
     
     init {
         init()

@@ -8,9 +8,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 class If : Instruction {
-//    private val blocks: List<Executor>
-    
-    override fun exec(env: Env) = sequence<Instruction> {
+    override fun exec(env: Env) = sequence {
         yield(this@If)
         
         val ret = yieldAllLR(blocks?.getOrNull(0)?.exec() ?: throw Error("Runtime error 'if[0]' not condition"))

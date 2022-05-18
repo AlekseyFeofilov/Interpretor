@@ -40,7 +40,7 @@ interface IOContainer {
             )
         }
     }
-    
+
 /*    //todo: complete for saving code
     fun addInput(stringArray: Array<String>) {
         val input: Input = when (stringArray[1]) {
@@ -138,7 +138,7 @@ interface IOContainer {
             )
         }
     }
-    
+
 /*    fun addOutput(stringArray: Array<String>) {
         val output: Output = when (stringArray[1]) {
             IO.Type.Boolean.toString() ->
@@ -217,7 +217,7 @@ interface IOContainer {
         val result = hashMapOf<Input, Output>()
         
         inputs.forEach {
-            if (it.second.name != IO.Name.Fake || it.first.getValue() != null) {
+            if (it.second.name != IO.Name.Fake || it.first.getValue() != null && it.first.type != IO.Type.Any) {
                 result[it.first] = it.second
             }
         }
@@ -242,9 +242,10 @@ interface IOContainer {
         
         inputs.forEach { pair ->
             when {
-                result.containsKey(pair.first.name) -> {
-                }
-                !(pair.second.name != IO.Name.Fake || pair.first.getValue() != null) -> {
+                result.containsKey(pair.first.name) ||
+                        !(pair.second.name != IO.Name.Fake || pair.first.getValue() != null) ||
+                        pair.first.getValue() != null && pair.first.type == IO.Type.Any
+                -> {
                 }
                 !pair.first.autocomplete -> {
                     result[pair.first.name] = pair.first

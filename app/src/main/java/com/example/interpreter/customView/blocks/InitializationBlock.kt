@@ -21,6 +21,17 @@ class InitializationBlock @JvmOverloads constructor(
         return initVariables(compiler)
     }
     
+    private fun toBool(string: String): Boolean{
+        return when{
+            string.matches("""\s*true\s*""".toRegex()) -> true
+            string.matches("""\s*false\s*""".toRegex()) -> false
+            else -> {
+                val value = """\s*(\S*)""".toRegex().find(string)
+                throw Error("${value!!.groups[1]!!.value} isn't boolean value")
+            }
+        }
+    }
+    
     private fun initVariables(compiler: Compiler): MutableList<Instruction> {
         val initializationList = mutableListOf<Instruction>()
         
@@ -49,7 +60,7 @@ class InitializationBlock @JvmOverloads constructor(
                             instruction = when (it.first.name) {
                                 IO.Name.Double, IO.Name.Int -> Math(compiler, assignment.groups[3]!!.value)
                                 IO.Name.String -> String(compiler, assignment.groups[3]!!.value)
-                                else -> Bool(compiler, assignment.groups[3]!!.value.matches("""\s*true\s*""".toRegex()))
+                                else -> Bool(compiler, toBool(assignment.groups[3]!!.value))
                             }
                         } else throw Error("incorrect expression $initialization")
                     }
