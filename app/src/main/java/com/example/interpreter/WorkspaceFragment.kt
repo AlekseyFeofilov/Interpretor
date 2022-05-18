@@ -137,11 +137,6 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
         canvas = DrawView(activity)
         addCanvas(canvas)
         
-        
-        bindingWorkspace.compile.setOnClickListener{
-            VM(Compiler(listOfBlocks[0]).compile()).start()
-        }
-        
         bindingStack.basketContainer.visibility = INVISIBLE
         readlnFromConsole()
         

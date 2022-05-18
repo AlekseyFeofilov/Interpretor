@@ -25,16 +25,30 @@
             app:layout_constraintStart_toEndOf="@id/button_panel"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintEnd_toEndOf="parent">
-            <LinearLayout
-                android:id="@+id/consoleBody"
-                android:layout_width="match_parent"
-                android:orientation="vertical"
-                android:layout_height="match_parent"
-                android:layout_marginEnd="64dp">
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+                <Button
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
+                    android:id="@+id/run"
+                    app:layout_constraintDimensionRatio="h, 1:1"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    android:background="@drawable/ic_baseline_play_circle_filled_24"/>
+                <LinearLayout
+                    android:id="@+id/consoleBody"
+                    android:layout_width="match_parent"
+                    android:orientation="vertical"
+                    android:layout_height="match_parent"
+                    android:layout_marginEnd="64dp"
+                    app:layout_constraintTop_toBottomOf="@id/run"
+                    app:layout_constraintStart_toStartOf="parent">
 
 
 
-            </LinearLayout>
+                </LinearLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
         </ScrollView>
         <Button
             android:id="@+id/button_panel"
@@ -69,8 +83,8 @@
         android:id="@+id/consoleButton"
         android:layout_height="60dp"
         android:layout_width="0dp"
-        android:text="cons_"
-        android:textSize="11sp"
+        android:text="compile"
+        android:textSize="8sp"
         android:layout_marginBottom="64dp"
         android:translationZ="90dp"
         app:layout_constraintDimensionRatio="1:1"
