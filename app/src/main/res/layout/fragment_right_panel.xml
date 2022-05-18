@@ -15,15 +15,27 @@
         app:layout_constraintBottom_toBottomOf="@id/BottomBorderConsole"
         app:layout_constraintStart_toEndOf="@id/startBorderConsole"
         app:layout_constraintEnd_toEndOf="@id/endBorderConsole">
-        <View
+        <ScrollView
             android:id="@+id/body_panel"
             android:layout_width="0dp"
             android:layout_height="0dp"
+            android:padding="16dp"
             android:background="@drawable/right_panel_body"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@id/button_panel"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+            app:layout_constraintEnd_toEndOf="parent">
+            <LinearLayout
+                android:id="@+id/consoleBody"
+                android:layout_width="match_parent"
+                android:orientation="vertical"
+                android:layout_height="match_parent"
+                android:layout_marginEnd="64dp">
+
+
+
+            </LinearLayout>
+        </ScrollView>
         <Button
             android:id="@+id/button_panel"
             android:layout_width="0dp"
@@ -54,6 +66,13 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <Button
+        android:layout_height="100dp"
+        android:layout_width="100dp"
+        android:id="@+id/wat"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <Button
         android:id="@+id/consoleButton"
         android:layout_height="60dp"
         android:layout_width="0dp"
@@ -78,7 +97,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.25"
+        app:layout_constraintGuide_percent="0.1"
         android:id="@+id/topBorderConsole"/>
     <androidx.constraintlayout.widget.Guideline
         android:layout_width="wrap_content"
