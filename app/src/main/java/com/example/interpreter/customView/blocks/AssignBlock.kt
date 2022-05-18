@@ -39,9 +39,9 @@ class AssignBlock @JvmOverloads constructor(
     }
     
     private fun getInstruction(compiler: Compiler, assignment: Pair<String?, String?>): Instruction{
-        val input = inputs.find { it.first.name == IO.Name.Value }!!.first
+        val input = getInput(IO.Name.Value)!!
         
-        return if(getLinkInput(input).name == IO.Name.Fake) {
+        return if(!isInputAvailable(input)) {
             val value = assignment.first!!
             getInstructionByClass(compiler, compiler.checkVar(value)!!, value)
         }
@@ -54,7 +54,7 @@ class AssignBlock @JvmOverloads constructor(
     
     private fun getInstructionByClass(compiler: Compiler, clazz: KClass<Instruction>, value: String): Instruction{
         return when(clazz){
-            Number::class -> Math(compiler, value)
+            Number::class, Int::class -> Math(compiler, value)
             Bool::class -> Bool(compiler, toBool(value))
             else -> {
                 val compilerType = Compiler::class.createType()
@@ -68,8 +68,8 @@ class AssignBlock @JvmOverloads constructor(
     
     private fun getAssignment(): Pair<String?, String?> {
         return Pair(
-            (inputs.find { it.first.name == IO.Name.Variable }!!.first as InputString).getValue(),
-            (inputs.find { it.first.name == IO.Name.Value }!!.first as InputString).getValue()
+            (getInput(IO.Name.Variable) as InputString).getValue(),
+            (getInput(IO.Name.Value) as InputString).getValue()
         )
     }
     

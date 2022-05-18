@@ -2,6 +2,7 @@ package com.example.interpreter.customView.blocks
 
 import android.content.Context
 import android.util.AttributeSet
+import androidx.annotation.UiThread
 import com.example.interpreter.customView.blockView.BlockView
 import com.example.interpreter.ioInterfaces.IO
 import com.example.interpreter.ioInterfaces.Output

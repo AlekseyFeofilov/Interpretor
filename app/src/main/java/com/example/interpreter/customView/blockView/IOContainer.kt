@@ -9,6 +9,8 @@ import com.example.interpreter.ioInterfaces.IO
 import com.example.interpreter.ioInterfaces.Input
 import com.example.interpreter.ioInterfaces.Output
 import com.example.interpreter.ioInterfaces.ioTypes.*
+import com.example.interpreter.vm.Compiler
+import com.example.interpreter.vm.Executor
 
 interface IOContainer {
     val view: View
@@ -237,15 +239,22 @@ interface IOContainer {
         return result
     }
     
+    fun isInputAvailable(input: Input): Boolean{
+        return !((getLinkInput(input).name == IO.Name.Fake && input.getValue() == null) ||
+                (input.getValue() != null && input.type == IO.Type.Any))
+    }
+    
+    fun isOutputAvailable(output: Output): Boolean{
+        return getLinkOutput(output).isNotEmpty()
+    }
+    
+    
     fun getInputsHash(): HashMap<IO.Name, Any> { /* HashMap<IO.Name, Any = Input | List<Input>> */
         val result = hashMapOf<IO.Name, Any>()
         
         inputs.forEach { pair ->
             when {
-                result.containsKey(pair.first.name) ||
-                        (pair.second.name == IO.Name.Fake && pair.first.getValue() == null) ||
-                        (pair.first.getValue() != null && pair.first.type == IO.Type.Any)
-                -> {
+                result.containsKey(pair.first.name) || !isInputAvailable(pair.first) -> {
                 }
                 !pair.first.autocomplete -> {
                     result[pair.first.name] = pair.first
@@ -262,7 +271,7 @@ interface IOContainer {
     
     fun getOutputsHash(): HashMap<IO.Name, Output> {
         return HashMap<IO.Name, Output>().apply {
-            outputs.forEach { if (it.second.isNotEmpty()) this[it.first.name] = it.first }
+            outputs.forEach { if (isOutputAvailable(it.first)) this[it.first.name] = it.first }
         }
     }
     
@@ -273,4 +282,17 @@ interface IOContainer {
     fun getLinkOutput(output: Output): List<Input> {
         return outputs[findIndexByOutput(output)].second
     }
+    
+    fun getInput(name: IO.Name) = inputs.find { it.first.name == name }?.first
+    
+    fun getInputExecutor(compiler: Compiler, name: IO.Name): Executor {
+        compiler.push()
+        
+        if(isInputAvailable(getInput(name) ?: throw Error("This input isn't exist"))) {
+            compiler[name]
+        }
+        
+        return compiler.pop()
+    }
+    
 }

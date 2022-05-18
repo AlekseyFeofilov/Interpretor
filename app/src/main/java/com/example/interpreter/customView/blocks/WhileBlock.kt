@@ -25,15 +25,15 @@ class WhileBlock @JvmOverloads constructor(
         return While(
             compiler,
             listOf(
-                getInputExecutor(IO.Name.Condition, compiler),
-                getInputExecutor(IO.Name.True, compiler),
+                getInputExecutor(compiler, IO.Name.Condition),
+                getInputExecutor(compiler, IO.Name.True),
             )
         )
     }
     
     init {
         addInput(InputBoolean(IO.Name.Condition, this, "condition: Boolean", isDefault = false))
-        addOutput(OutputFunction(IO.Name.True, this, "action"))
+        addInput(InputFunction(IO.Name.True, this, "action"))
         setHeader("While", "#6B8C9E")
     }
 }

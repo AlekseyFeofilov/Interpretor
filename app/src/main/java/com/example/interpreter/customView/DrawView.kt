@@ -127,7 +127,6 @@ class DrawView(context: Context?) : View(context) {
 //    }
 //    fun up(event: MotionEvent, touchPoint: com.example.interpreter.Point) {
 //        Log.i("hello", "up")
-//        //TODO("redraw old lines")
 //    }
 
 //    private val touchListener = OnTouchListener { it, event ->

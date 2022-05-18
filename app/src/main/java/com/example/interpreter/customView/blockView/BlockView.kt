@@ -185,15 +185,11 @@ abstract class BlockView @JvmOverloads constructor(
     fun isInputComplete(input: View) =
         inputs[findIndexByInput(findInputByInputRadioButton(input))].second.name != IO.Name.Fake
     
-    fun getInputExecutor(name: IO.Name, compiler: Compiler): Executor {
-        compiler.push()
-        compiler[name]
-        return compiler.pop()
-    }
-    
     init {
         init()
     }
+    
+    //todo: add boolean compare, print,
     
     open fun init(){
         addInput(InputFunction(IO.Name.From, this, "before"))
