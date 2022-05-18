@@ -12,6 +12,7 @@ import com.example.interpreter.ioInterfaces.ioTypes.InputDouble
 import com.example.interpreter.vm.Compiler
 import com.example.interpreter.vm.instruction.Bool
 import com.example.interpreter.vm.instruction.Instruction
+import com.example.interpreter.vm.instruction.Math
 
 class CompareBlock @JvmOverloads constructor(
     context: Context,
@@ -27,7 +28,7 @@ class CompareBlock @JvmOverloads constructor(
         
         return Bool(
             compiler,
-            Math(compiler, )
+            Math(compiler, listOf(Math.TRegister()))
         )
     }*/
     

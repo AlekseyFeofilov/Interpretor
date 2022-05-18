@@ -22,12 +22,6 @@ class IfBlock @JvmOverloads constructor(
         return listOf(getIfInstruction(compiler))
     }
     
-    private fun getInputExecutor(name: IO.Name, compiler: Compiler): Executor {
-        compiler.push()
-            compiler[name]
-        return compiler.pop()
-    }
-    
     private fun getIfInstruction(compiler: Compiler): If {
         return If(
             compiler,
@@ -40,7 +34,7 @@ class IfBlock @JvmOverloads constructor(
     }
     
     init {
-        addInput(InputBoolean(IO.Name.Condition, this, "Condition", true, false))
+        addInput(InputBoolean(IO.Name.Condition, this, "Condition", isDefault = false))
         addOutput(OutputFunction(IO.Name.True, this, "If condition = true"))
         addOutput(OutputFunction(IO.Name.False, this, "Else"))
         

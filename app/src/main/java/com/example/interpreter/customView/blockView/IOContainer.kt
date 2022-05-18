@@ -243,8 +243,8 @@ interface IOContainer {
         inputs.forEach { pair ->
             when {
                 result.containsKey(pair.first.name) ||
-                        !(pair.second.name != IO.Name.Fake || pair.first.getValue() != null) ||
-                        pair.first.getValue() != null && pair.first.type == IO.Type.Any
+                        (pair.second.name == IO.Name.Fake && pair.first.getValue() == null) ||
+                        (pair.first.getValue() != null && pair.first.type == IO.Type.Any)
                 -> {
                 }
                 !pair.first.autocomplete -> {

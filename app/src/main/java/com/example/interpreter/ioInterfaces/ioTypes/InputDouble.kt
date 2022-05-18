@@ -48,6 +48,7 @@ class InputDouble(
         return OutputDouble(IO.Name.Fake, FakeBlock(parent.view.context), input = this)
     }
     
+    //todo: solve the problem with fake block
     private class FakeBlock @JvmOverloads constructor(
         context: Context, attrs: AttributeSet? = null
     ) : BlockView(context, attrs) {

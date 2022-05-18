@@ -51,7 +51,7 @@ class InputBoolean(
             return listOf(Bool(
                 compiler,
                 input.getValue() ?: false
-//                outputs[1].first.input!!.getValue() as Boolean
+//                outputs[0].first.input!!.getValue() as Boolean
             ))
         }
     }

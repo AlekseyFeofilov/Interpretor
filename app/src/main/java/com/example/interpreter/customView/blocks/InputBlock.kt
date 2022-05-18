@@ -6,19 +6,17 @@ import com.example.interpreter.customView.blockView.BlockView
 import com.example.interpreter.ioInterfaces.IO
 import com.example.interpreter.ioInterfaces.ioTypes.InputString
 import com.example.interpreter.vm.Compiler
-import com.example.interpreter.vm.Env
 import com.example.interpreter.vm.instruction.*
 import com.example.interpreter.vm.instruction.Number
-import kotlin.text.String
 
-class InitializationBlock @JvmOverloads constructor(
+class InputBlock  @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0,
 ) : BlockView(context, attrs, defStyleAttr) {
     override fun compile(compiler: Compiler): List<Instruction> {
         super.compile(compiler)
-        return initVariables(compiler)
+        return requestVariables(compiler)
     }
     
     private fun toBool(string: String): Boolean{
@@ -32,7 +30,7 @@ class InitializationBlock @JvmOverloads constructor(
         }
     }
     
-    private fun initVariables(compiler: Compiler): MutableList<Instruction> {
+    private fun requestVariables(compiler: Compiler): MutableList<Instruction> {
         val initializationList = mutableListOf<Instruction>()
         
         inputs.forEach { it ->
@@ -51,7 +49,7 @@ class InitializationBlock @JvmOverloads constructor(
                     }
                     
                     val assignment = """^\s*([_A-Za-z][_A-Za-z\d]*)\s*(=\s*)?(.+)?$""".toRegex()
-                            .find(initialization)
+                        .find(initialization)
                     
                     if (initialization != assignment?.groups?.get(0)?.value) throw Error("incorrect expression $initialization")
                     
@@ -79,6 +77,6 @@ class InitializationBlock @JvmOverloads constructor(
         addInput(InputString(IO.Name.String, this, "String:",true, isLink = false))
         addInput(InputString(IO.Name.Boolean, this, "Boolean:", true, isLink = false))
         
-        setHeader("Init", "#8281B1")
+        setHeader("If", "#0B6E4F")
     }
 }
