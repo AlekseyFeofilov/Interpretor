@@ -2,34 +2,33 @@ package com.example.interpreter
 
 import android.annotation.SuppressLint
 import android.content.ClipData
+import android.content.Context
 import android.graphics.Color
-import android.os.Build
-import android.os.Bundle
-import android.os.CountDownTimer
+import android.os.*
 import android.util.Log
 import android.view.DragEvent
 import android.view.KeyEvent
 import android.view.MotionEvent
 import android.view.View
 import android.view.View.*
+import android.widget.Button
 import android.widget.EditText
-import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.content.ContextCompat.getSystemService
 import androidx.core.view.forEach
 import androidx.fragment.app.Fragment
-import com.example.interpreter.customView.blockView.BlockView
 import com.example.interpreter.customView.DrawView
+import com.example.interpreter.customView.blockView.BlockView
 import com.example.interpreter.customView.blocks.*
-import com.example.interpreter.customView.blocks.WhileBlock
 import com.example.interpreter.databinding.*
+import com.example.interpreter.vm.Compiler
 import com.example.interpreter.vm.VM
 import kotlin.math.pow
 import kotlin.math.sqrt
-import kotlin.random.Random
-import com.example.interpreter.vm.Compiler
-import kotlinx.coroutines.delay
+import kotlin.reflect.jvm.internal.impl.metadata.ProtoBuf
+import android.os.VibratorManager as VibratorManager1
 
 
 var isConsoleHidden = true
@@ -69,7 +68,7 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
     private val listOfBlocks = mutableListOf<BlockView>()
     private val listOfWires = mutableListOf<Wire>()
     
-    @SuppressLint("ClickableViewAccessibility")
+    @SuppressLint("ClickableViewAccessibility", "UseRequireInsteadOfGet")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         
@@ -161,10 +160,17 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
 //        printlnToConsole("hello, World", "#DDDDDD")
 //        printlnToConsole("hello, World", "#EEEEEE")
 //        printlnToConsole("hello, World", "#FFFFFF")
+        //bindingScrollBox.scrollBox.setOnTouchListener{ view, event -> vibrate(1000L); true }
     }
     
-    
-    
+    private fun vibrate(time: Long) {
+        val vibrator = context?.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+        if (Build.VERSION.SDK_INT >= 26) {
+            vibrator.vibrate(VibrationEffect.createOneShot(time,VibrationEffect.DEFAULT_AMPLITUDE))
+        } else {
+            vibrator.vibrate(time)
+        }
+    }
     private fun getListOfTextViewFromConsole(): MutableList<TextView> {
         val list = mutableListOf<TextView>()
         consoleBody.forEach { list.add(it as TextView) }
@@ -238,18 +244,27 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
         //canvas.translationZ = 10000f
     }
     
+    private fun sleep(time: Long, onFinished: Unit) {
+        object : CountDownTimer(time, 1) {
+            override fun onTick(millisUntilFinished: Long) {}
+            override fun onFinish() {
+                onFinished
+            }
+        }.start()
+    }
+    
     @SuppressLint("ClickableViewAccessibility")
     private fun onTouchIO() = OnTouchListener { fromView, event ->
         if(!isInScrollBox(fromView)) return@OnTouchListener true
         when (event.action) {
             MotionEvent.ACTION_DOWN -> {
-                //TODO: add vibration
+                vibrate(50L)
                 touchPoint = getCoordinatesOfIOPoint(fromView, bindingScrollBox.scrollBox)
             }
             MotionEvent.ACTION_MOVE -> {
-                val currentPoint = Point(event.x + touchPoint.x, event.y + touchPoint.y)
+                    val currentPoint = Point(event.x + touchPoint.x, event.y + touchPoint.y)
                 if (calculateDistanceBetweenPoints(
-                        touchPoint,
+                        Point(touchPoint.x + fromView.width/2, touchPoint.y + fromView.height/2),
                         currentPoint
                     ) >= 1.5*fromView.height
                 ) {
@@ -518,7 +533,7 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
     @SuppressLint("ClickableViewAccessibility")
     private fun dragListener() = OnLongClickListener { view ->
         val data = ClipData.newPlainText("", "")
-        //TODO: add vibration
+        vibrate(50L)
     
         dragShadow = DragShadowBuilder(view)
         draggingView = view as View
@@ -546,7 +561,7 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
             DragEvent.ACTION_DRAG_ENTERED -> {
                 when (view) {
                     bindingStack.basketContainer -> {
-                        //TODO: add vibration
+                        vibrate(50L)
                     }
                     bindingStack.stack -> {
 //                        dragShadow.onProvideShadowMetrics(
@@ -576,6 +591,8 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
                         canvas.draw(listOfWires)
                     }
                 }
+            }
+            DragEvent.ACTION_DRAG_ENDED -> {
                 bindingStack.basketContainer.visibility = INVISIBLE
             }
         }
