@@ -182,6 +182,7 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
             list[list.size - 2].text = newText
         }else printlnToConsole(text)
     }
+    @SuppressLint("SetTextI18n")
     fun printlnToConsole(text: String) {
         val newLine = TextView(context)
         consoleBody.addView(newLine, consoleBody.childCount - 1)
@@ -195,6 +196,7 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
             list[list.size - 2].text = newText
         }else printlnToConsole(text, color)
     }
+    @SuppressLint("SetTextI18n")
     fun printlnToConsole(text: String, color: String) {
         val newLine = TextView(context)
         consoleBody.addView(newLine, consoleBody.childCount - 1)
@@ -213,7 +215,8 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
         }
     }
     
-    private fun keyListener() = View.OnKeyListener { view, key, event ->
+    @SuppressLint("SetTextI18n")
+    private fun keyListener() = OnKeyListener { view, key, event ->
         if (event.action == KeyEvent.ACTION_DOWN &&
             key == KeyEvent.KEYCODE_ENTER &&
             (view as EditText).text.isNotEmpty()
@@ -292,7 +295,7 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
     
     private fun recalculateWiresPoint() {
         for(i in 0 until listOfWires.size) {
-            var outputX = getCoordinatesOfIOPoint(listOfWires[i].startBlock.getListOfOutputView()[0], listOfWires[i].startBlock).x
+            val outputX = getCoordinatesOfIOPoint(listOfWires[i].startBlock.getListOfOutputView()[0], listOfWires[i].startBlock).x
             Log.i("hello", "${listOfWires[i].startBlock}, $outputX")
             listOfWires[i].outputPoint.x = outputX
 //            outputX = getCoordinatesOfIOPoint(i.startBlock.getListOfOutputView()[0], i.endBlock).x
