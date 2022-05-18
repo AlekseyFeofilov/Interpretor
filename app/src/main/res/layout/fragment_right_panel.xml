@@ -66,13 +66,6 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <Button
-        android:layout_height="100dp"
-        android:layout_width="100dp"
-        android:id="@+id/wat"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
-
-    <Button
         android:id="@+id/consoleButton"
         android:layout_height="60dp"
         android:layout_width="0dp"

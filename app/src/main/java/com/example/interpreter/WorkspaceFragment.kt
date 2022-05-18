@@ -2,6 +2,7 @@ package com.example.interpreter
 
 import android.annotation.SuppressLint
 import android.content.ClipData
+import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
 import android.os.CountDownTimer
@@ -144,6 +145,22 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
         
         bindingStack.basketContainer.visibility = INVISIBLE
         readlnFromConsole()
+        
+//        printlnToConsole("hello, World", "#111111")
+//        printlnToConsole("hello, World", "#222222")
+//        printlnToConsole("hello, World", "#333333")
+//        printlnToConsole("hello, World", "#444444")
+//        printlnToConsole("hello, World", "#555555")
+//        printlnToConsole("hello, World", "#666666")
+//        printlnToConsole("hello, World", "#777777")
+//        printlnToConsole("hello, World", "#888888")
+//        printlnToConsole("hello, World", "#999999")
+//        printlnToConsole("hello, World", "#AAAAAA")
+//        printlnToConsole("hello, World", "#BBBBBB")
+//        printlnToConsole("hello, World", "#CCCCCC")
+//        printlnToConsole("hello, World", "#DDDDDD")
+//        printlnToConsole("hello, World", "#EEEEEE")
+//        printlnToConsole("hello, World", "#FFFFFF")
     }
     
     
@@ -165,11 +182,24 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
             list[list.size - 2].text = newText
         }else printlnToConsole(text)
     }
-    
     fun printlnToConsole(text: String) {
         val newLine = TextView(context)
         consoleBody.addView(newLine, consoleBody.childCount - 1)
-        newLine.text = text
+        newLine.text = ">> $text"
+    }
+    
+    fun printToConsole(text: String, color: String) {
+        val list = getListOfTextViewFromConsole()
+        if(list.size > 1) {
+            val newText = list[list.size - 1].text.toString() + text
+            list[list.size - 2].text = newText
+        }else printlnToConsole(text, color)
+    }
+    fun printlnToConsole(text: String, color: String) {
+        val newLine = TextView(context)
+        consoleBody.addView(newLine, consoleBody.childCount - 1)
+        newLine.setTextColor(Color.parseColor(color))
+        newLine.text = ">> $text"
     }
     
     fun readlnFromConsole(): String {
@@ -188,10 +218,12 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
             key == KeyEvent.KEYCODE_ENTER &&
             (view as EditText).text.isNotEmpty()
         ) {
-            printlnToConsole((view as EditText).text.toString())
+            val newLine = TextView(context)
+            consoleBody.addView(newLine, consoleBody.childCount - 1)
+            newLine.text = "<< ${view.text}"
             listOfReading.add(view.text.toString())
-            view.text.clear()
         }
+        (view as EditText).text.clear()
         false
     }
     
