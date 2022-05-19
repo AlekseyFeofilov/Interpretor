@@ -6,10 +6,14 @@ import com.example.interpreter.vm.Compiler
 import com.example.interpreter.vm.Env
 import io.netty.util.concurrent.Promise
 import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
 import java.util.concurrent.Callable
 import java.util.concurrent.FutureTask
+import kotlin.coroutines.suspendCoroutine
 
 
 @Serializable
@@ -23,7 +27,19 @@ class Input : Instruction {
         //todo: Deferred
         
         val callable = Callable<kotlin.String> {
+/*
             Thread.sleep(10000)
+*/
+            
+            runBlocking {
+                suspendCoroutine<kotlin.String> {
+                    launch {
+                        delay(10000)
+                    }.start()
+                    
+                    it.resumeWith(Result.success<kotlin.String>("dsf"))
+                }
+            }
             
             return@Callable "df"
         }

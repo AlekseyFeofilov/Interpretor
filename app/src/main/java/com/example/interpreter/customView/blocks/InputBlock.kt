@@ -9,7 +9,7 @@ import com.example.interpreter.vm.Compiler
 import com.example.interpreter.vm.instruction.*
 import com.example.interpreter.vm.instruction.Number
 
-class InputBlock  @JvmOverloads constructor(
+class InputBlock @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0,
@@ -19,8 +19,8 @@ class InputBlock  @JvmOverloads constructor(
         return requestVariables(compiler)
     }
     
-    private fun toBool(string: String): Boolean{
-        return when{
+    private fun toBool(string: String): Boolean {
+        return when {
             string.matches("""\s*true\s*""".toRegex()) -> true
             string.matches("""\s*false\s*""".toRegex()) -> false
             else -> {
@@ -30,40 +30,37 @@ class InputBlock  @JvmOverloads constructor(
         }
     }
     
+    @Suppress("UNREACHABLE_CODE")
     private fun requestVariables(compiler: Compiler): MutableList<Instruction> {
         val initializationList = mutableListOf<Instruction>()
         
         inputs.forEach { it ->
-            if(it.first !is InputString) return@forEach
+            if (it.first !is InputString) return@forEach
             val value = (it.first as InputString).default
             
             if (value != null) {
                 val initializations = value.split(",")
                 
                 initializations.forEach { initialization ->
-                    var instruction = when (it.first.name) {
-                        IO.Name.Double -> Number(compiler)
-                        IO.Name.Int -> Int(compiler, 0)
-                        IO.Name.String -> String(compiler, "")
-                        else -> Bool(compiler, true)
+                    val variable = """^\s*(\S+)\s*$""".toRegex().find(initialization)
+                    
+                    if (initialization != variable?.groups?.get(0)?.value) throw Error("incorrect expression $initialization")
+                    
+                    TODO("make request to console here")
+                    val instruction = when (it.first.name) {
+                        IO.Name.Double, IO.Name.Int -> Math(compiler, TODO("value") as String)
+                        IO.Name.String -> String(compiler, TODO("value") as String)
+                        else -> Bool(compiler, toBool(TODO("value") as String))
                     }
                     
-                    val assignment = """^\s*([_A-Za-z][_A-Za-z\d]*)\s*(=\s*)?(.+)?$""".toRegex()
-                        .find(initialization)
-                    
-                    if (initialization != assignment?.groups?.get(0)?.value) throw Error("incorrect expression $initialization")
-                    
-                    if (assignment.groups[2]?.value.let { it != null && it != "" }) {
-                        if (assignment.groups[3]?.value.let { it != null && it != "" }) {
-                            instruction = when (it.first.name) {
-                                IO.Name.Double, IO.Name.Int -> Math(compiler, assignment.groups[3]!!.value)
-                                IO.Name.String -> String(compiler, assignment.groups[3]!!.value)
-                                else -> Bool(compiler, toBool(assignment.groups[3]!!.value))
-                            }
-                        } else throw Error("incorrect expression $initialization")
-                    }
-                    
-                    initializationList.add(SetVar(compiler, assignment.groups[1]!!.value, instruction, true))
+                    initializationList.add(
+                        SetVar(
+                            compiler,
+                            variable.groups[1]!!.value,
+                            instruction,
+                            true
+                        )
+                    )
                 }
             }
         }
@@ -72,11 +69,11 @@ class InputBlock  @JvmOverloads constructor(
     }
     
     init {
-        addInput(InputString(IO.Name.Int, this, "Int:",true, isLink = false))
-        addInput(InputString(IO.Name.Double, this, "Double:",true, isLink = false))
-        addInput(InputString(IO.Name.String, this, "String:",true, isLink = false))
+        addInput(InputString(IO.Name.Int, this, "Int:", true, isLink = false))
+        addInput(InputString(IO.Name.Double, this, "Double:", true, isLink = false))
+        addInput(InputString(IO.Name.String, this, "String:", true, isLink = false))
         addInput(InputString(IO.Name.Boolean, this, "Boolean:", true, isLink = false))
         
-        setHeader("If", "#0B6E4F")
+        setHeader("Input", "#8F95D3")
     }
 }

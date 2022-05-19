@@ -189,7 +189,7 @@ abstract class BlockView @JvmOverloads constructor(
         init()
     }
     
-    //todo: add boolean compare, print,
+    //todo: add boolean compare, print, logical And and Or
     
     open fun init(){
         addInput(InputFunction(IO.Name.From, this, "before"))

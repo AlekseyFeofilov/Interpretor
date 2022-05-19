@@ -35,15 +35,15 @@ class InitializationBlock @JvmOverloads constructor(
     private fun initVariables(compiler: Compiler): MutableList<Instruction> {
         val initializationList = mutableListOf<Instruction>()
         
-        inputs.forEach { it ->
-            if(it.first !is InputString) return@forEach
-            val value = (it.first as InputString).default
+        inputs.forEach { pair ->
+            if(pair.first !is InputString || pair.first.getValue() == null) return@forEach
+            val value = (pair.first as InputString).default
             
             if (value != null) {
                 val initializations = value.split(",")
                 
                 initializations.forEach { initialization ->
-                    var instruction = when (it.first.name) {
+                    var instruction = when (pair.first.name) {
                         IO.Name.Double -> Number(compiler)
                         IO.Name.Int -> Int(compiler, 0)
                         IO.Name.String -> String(compiler, "")
@@ -57,7 +57,7 @@ class InitializationBlock @JvmOverloads constructor(
                     
                     if (assignment.groups[2]?.value.let { it != null && it != "" }) {
                         if (assignment.groups[3]?.value.let { it != null && it != "" }) {
-                            instruction = when (it.first.name) {
+                            instruction = when (pair.first.name) {
                                 IO.Name.Double, IO.Name.Int -> Math(compiler, assignment.groups[3]!!.value)
                                 IO.Name.String -> String(compiler, assignment.groups[3]!!.value)
                                 else -> Bool(compiler, toBool(assignment.groups[3]!!.value))
