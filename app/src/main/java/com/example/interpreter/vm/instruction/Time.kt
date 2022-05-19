@@ -1,19 +1,17 @@
 package com.example.interpreter.vm.instruction
 
-import android.util.Log
 import com.example.interpreter.vm.Compiler
 import com.example.interpreter.vm.Env
 import com.example.interpreter.vm.yieldAllLR
 import kotlinx.serialization.Serializable
 
 @Serializable
-open class Print : Instruction {
-    val value: Instruction
-    
+class Time : Instruction  {
     override fun exec(env: Env) = sequence<Instruction> {
-        Log.i(TAG, yieldAllLR(value.exec(env)).toString())
-        yield(this@Print)
+        yield(Object(Compiler.FCompiler(),
+            "out" to Int(Compiler.FCompiler(), System.nanoTime().toInt())
+        ))
     }.iterator()
-    // todo: color and ln or not
-    constructor(compiler: Compiler, value: Instruction) : super(compiler) { this.value = value }
+    
+    constructor(compiler: Compiler) : super(compiler) { }
 }

@@ -4,6 +4,7 @@ import com.example.interpreter.vm.Env
 import com.example.interpreter.vm.Compiler
 import com.example.interpreter.vm.awaitLR
 import kotlinx.serialization.*
+import kotlinx.serialization.builtins.serializer
 import kotlinx.serialization.descriptors.*
 import kotlinx.serialization.encoding.*
 import java.lang.Error
@@ -17,6 +18,7 @@ open class Bool : Instruction {
     @Transient
     private var value: @Contextual Any = false
     
+    @OptIn(ExperimentalSerializationApi::class)
     class Serializer : KSerializer<Bool> {
         override val descriptor: SerialDescriptor = buildClassSerialDescriptor(Bool::class.qualifiedName ?: "*EMPTY qualifiedName*") {
             element<kotlin.Int>("id")
@@ -28,7 +30,7 @@ open class Bool : Instruction {
             encoder.encodeStructure(descriptor){
                 encodeIntElement(descriptor, 0, value.id)
                 encodeBooleanElement(descriptor, 1, value.isBasic)
-                encodeBooleanElement(descriptor, 2, value.v)
+                encodeNullableSerializableElement(descriptor, 2, Boolean.serializer(), try{ value.v }catch (e: Error){ null })
             }
         }
         
@@ -58,7 +60,8 @@ open class Bool : Instruction {
     fun toBool(): kotlin.Boolean = _toBool(value)
     
     private fun _toBool(value: Any): kotlin.Boolean{
-        if(value is Boolean) return value
+        if(value is kotlin.Boolean) return value
+        if(value is Int) return value.toNumber() != 0.0
         if(value is Number) return value.toNumber() != 0.0
         if(value is String) return value.toString().isNotEmpty()
         if(value is Object) return value.v.values.any()

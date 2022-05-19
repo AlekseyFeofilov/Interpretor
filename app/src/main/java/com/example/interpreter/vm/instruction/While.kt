@@ -23,5 +23,6 @@ class While : Instruction {
             } else break
         }
     }.iterator()
+    
     constructor(compiler: Compiler, block: List<Executor>) : super(compiler, block) { this.blocks = block }
 }

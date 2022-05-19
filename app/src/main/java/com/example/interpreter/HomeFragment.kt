@@ -6,6 +6,7 @@ import android.widget.Button
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.navOptions
+import com.example.interpreter.vm.VM
 
 class HomeFragment : Fragment(R.layout.fragment_home) {
     private val settingsPanel = SettingsFragment()

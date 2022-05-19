@@ -52,7 +52,7 @@ open class Compiler {
         stack.addLast(Pair(Env(stack.lastOrNull()?.first), mutableListOf()))
     }
     
-    fun pop(localVar: kotlin.Boolean = true): Executor{
+    fun pop(localVar: kotlin.Boolean = false): Executor{
         val exec = stack.removeLastOrNull() ?: throw Error("compiler stack corrupted")
         
         return Executor(exec.first, exec.second, localVar)
@@ -75,7 +75,7 @@ open class Compiler {
         val last = stack.lastOrNull() ?: throw Error("compiler stack corrupted")
         val bv = currBlockView ?: throw Error("compiler context corrupted")
         
-        val inNext = bv.getInputsHash()[name] ?: bv.getOutputsHash()[name] ?: throw Error("compiler crash input/output in hashT is null")
+        val inNext = bv.getInputsHash()[name] ?: throw Error("compiler crash input/output in hashT is null")
     
         fun blockViewCompile(curr: BlockView, name: IO.Name): Instruction {
             if (cacheInputs[Pair(curr, name)] == null) {
@@ -90,20 +90,14 @@ open class Compiler {
             return listInstruction.lastOrNull() ?: throw Error("last instruction is null")
         }
         
-        if(inNext is OutputFunction){
-//            currBlockView = bv.getLinkOutput(inNext).parent.view as BlockView
-//                val ret = blockViewCompile(currBlockView!!, name)
-//            currBlockView = bv
-    
-            return Register(this, Nop(this) /* ret */, env = last.first)
-        }
+        //todo: compile function input
         
         if(inNext is Input){
             currBlockView = bv.getLinkInput(inNext).parent.view as BlockView
                 val ret = blockViewCompile(currBlockView!!, name)
             currBlockView = bv
             
-            return Register(this, ret, env = last.first)
+            return Register(this, ret, name.toString(), env = last.first)
         }
         
         if(inNext is List<*>){
@@ -114,7 +108,7 @@ open class Compiler {
                 val ret = blockViewCompile(currBlockView!!, name)
                 android.util.Log.i("COMPILER", currBlockView.toString())
     
-                listRet.add(Register(this, ret, env = last.first))
+                listRet.add(Register(this, ret, name.toString(), env = last.first))
             }
             
             currBlockView = bv
@@ -127,7 +121,6 @@ open class Compiler {
 //    operator fun set(name: kotlin.String, value: Any) {}
     
     constructor(value: BlockView?) {
-//        if(value == null) throw Error("TODO")
         blockView = value
     }
     
