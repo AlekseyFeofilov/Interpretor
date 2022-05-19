@@ -25,6 +25,7 @@ class PrintBlock @JvmOverloads constructor(
         return """\s*(\S+)\s*""".toRegex().find(string)?.groups?.get(1)?.value
     }
     
+    //todo: do endln
     private fun printAll(compiler: Compiler): List<Instruction> {
         val prints = mutableListOf<Instruction>()
         val compiledInput = (compiler[IO.Name.Print] as List<*>).iterator()
