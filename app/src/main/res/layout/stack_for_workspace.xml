@@ -23,6 +23,8 @@
             android:layout_marginEnd="60dp"
             android:layout_width="0dp"
             android:layout_height="0dp"
+            android:layout_marginBottom="4dp"
+            android:layout_marginStart="4dp"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -35,18 +37,16 @@
             android:orientation="vertical"
             app:layout_constraintGuide_percent="0.96"/>
     </androidx.constraintlayout.widget.ConstraintLayout>
-    <FrameLayout
+
+    <Button
         android:id="@+id/basketContainer"
+        android:layout_width="60dp"
         android:layout_height="0dp"
-        android:layout_width="0dp"
-        android:layout_marginEnd="60dp"
-
-        android:background="@drawable/settings_panel"
-        app:layout_constraintTop_toTopOf="@id/bottomBorderStack"
-        app:layout_constraintEnd_toEndOf="@id/endBorderBasket"
-        app:layout_constraintBottom_toBottomOf="@id/bottomBorderStack"
-        app:layout_constraintStart_toStartOf="@id/startBorderStack"/>
-
+        app:layout_constraintDimensionRatio="1:1"
+        android:background="@drawable/basket"
+        android:translationZ="100dp"
+        app:layout_constraintEnd_toEndOf="@id/topBorderStack"
+        app:layout_constraintBottom_toBottomOf="@id/bottomBorderStack"/>
 
 <!--    <androidx.constraintlayout.widget.Guideline-->
 <!--        android:layout_width="wrap_content"-->
@@ -60,12 +60,12 @@
         android:orientation="horizontal"
         app:layout_constraintGuide_percent="0.98"
         android:id="@+id/bottomBorderStack"/>
-<!--    <androidx.constraintlayout.widget.Guideline-->
-<!--        android:layout_width="wrap_content"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:orientation="horizontal"-->
-<!--        app:layout_constraintGuide_percent="0.98"-->
-<!--        android:id="@+id/topBorderStack"/>-->
+    <androidx.constraintlayout.widget.Guideline
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.98"
+        android:id="@+id/topBorderStack"/>
     <androidx.constraintlayout.widget.Guideline
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

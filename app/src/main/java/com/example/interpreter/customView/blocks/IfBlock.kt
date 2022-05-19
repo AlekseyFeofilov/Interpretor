@@ -2,6 +2,8 @@ package com.example.interpreter.customView.blocks
 
 import android.content.Context
 import android.util.AttributeSet
+import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
 import com.example.interpreter.customView.blockView.BlockView
 import com.example.interpreter.ioInterfaces.IO
 import com.example.interpreter.ioInterfaces.ioTypes.InputBoolean
@@ -11,6 +13,8 @@ import com.example.interpreter.vm.instruction.Instruction
 import com.example.interpreter.vm.Compiler
 import com.example.interpreter.vm.Executor
 import com.example.interpreter.vm.instruction.If
+import com.example.interpreter.vm.instruction.Input
+import com.example.interpreter.vm.instruction.Nop
 
 class IfBlock @JvmOverloads constructor(
     context: Context,
@@ -19,16 +23,18 @@ class IfBlock @JvmOverloads constructor(
 ) : BlockView(context, attrs, defStyleAttr) {
     override fun compile(compiler: Compiler): List<Instruction> {
         super.compile(compiler)
-        return listOf(getIfInstruction(compiler))
+        //todo: remove Input from list
+        return listOf(getIfInstruction(compiler), Input(compiler, context as AppCompatActivity))
     }
     
+
     private fun getIfInstruction(compiler: Compiler): If {
         return If(
             compiler,
             listOf(
-                getInputExecutor(IO.Name.Condition, compiler),
-                getInputExecutor(IO.Name.True, compiler),
-                getInputExecutor(IO.Name.False, compiler)
+                getInputExecutor(compiler, IO.Name.Condition),
+                getInputExecutor(compiler, IO.Name.True),
+                getInputExecutor(compiler, IO.Name.False)
             )
         )
     }

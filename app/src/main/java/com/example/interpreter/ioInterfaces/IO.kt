@@ -14,6 +14,7 @@ interface IO {
         First, Second,
         Variable, Value,
         Fake,
+        Print,
     }
     
     val name: Name
