@@ -74,7 +74,7 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
     private val listOfWires = mutableListOf<Wire>()
     
     var listOfReading = ArrayDeque<String>()
-    var consoleEvent: Continuation<Int>? = null
+    var consoleEvent: Continuation<String>? = null
     
     @SuppressLint("ClickableViewAccessibility")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -240,11 +240,11 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
             val newLine = TextView(context)
             consoleBody.addView(newLine, consoleBody.childCount - 1)
             newLine.text = "<< ${view.text}"
-            listOfReading.add(view.text.toString())
             
             if(consoleEvent != null){
-                consoleEvent?.resume(0)
-            }
+                consoleEvent?.resume(view.text.toString())
+                consoleEvent = null
+            }else listOfReading.add(view.text.toString())
         }
         (view as EditText).text.clear()
         false

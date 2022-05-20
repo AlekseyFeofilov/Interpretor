@@ -14,6 +14,7 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
 import java.util.concurrent.Callable
 import java.util.concurrent.FutureTask
+import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
 
@@ -23,30 +24,48 @@ class Input : Instruction {
     var context:  WorkspaceFragment? = null
     
     override fun exec(env: Env) = sequence<Instruction> {
-        val callable = Callable<kotlin.String> {
-            val context = context!!
-            
-            if(context.listOfReading.firstOrNull() != null){
-                return@Callable context.listOfReading.removeFirst()
-            }
-            
-            do {
-                runBlocking {
-                    suspendCoroutine<kotlin.Int> {
-                        context.consoleEvent = it
+//        val callable = Callable<kotlin.String> {
+//            val context = context!!
+//
+//            if(context.listOfReading.firstOrNull() != null){
+//                return@Callable context.listOfReading.removeFirst()
+//            }
+//
+//            do {
+//                runBlocking {
+//                    suspendCoroutine<kotlin.Int> {
+//                        context.consoleEvent = it
+//                    }
+//                }
+//            }while (context.listOfReading.firstOrNull() == null)
+//
+//            return@Callable context.listOfReading.removeFirst()
+//        }
+//
+//        val task = FutureTask(callable)
+        val str: kotlin.String
+        
+        runBlocking {
+            str = suspendCoroutine<kotlin.String> {
+                context!!.requireActivity().runOnUiThread{
+                    if(context!!.listOfReading.firstOrNull() != null){
+                        it.resume(context!!.listOfReading.removeFirst())
+                        return@runOnUiThread
                     }
+                    
+                    context!!.consoleEvent = it
                 }
-            }while (context.listOfReading.firstOrNull() == null)
-            
-            return@Callable context.listOfReading.removeFirst()
+            }
         }
         
-        val task = FutureTask(callable)
+//        context!!.requireActivity().runOnUiThread(task)
         
-        context!!.requireActivity().runOnUiThread(task)
-        
-        yield(String(Compiler.FCompiler(), task.get()))
+        yield(Object(Compiler.FCompiler(),
+            "out" to String(Compiler.FCompiler(), str) //String(Compiler.FCompiler(), task.get())
+        ))
     }.iterator()
+    
+    //todo: compiler, class var, name var
     
     constructor(compiler: Compiler) : super(compiler) {
         this.context = compiler.context
