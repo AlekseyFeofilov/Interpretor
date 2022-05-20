@@ -24,16 +24,18 @@ open class Print : Instruction {
         
         Log.i(TAG, str)
         
-        when(ln) {
-            true -> context?.printToConsole(str, color)
-            false -> context?.printlnToConsole(str, color)
+        if(context != null) {
+            when (ln) {
+                true -> context?.printToConsole(str, color)
+                false -> context?.printlnToConsole(str, color)
+            }
         }
         
         yield(this@Print)
     }.iterator()
     
-    constructor(compiler: Compiler, value: Instruction, context: WorkspaceFragment, color: kotlin.String = "#ffffff", ln: kotlin.Boolean = false) : super(compiler) {
-        this.context = context
+    constructor(compiler: Compiler, value: Instruction, color: kotlin.String = "#ffffff", ln: kotlin.Boolean = false) : super(compiler) {
+        this.context = compiler.context
         this.color = color
         this.value = value
         this.ln = ln

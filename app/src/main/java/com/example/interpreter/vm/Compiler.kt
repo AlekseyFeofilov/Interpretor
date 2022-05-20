@@ -1,20 +1,23 @@
 package com.example.interpreter.vm
 
 import android.util.Log
+import com.example.interpreter.WorkspaceFragment
 import com.example.interpreter.customView.blockView.BlockView
 import com.example.interpreter.ioInterfaces.IO
 import com.example.interpreter.ioInterfaces.Input
-import com.example.interpreter.ioInterfaces.ioTypes.OutputFunction
+import com.example.interpreter.ioInterfaces.ioTypes.*
 import com.example.interpreter.vm.instruction.*
+import com.example.interpreter.vm.instruction.Int
 import com.example.interpreter.vm.instruction.Number
+import com.example.interpreter.vm.instruction.String
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.Transient
 import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.descriptors.buildClassSerialDescriptor
 import kotlinx.serialization.encoding.*
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.encodeToString
-import java.util.*
 import kotlin.collections.ArrayDeque
 import kotlin.collections.HashMap
 import kotlin.reflect.KClass
@@ -37,8 +40,10 @@ open class Compiler {
     
     val blockView: BlockView?
     var currBlockView: BlockView? = null
+    @Transient
+    var context: WorkspaceFragment? = null
     
-    class FCompiler() : Compiler(null){
+    class FCompiler() : Compiler(null, null){
         override fun defineVar(name: kotlin.String, clazz: KClass<Instruction>){
         
         }
@@ -71,6 +76,17 @@ open class Compiler {
         return last.first.define(name)
     }
     
+    private fun typeCast(value: Instruction, inp: Input): Instruction{
+        return when(inp){
+            is InputBoolean -> if(value !is Bool) Bool(this, value) else value
+            is InputDouble -> if(value !is Number) Number(this, value) else value
+            is InputString -> if(value !is String) String(this, value) else value
+            is InputInt -> if(value !is String) Int(this, value) else value
+            
+            else -> { throw Error("compiler auto cast error") }
+        }
+    }
+    
     operator fun get(name: IO.Name): Any{ /* Register or List<Register> */
         val last = stack.lastOrNull() ?: throw Error("compiler stack corrupted")
         val bv = currBlockView ?: throw Error("compiler context corrupted")
@@ -80,7 +96,7 @@ open class Compiler {
         fun blockViewCompile(curr: BlockView, name: IO.Name): Instruction {
             if (cacheInputs[Pair(curr, name)] == null) {
                 val ret = curr.compile(this)
-            
+                
                 cacheInputs[Pair(curr, name)] = ret
                 last.second.addAll(ret)
             }
@@ -120,7 +136,8 @@ open class Compiler {
     }
 //    operator fun set(name: kotlin.String, value: Any) {}
     
-    constructor(value: BlockView?) {
+    constructor(value: BlockView?, context: WorkspaceFragment?) {
+        this.context = context
         blockView = value
     }
     
