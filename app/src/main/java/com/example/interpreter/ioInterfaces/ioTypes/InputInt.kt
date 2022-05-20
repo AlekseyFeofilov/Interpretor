@@ -19,8 +19,8 @@ class InputInt(
     override val isDefault: Boolean = true,
     override val isLink: Boolean = true
 ) : Input {
-    override val type = IO.Type.Double
-    override val color = "#80505B"
+    override val type = IO.Type.Int
+    override val color = "#526760"
     var default: kotlin.Int? = null
     
     override fun parseValue(value: String) {

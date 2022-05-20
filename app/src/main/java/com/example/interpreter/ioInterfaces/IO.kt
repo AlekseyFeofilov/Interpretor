@@ -4,7 +4,7 @@ import com.example.interpreter.customView.blockView.IOContainer
 
 interface IO {
     enum class Type {
-        Boolean, Double, String, Function, Any, Null
+        Boolean, Double, Int, String, Function, Any, Null
     }
     
     enum class Name {
