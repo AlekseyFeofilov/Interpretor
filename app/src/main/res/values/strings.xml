@@ -8,6 +8,7 @@
     <string name="after">after</string>
     <string name="START">START</string>
     <string name="PRINT">PRINT</string>
+    <string name="INPUT">INPUT</string>
 
     <string-array name="comparing">
         <item><![CDATA[<]]></item>

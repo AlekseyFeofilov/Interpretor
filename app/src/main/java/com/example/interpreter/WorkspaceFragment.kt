@@ -343,23 +343,28 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
             input = first
             output = second
         }
-        
-        if (!listOfBlocks[findBlockIndByIOView(input)].isInputComplete(input) &&
-            !listOfBlocks[findBlockIndByIOView(output)].isOutputComplete(output)
-        ) {
-            addNewWire(input, output)
-        } else if (listOfBlocks[findBlockIndByIOView(input)].isInputComplete(input) &&
-            !listOfBlocks[findBlockIndByIOView(output)].isOutputComplete(output)
-        ) {
-            disconnectWireByIO(input)
-            removeWireByIO(input)
-            addNewWire(input, output)
-        } else if (!listOfBlocks[findBlockIndByIOView(input)].isInputComplete(input) &&
-            listOfBlocks[findBlockIndByIOView(output)].isOutputComplete(output)
-        ) {
-            disconnectWireByIO(output)
-            removeWireByIO(output)
-            addNewWire(input, output)
+    
+        //todo: убрать лишние проверки
+        when {
+            !listOfBlocks[findBlockIndByIOView(input)].isInputComplete(input) &&
+                    !listOfBlocks[findBlockIndByIOView(output)].isOutputComplete(output) -> {
+                addNewWire(input, output)
+                Log.i("TAG", "connect")
+            }
+            listOfBlocks[findBlockIndByIOView(input)].isInputComplete(input) &&
+                    !listOfBlocks[findBlockIndByIOView(output)].isOutputComplete(output) -> {
+                Log.i("TAG", "reconnect input")
+                disconnectWireByIO(input)
+                removeWireByIO(input)
+                addNewWire(input, output)
+            }
+            !listOfBlocks[findBlockIndByIOView(input)].isInputComplete(input) &&
+                    listOfBlocks[findBlockIndByIOView(output)].isOutputComplete(output) -> {
+                Log.i("TAG", "reconnect output")
+                disconnectWireByIO(output)
+                removeWireByIO(output)
+                addNewWire(input, output)
+            }
         }
         
     }
@@ -536,6 +541,9 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
             }
             bindingListOfBlocks.START -> {
                 StartBlock(context!!)
+            }
+            bindingListOfBlocks.INPUT -> {
+                InputBlock(context!!)
             }
             else -> {
                 InitializationBlock(context!!)

@@ -24,6 +24,7 @@ class PrintBlock @JvmOverloads constructor(
         return printAll(compiler)
     }
     
+    //todo: remove brackets and add color
     private fun stringWithoutSpaces(string: String): String? {
         return """\s*(\S+)\s*""".toRegex().find(string)?.groups?.get(1)?.value
     }
