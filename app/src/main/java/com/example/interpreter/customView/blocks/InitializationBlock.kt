@@ -9,6 +9,7 @@ import com.example.interpreter.vm.Compiler
 import com.example.interpreter.vm.Env
 import com.example.interpreter.vm.instruction.*
 import com.example.interpreter.vm.instruction.Number
+import kotlin.reflect.KClass
 import kotlin.text.String
 
 class InitializationBlock @JvmOverloads constructor(
@@ -43,10 +44,11 @@ class InitializationBlock @JvmOverloads constructor(
                 val initializations = value.split(",")
                 
                 initializations.forEach { initialization ->
-                    var instruction = when (pair.first.name) {
+                    var instruction: Instruction = when (pair.first.name) {
                         IO.Name.Double -> Number(compiler)
                         IO.Name.Int -> Int(compiler, 0)
                         IO.Name.String -> String(compiler, "")
+                        IO.Name.Array -> Object(compiler)
                         else -> Bool(compiler, true)
                     }
                     
@@ -54,12 +56,14 @@ class InitializationBlock @JvmOverloads constructor(
                             .find(initialization)
                     
                     if (initialization != assignment?.groups?.get(0)?.value) throw Error("incorrect expression $initialization")
+                    compiler.defineVar(assignment.groups[1]!!.value, instruction::class)
                     
                     if (assignment.groups[2]?.value.let { it != null && it != "" }) {
                         if (assignment.groups[3]?.value.let { it != null && it != "" }) {
                             instruction = when (pair.first.name) {
                                 IO.Name.Double, IO.Name.Int -> Math(compiler, assignment.groups[3]!!.value)
                                 IO.Name.String -> String(compiler, assignment.groups[3]!!.value)
+                                IO.Name.Array -> throw Error("you should use Set Array")
                                 else -> Bool(compiler, toBool(assignment.groups[3]!!.value))
                             }
                         } else throw Error("incorrect expression $initialization")
@@ -78,6 +82,7 @@ class InitializationBlock @JvmOverloads constructor(
         addInput(InputString(IO.Name.Double, this, "Double:",true, isLink = false))
         addInput(InputString(IO.Name.String, this, "String:",true, isLink = false))
         addInput(InputString(IO.Name.Boolean, this, "Boolean:", true, isLink = false))
+        addInput(InputString(IO.Name.Array, this, "Array:", true, isLink = false))
         
         setHeader("Init", "#8281B1")
     }

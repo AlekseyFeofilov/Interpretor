@@ -23,8 +23,7 @@ class IfBlock @JvmOverloads constructor(
 ) : BlockView(context, attrs, defStyleAttr) {
     override fun compile(compiler: Compiler): List<Instruction> {
         super.compile(compiler)
-        //todo: remove Input from list
-        return listOf(getIfInstruction(compiler), Input(compiler, context as AppCompatActivity))
+        return listOf(getIfInstruction(compiler))
     }
     
 

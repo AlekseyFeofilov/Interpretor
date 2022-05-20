@@ -34,7 +34,7 @@ open class Print : Instruction {
         yield(this@Print)
     }.iterator()
     
-    constructor(compiler: Compiler, value: Instruction, color: kotlin.String = "#ffffff", ln: kotlin.Boolean = false) : super(compiler) {
+    constructor(compiler: Compiler, value: Instruction, ln: kotlin.Boolean = false, color: kotlin.String = "#ffffff") : super(compiler) {
         this.context = compiler.context
         this.color = color
         this.value = value

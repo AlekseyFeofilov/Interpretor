@@ -2,6 +2,9 @@ package com.example.interpreter.customView.blocks
 
 import android.content.Context
 import android.util.AttributeSet
+import androidx.appcompat.app.AppCompatActivity
+import com.example.interpreter.R
+import com.example.interpreter.WorkspaceFragment
 import com.example.interpreter.customView.blockView.BlockView
 import com.example.interpreter.ioInterfaces.IO
 import com.example.interpreter.ioInterfaces.ioTypes.InputAny
@@ -25,7 +28,6 @@ class PrintBlock @JvmOverloads constructor(
         return """\s*(\S+)\s*""".toRegex().find(string)?.groups?.get(1)?.value
     }
     
-    //todo: do endln
     private fun printAll(compiler: Compiler): List<Instruction> {
         val prints = mutableListOf<Instruction>()
         val compiledInput = (compiler[IO.Name.Print] as List<*>).iterator()
@@ -45,22 +47,29 @@ class PrintBlock @JvmOverloads constructor(
             (pair.first.getValue() as String)
                 .split("""(?<!\\),""".toRegex())
                 .forEach {
-                    prints.add(print(compiler, it))
+                    if (stringWithoutSpaces(it) != null) {
+                        prints.add(print(compiler, it))
+                    }
                 }
+            prints.add(endln(compiler))
         }
         
         return prints
     }
     
+    private fun endln(compiler: Compiler): Print {
+        return Print(
+            compiler,
+            String(compiler, "")
+        )
+    }
+    
     private fun print(compiler: Compiler, value: String): Print {
         return when {
             value.matches("""^\s*"[^"]*"\s*$""".toRegex()) -> {
-                Print(
-                    compiler,
-                    com.example.interpreter.vm.instruction.String(compiler, value)
-                )
+                Print(compiler, String(compiler, value))
             }
-            compiler.checkVar(stringWithoutSpaces(value) ?: throw Error("can't print empty string")) != null -> {
+            compiler.checkVar(stringWithoutSpaces(value)!!) != null -> {
                 val clazz = compiler.checkVar(stringWithoutSpaces(value)!!)!!
                 Print(compiler, getInstructionByClass(compiler, clazz, value))
             }
@@ -70,8 +79,8 @@ class PrintBlock @JvmOverloads constructor(
         }
     }
     
-    private fun toBool(string: String): Boolean{
-        return when{
+    private fun toBool(string: String): Boolean {
+        return when {
             string.matches("""\s*true\s*""".toRegex()) -> true
             string.matches("""\s*false\s*""".toRegex()) -> false
             else -> {
@@ -81,16 +90,28 @@ class PrintBlock @JvmOverloads constructor(
         }
     }
     
-    private fun getInstructionByClass(compiler: Compiler, clazz: KClass<Instruction>, value: String): Instruction{
-        return when(clazz){
+    private fun getInstructionByClass(
+        compiler: Compiler,
+        clazz: KClass<out Instruction>,
+        value: String
+    ): Instruction {
+        return when (clazz) {
             Number::class, Int::class -> Math(compiler, value)
             Bool::class -> Bool(compiler, toBool(value))
             else -> {
                 val compilerType = Compiler::class.createType()
                 val instructionType = Instruction::class.createType()
-                val constructor = clazz.constructors.find { it.typeParameters == listOf(compilerType, instructionType) }
+                val constructor = clazz.constructors.find {
+                    it.typeParameters == listOf(
+                        compilerType,
+                        instructionType
+                    )
+                }
                 
-                return constructor!!.call(compiler, com.example.interpreter.vm.instruction.String(compiler, value))
+                return constructor!!.call(
+                    compiler,
+                    com.example.interpreter.vm.instruction.String(compiler, value)
+                )
             }
         }
     }

@@ -44,7 +44,7 @@ open class Compiler {
     var context: WorkspaceFragment? = null
     
     class FCompiler() : Compiler(null, null){
-        override fun defineVar(name: kotlin.String, clazz: KClass<Instruction>){
+        override fun defineVar(name: kotlin.String, clazz: KClass<out Instruction>){
         
         }
         
@@ -63,14 +63,14 @@ open class Compiler {
         return Executor(exec.first, exec.second, localVar)
     }
     
-    open fun defineVar(name: kotlin.String, clazz: KClass<Instruction>){
+    open fun defineVar(name: kotlin.String, clazz: KClass<out Instruction>){
         val last = stack.lastOrNull() ?: throw Error("compiler stack corrupted")
         if(last.first.define(name).let { it != null && it != clazz }) throw Error("Redefine var to new type")
         
         last.first.define(name, clazz)
     }
     
-    open fun checkVar(name: kotlin.String): KClass<Instruction>? {
+    open fun checkVar(name: kotlin.String): KClass<out Instruction>? {
         val last = stack.lastOrNull() ?: throw Error("compiler stack corrupted")
         
         return last.first.define(name)

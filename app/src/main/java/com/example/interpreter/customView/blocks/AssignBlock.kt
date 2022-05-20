@@ -53,7 +53,7 @@ class AssignBlock @JvmOverloads constructor(
     
     private fun getInstructionByClass(
         compiler: Compiler,
-        clazz: KClass<Instruction>,
+        clazz: KClass<out Instruction>,
         value: String
     ): Instruction {
         return when (clazz) {

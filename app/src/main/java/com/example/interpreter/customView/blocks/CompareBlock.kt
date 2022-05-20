@@ -20,6 +20,7 @@ class CompareBlock @JvmOverloads constructor(
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0,
 ) : BlockView(context, attrs, defStyleAttr) {
+    private val spinner: Spinner
     private val comparing = hashMapOf<String, Math.Token>(
         "<" to Math.TLogicLess(),
         ">" to Math.TLogicGreater(),
@@ -28,10 +29,6 @@ class CompareBlock @JvmOverloads constructor(
         "<=" to Math.TLogicLessEQ(),
         ">=" to Math.TLogicGreaterEQ(),
     )
-    
-    private val spinner: Spinner = (((binding.listOfInputLinearLayout.getChildAt(2) as LinearLayout)
-        .getChildAt(0) as LinearLayout)
-        .getChildAt(2) as Spinner)
     
     override fun compile(compiler: Compiler): List<Instruction> {
         super.compile(compiler)
@@ -64,9 +61,12 @@ class CompareBlock @JvmOverloads constructor(
     
     init {
         addInput(InputDouble(IO.Name.First, this, "Compare this:"))
-        val input = InputBoolean(IO.Name.By, this, "By sign:", isLink = false)
-        addInput(input)
+        addInput(InputBoolean(IO.Name.By, this, "By sign:", isLink = false))
         addInput(InputDouble(IO.Name.Second, this, "With this:"))
+        
+        spinner = (((binding.listOfInputLinearLayout.getChildAt(2) as LinearLayout)
+            .getChildAt(0) as LinearLayout)
+            .getChildAt(2) as Spinner)
         
         setHeader("Compare", "#EC8532")
         
