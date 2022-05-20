@@ -3,6 +3,7 @@ package com.example.interpreter.vm
 import android.util.Log
 import com.example.interpreter.WorkspaceFragment
 import com.example.interpreter.customView.blockView.BlockView
+import com.example.interpreter.customView.blockView.IOContainer
 import com.example.interpreter.ioInterfaces.IO
 import com.example.interpreter.ioInterfaces.Input
 import com.example.interpreter.ioInterfaces.ioTypes.*
@@ -140,8 +141,8 @@ open class Compiler {
             return listInstruction.lastOrNull() ?: throw Error("compiler: last instruction is null")
         }
         
-        fun travelBackFun(inp: Input): BlockView{
-            var retBV = inp.parent
+        fun travelBackFun(from: BlockView): BlockView{
+            var retBV: IOContainer = from
             
             while(true) {
                 val hashInp = retBV.getInputsHash()
@@ -158,7 +159,7 @@ open class Compiler {
         }
         
         if(inNext is InputFunction){
-            compileFunc(travelBackFun(inNext), bv.getLinkInput(inNext).parent.view as BlockView)
+            compileFunc(travelBackFun(bv.getLinkInput(inNext).parent.view as BlockView), bv.getLinkInput(inNext).parent.view as BlockView)
             
             return Register(this, last.second.lastOrNull() ?: throw Error("compiler: last instruction is null"), env = last.first)
         }
