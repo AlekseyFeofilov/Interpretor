@@ -281,54 +281,63 @@ class VM {
 
 //        var i = 0
             var pause: Boolean = debug
-    
-            while (true) {
-                var boolNext = false
-                val dToken = channelDebug.tryReceive().getOrNull()
+            try {
+                while (true) {
+                    var boolNext = false
+                    val dToken = channelDebug.tryReceive().getOrNull()
         
-                if (dToken != null) {
-                    when (dToken.type) {
-                        Debug.Type.STOP -> {
-                            pause = true
-                        }
-                        Debug.Type.START -> {
-                            pause = false
-                        }
-                        Debug.Type.NEXT -> {
-                            boolNext = true
-                        }
-                        Debug.Type.RESTART -> {
-                            vm = _VM()
-                        }
-                        else -> {}
-                    }
-                }
-        
-                if (vm.hasNext() && (!pause || boolNext)) {
-                    val lastInst = vm.next()
-                    
-                    if(debug){
-                        val jsonObj = Json.encodeToString(
-                            buildJsonObject {
-                                put("instruction", JsonPrimitive(lastInst::class.jvmName + "@" + lastInst.id.toString()))
-                                put("env", Json.encodeToJsonElement(block.env))
-                                if(lastInst is Print){
-                                    put("console", JsonPrimitive(awaitLR(lastInst.value.exec(block.env)).toString()))
-                                }
+                    if (dToken != null) {
+                        when (dToken.type) {
+                            Debug.Type.STOP -> {
+                                pause = true
                             }
-                        )
-                        
-                        Log.i("VM", jsonObj)
-                        
-                        launch { WSConnects.sendAll(jsonObj) }.join()
+                            Debug.Type.START -> {
+                                pause = false
+                            }
+                            Debug.Type.NEXT -> {
+                                boolNext = true
+                            }
+                            Debug.Type.RESTART -> {
+                                vm = _VM()
+                            }
+                            else -> {}
+                        }
                     }
-                } else delay(50)
+        
+                    if (vm.hasNext() && (!pause || boolNext)) {
+                        val lastInst = vm.next()
+            
+                        if (debug) {
+                            val jsonObj = Json.encodeToString(
+                                buildJsonObject {
+                                    put(
+                                        "instruction",
+                                        JsonPrimitive(lastInst::class.jvmName + "@" + lastInst.id.toString())
+                                    )
+                                    put("env", Json.encodeToJsonElement(block.env))
+                                    if (lastInst is Print) {
+                                        put(
+                                            "console",
+                                            JsonPrimitive(awaitLR(lastInst.value.exec(block.env)).toString())
+                                        )
+                                    }
+                                }
+                            )
                 
+                            Log.i("VM", jsonObj)
+                
+                            launch { WSConnects.sendAll(jsonObj) }.join()
+                        }
+                    } else delay(50)
+
 //            Log.i("VM", "debugCaller")
 //            Thread.sleep(50)
 
 //            if(i++ >= 10)
 //                exitProcess(0)
+                }
+            }catch(e: Error) {
+                e.printStackTrace()
             }
         }
     }

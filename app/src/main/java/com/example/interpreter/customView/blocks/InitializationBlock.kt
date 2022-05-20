@@ -57,6 +57,7 @@ class InitializationBlock @JvmOverloads constructor(
                     
                     if (initialization != assignment?.groups?.get(0)?.value) throw Error("incorrect expression $initialization")
                     compiler.defineVar(assignment.groups[1]!!.value, instruction::class)
+                    val debug = compiler.checkVar(assignment.groups[1]!!.value)
                     
                     if (assignment.groups[2]?.value.let { it != null && it != "" }) {
                         if (assignment.groups[3]?.value.let { it != null && it != "" }) {

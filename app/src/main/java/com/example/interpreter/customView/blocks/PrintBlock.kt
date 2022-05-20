@@ -24,6 +24,7 @@ class PrintBlock @JvmOverloads constructor(
         return printAll(compiler)
     }
     
+    //todo: remove brackets and add color
     private fun stringWithoutSpaces(string: String): String? {
         return """\s*(\S+)\s*""".toRegex().find(string)?.groups?.get(1)?.value
     }
@@ -35,12 +36,13 @@ class PrintBlock @JvmOverloads constructor(
         inputs.forEach { pair ->
             if (
                 pair.first !is InputAny ||
-                (isInputAvailable(pair.first) && pair.first.getValue() == null)
+                (!isInputAvailable(pair.first) && pair.first.getValue() == null)
             ) return@forEach
             
             if (isInputAvailable(pair.first)) {
                 val print = compiledInput.next() as Register
                 prints.add(Print(compiler, print))
+                endln(compiler)
                 return@forEach
             }
             
@@ -51,18 +53,13 @@ class PrintBlock @JvmOverloads constructor(
                         prints.add(print(compiler, it))
                     }
                 }
-            prints.add(endln(compiler))
+            endln(compiler)
         }
         
         return prints
     }
     
-    private fun endln(compiler: Compiler): Print {
-        return Print(
-            compiler,
-            String(compiler, "")
-        )
-    }
+    private fun endln(compiler: Compiler) = Print(compiler, String(compiler, ""), true)
     
     private fun print(compiler: Compiler, value: String): Print {
         return when {
@@ -70,48 +67,10 @@ class PrintBlock @JvmOverloads constructor(
                 Print(compiler, String(compiler, value))
             }
             compiler.checkVar(stringWithoutSpaces(value)!!) != null -> {
-                val clazz = compiler.checkVar(stringWithoutSpaces(value)!!)!!
-                Print(compiler, getInstructionByClass(compiler, clazz, value))
+                Print(compiler, GetVar(compiler, stringWithoutSpaces(value)!!))
             }
             else -> {
                 throw Error("variable ${stringWithoutSpaces(value)} isn't exist")
-            }
-        }
-    }
-    
-    private fun toBool(string: String): Boolean {
-        return when {
-            string.matches("""\s*true\s*""".toRegex()) -> true
-            string.matches("""\s*false\s*""".toRegex()) -> false
-            else -> {
-                val value = """\s*(\S*)""".toRegex().find(string)
-                throw Error("${value!!.groups[1]!!.value} isn't boolean value")
-            }
-        }
-    }
-    
-    private fun getInstructionByClass(
-        compiler: Compiler,
-        clazz: KClass<out Instruction>,
-        value: String
-    ): Instruction {
-        return when (clazz) {
-            Number::class, Int::class -> Math(compiler, value)
-            Bool::class -> Bool(compiler, toBool(value))
-            else -> {
-                val compilerType = Compiler::class.createType()
-                val instructionType = Instruction::class.createType()
-                val constructor = clazz.constructors.find {
-                    it.typeParameters == listOf(
-                        compilerType,
-                        instructionType
-                    )
-                }
-                
-                return constructor!!.call(
-                    compiler,
-                    com.example.interpreter.vm.instruction.String(compiler, value)
-                )
             }
         }
     }

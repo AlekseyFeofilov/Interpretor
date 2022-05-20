@@ -2,6 +2,7 @@ package com.example.interpreter.vm.instruction
 
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
+import com.example.interpreter.WorkspaceFragment
 import com.example.interpreter.vm.Compiler
 import com.example.interpreter.vm.Env
 import io.netty.util.concurrent.Promise
@@ -19,39 +20,35 @@ import kotlin.coroutines.suspendCoroutine
 @Serializable
 class Input : Instruction {
     @Transient
-    var context: AppCompatActivity? = null
+    var context:  WorkspaceFragment? = null
     
     override fun exec(env: Env) = sequence<Instruction> {
-        yield(this@Input)
-        
-        //todo: Deferred
-        
         val callable = Callable<kotlin.String> {
-/*
-            Thread.sleep(10000)
-*/
+            val context = context!!
             
-            runBlocking {
-                suspendCoroutine<kotlin.String> {
-                    launch {
-                        delay(10000)
-                    }.start()
-                    
-                    it.resumeWith(Result.success<kotlin.String>("dsf"))
-                }
+            if(context.listOfReading.firstOrNull() != null){
+                return@Callable context.listOfReading.removeFirst()
             }
             
-            return@Callable "df"
+            do {
+                runBlocking {
+                    suspendCoroutine<kotlin.Int> {
+                        context.consoleEvent = it
+                    }
+                }
+            }while (context.listOfReading.firstOrNull() == null)
+            
+            return@Callable context.listOfReading.removeFirst()
         }
         
         val task = FutureTask(callable)
-        context!!.runOnUiThread(task)
         
-        Log.i(TAG, "отлагало ${task.get()}")
+        context!!.requireActivity().runOnUiThread(task)
         
+        yield(String(Compiler.FCompiler(), task.get()))
     }.iterator()
     
-    constructor(compiler: Compiler, context: AppCompatActivity? = null) : super(compiler) {
-        this.context = context
+    constructor(compiler: Compiler) : super(compiler) {
+        this.context = compiler.context
     }
 }

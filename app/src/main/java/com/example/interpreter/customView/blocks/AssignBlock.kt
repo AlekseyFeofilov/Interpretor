@@ -79,7 +79,7 @@ class AssignBlock @JvmOverloads constructor(
     }
     
     private fun getAssignment(): Pair<String, String?> {
-        val input = getInput(IO.Name.Value) as InputString
+        val input = getInput(IO.Name.Value) as InputAny
     
         val variable = (getInput(IO.Name.Variable) as InputString).getValue()
             ?: throw Error("Missing variable to assign")

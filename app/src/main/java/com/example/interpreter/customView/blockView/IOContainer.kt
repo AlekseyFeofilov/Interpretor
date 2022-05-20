@@ -239,12 +239,12 @@ interface IOContainer {
         return result
     }
     
-    fun isInputAvailable(input: Input): Boolean{
+    fun isInputAvailable(input: Input): Boolean {
         return !((getLinkInput(input).name == IO.Name.Fake && input.getValue() == null) ||
                 (input.getValue() != null && input.type == IO.Type.Any))
     }
     
-    fun isOutputAvailable(output: Output): Boolean{
+    fun isOutputAvailable(output: Output): Boolean {
         return getLinkOutput(output).isNotEmpty()
     }
     
@@ -253,8 +253,15 @@ interface IOContainer {
         val result = hashMapOf<IO.Name, Any>()
         
         inputs.forEach { pair ->
+            if (result.containsKey(pair.first.name)) return@forEach
             when {
-                result.containsKey(pair.first.name) || !isInputAvailable(pair.first) -> {
+                result.containsKey(pair.first.name) -> return@forEach
+                !isInputAvailable(pair.first) -> {
+                    if (pair.first.autocomplete) {
+                        result[pair.first.name] = listOf<Input>()
+                    } else {
+                        return@forEach
+                    }
                 }
                 !pair.first.autocomplete -> {
                     result[pair.first.name] = pair.first
@@ -288,7 +295,7 @@ interface IOContainer {
     fun getInputExecutor(compiler: Compiler, name: IO.Name): Executor {
         compiler.push()
         
-        if(isInputAvailable(getInput(name) ?: throw Error("This input isn't exist"))) {
+        if (isInputAvailable(getInput(name) ?: throw Error("This input isn't exist"))) {
             compiler[name]
         }
         
