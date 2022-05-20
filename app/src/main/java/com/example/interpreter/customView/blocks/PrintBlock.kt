@@ -35,7 +35,7 @@ class PrintBlock @JvmOverloads constructor(
         inputs.forEach { pair ->
             if (
                 pair.first !is InputAny ||
-                (isInputAvailable(pair.first) && pair.first.getValue() == null)
+                (!isInputAvailable(pair.first) && pair.first.getValue() == null)
             ) return@forEach
             
             if (isInputAvailable(pair.first)) {
