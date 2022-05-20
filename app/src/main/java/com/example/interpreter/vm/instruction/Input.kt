@@ -33,7 +33,7 @@ class Input : Instruction {
             do {
                 runBlocking {
                     suspendCoroutine<kotlin.Int> {
-                        context.consoleEvent = it
+                        //context.consoleEvent = it
                     }
                 }
             }while (context.listOfReading.firstOrNull() == null)

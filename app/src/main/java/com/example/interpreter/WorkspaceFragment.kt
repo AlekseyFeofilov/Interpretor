@@ -6,6 +6,7 @@ import android.content.ClipData
 import android.content.Context
 import android.graphics.Color
 import android.os.*
+import android.util.Log
 import android.view.*
 import android.view.View.*
 import android.widget.EditText
@@ -16,6 +17,7 @@ import androidx.core.view.forEach
 import androidx.core.view.setMargins
 import androidx.fragment.app.Fragment
 import com.example.interpreter.customView.DrawView
+import com.example.interpreter.customView.Line
 import com.example.interpreter.customView.blockView.BlockView
 import com.example.interpreter.customView.blocks.*
 import com.example.interpreter.databinding.*
@@ -44,7 +46,7 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
     private lateinit var blocksPanel: ConstraintLayout
     
     private lateinit var consoleBody: LinearLayout
-    private var listOfReading = mutableListOf<String>()
+    var listOfReading = mutableListOf<String>()
     private lateinit var canvas: DrawView
     
     private lateinit var bindingWorkspace: FragmentWorkspaceBinding
@@ -112,22 +114,26 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
         //    bindingConsole.consoleButton.visibility = View.INVISIBLE
         //}
         
-//        val params = LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT)
-//        params.setMargins(8, 8, 8, 8)
-//        bindingListOfBlocks.listOfBlocks.addView(AssignBlock(context!!), params)
-//        bindingListOfBlocks.listOfBlocks.addView(WhileBlock(context!!), params)
-//        bindingListOfBlocks.listOfBlocks.addView(IfBlock(context!!), params)
-//        bindingListOfBlocks.listOfBlocks.addView(InitializationBlock(context!!), params)
-//        bindingListOfBlocks.listOfBlocks.addView(BoolBlock(context!!), params)
-//        bindingListOfBlocks.listOfBlocks.addView(CompareBlock(context!!), params)
-    
+        val params = LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT)
+        params.setMargins(8, 8, 8, 8)
+        addBlockToGroup(StartBlock(context!!), params, context!!)
+        addBlockToGroup(InitializationBlock(context!!), params, context!!)
+        addBlockToGroup(InputBlock(context!!), params, context!!)
+        addBlockToGroup(PrintBlock(context!!), params, context!!)
+        addBlockToGroup(SetObjectBlock(context!!), params, context!!)
+        addBlockToGroup(WhileBlock(context!!), params, context!!)
+        addBlockToGroup(IfBlock(context!!), params, context!!)
+        addBlockToGroup(GetObjectBlock(context!!), params, context!!)
+        addBlockToGroup(CompareBlock(context!!), params, context!!)
+        addBlockToGroup(BoolBlock(context!!), params, context!!)
+        addBlockToGroup(AssignBlock(context!!), params, context!!)
         
         
         // set on click listener for button that add block from panel to stack
         for (i in 0 until bindingListOfBlocks.listOfBlocks.childCount) {
             bindingListOfBlocks.listOfBlocks.getChildAt(i).scaleX = 0.95f
             bindingListOfBlocks.listOfBlocks.getChildAt(i).setOnClickListener { block ->
-                addBlockToStack(createBlockByClickedButton(block))
+//                addBlockToStack(createBlockByClickedButton(block))
             }
         }
         
@@ -144,22 +150,105 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
         bindingStack.basketContainer.visibility = INVISIBLE
 
         console.x = metrics.bounds.width().toFloat()
-        bindingScrollBox.scrollBox.setOnTouchListener{ view, event -> vibrate(1000L); true }
+        //bindingScrollBox.scrollBox.setOnTouchListener{ view, event -> vibrate(1000L); true }
     
     }
     
-     //generate and put in stack blocks
-    @SuppressLint("UseRequireInsteadOfGet")
-    private fun createBlockByClickedButton(view: View): BlockView =
-        when (view) {
-            bindingListOfBlocks.ASSIGN -> { AssignBlock(context!!) }
-            bindingListOfBlocks.WHILE -> { WhileBlock(context!!) }
-            bindingListOfBlocks.COMPARE -> { CompareBlock(context!!) }
-            bindingListOfBlocks.IF -> { IfBlock(context!!) }
-            bindingListOfBlocks.INIT -> { InitializationBlock(context!!) }
-            bindingListOfBlocks.BOOL -> { BoolBlock(context!!) }
-            else -> { InitializationBlock(context!!) }
+    private fun addBlockToGroup(block: BlockView, params: LinearLayout.LayoutParams, context: Context) {
+        setListenersForBlock(block)
+        when (block) {
+            is AssignBlock -> {
+                val newBlock = AssignBlock(context)
+                bindingListOfBlocks.listOfBlocks.addView(newBlock, 10, params)
+                setListenersForBlock(newBlock)
+            }
+            is BoolBlock -> {
+                val newBlock = BoolBlock(context)
+                bindingListOfBlocks.listOfBlocks.addView(newBlock, 9, params)
+                setListenersForBlock(newBlock)
+            }
+            is CompareBlock -> {
+                val newBlock = CompareBlock(context)
+                bindingListOfBlocks.listOfBlocks.addView(newBlock, 8, params)
+                setListenersForBlock(newBlock)
+            }
+            is GetObjectBlock -> {
+                val newBlock = GetObjectBlock(context)
+                bindingListOfBlocks.listOfBlocks.addView(newBlock, 7, params)
+                setListenersForBlock(newBlock)
+            }
+            is IfBlock -> {
+                val newBlock = IfBlock(context)
+                bindingListOfBlocks.listOfBlocks.addView(newBlock, 6, params)
+                setListenersForBlock(newBlock)
+            }
+            is InitializationBlock -> {
+                val newBlock = InitializationBlock(context)
+                bindingListOfBlocks.listOfBlocks.addView(newBlock, 1, params)
+                setListenersForBlock(newBlock)
+            }
+            is InputBlock -> {
+                val newBlock = InputBlock(context)
+                bindingListOfBlocks.listOfBlocks.addView(newBlock, 2, params)
+                setListenersForBlock(newBlock)
+            }
+            is PrintBlock -> {
+                val newBlock = PrintBlock(context)
+                bindingListOfBlocks.listOfBlocks.addView(newBlock, 3, params)
+                setListenersForBlock(newBlock)
+            }
+            is SetObjectBlock -> {
+                val newBlock = SetObjectBlock(context)
+                bindingListOfBlocks.listOfBlocks.addView(newBlock, 4, params)
+                setListenersForBlock(newBlock)
+            }
+            is StartBlock -> {
+                val newBlock = StartBlock(context)
+                bindingListOfBlocks.listOfBlocks.addView(newBlock, 0, params)
+                setListenersForBlock(newBlock)
+            }
+            is WhileBlock -> {
+                val newBlock = WhileBlock(context)
+                bindingListOfBlocks.listOfBlocks.addView(newBlock, 5, params)
+                setListenersForBlock(newBlock)
+            }
         }
+    }
+    
+    private fun setListenersForBlock(block: BlockView) {
+        for (i in block.getListOfOutputView()) {
+            i.setOnTouchListener(onTouchIO())
+        }
+        for (i in block.getListOfInputView()) {
+            i.setOnTouchListener(onTouchIO())
+        }
+        block.translationZ = translationForBlocks
+        translationForBlocks++
+        
+        block.setOnClickListener {
+            Log.i("hello", "i'm here")
+            moveToStack(block, Point(0f, 0f))
+            correctNearBorder(block)
+            val params = LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT)
+            params.setMargins(8, 8, 8, 8)
+            addBlockToGroup(block, params, context!!)
+            block.setOnClickListener{ }
+        }
+        block.setOnLongClickListener(dragListener())
+    }
+    
+     //generate and put in stack blocks
+   // @SuppressLint("UseRequireInsteadOfGet")
+//    private fun createBlockByClickedButton(view: View): BlockView =
+//        when (view) {
+//            bindingListOfBlocks.ASSIGN -> { AssignBlock(context!!) }
+//            bindingListOfBlocks.WHILE -> { WhileBlock(context!!) }
+//            bindingListOfBlocks.COMPARE -> { CompareBlock(context!!) }
+//            bindingListOfBlocks.IF -> { IfBlock(context!!) }
+//            bindingListOfBlocks.INIT -> { InitializationBlock(context!!) }
+//            bindingListOfBlocks.BOOL -> { BoolBlock(context!!) }
+//            else -> { InitializationBlock(context!!) }
+//        }
     
     @SuppressLint("ClickableViewAccessibility")
     private fun addBlockToStack(block: BlockView) {
@@ -526,12 +615,18 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
     
     
     // drag-n-drop for blocks
-    @SuppressLint("ClickableViewAccessibility")
+    @SuppressLint("ClickableViewAccessibility", "UseRequireInsteadOfGet")
     private fun dragListener() = OnLongClickListener { view ->
         val data = ClipData.newPlainText("", "")
         vibrate(100L)
     
         //dragShadow = DragShadowBuilder(view)
+        if(view.parent == bindingListOfBlocks.listOfBlocks) {
+            movePanelWithBlocks(200L)
+            val params = LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT)
+            params.setMargins(8, 8, 8, 8)
+            addBlockToGroup(view as BlockView, params, context!!)
+        }
         draggingView = view as View
         dragShadow = DragShadowBuilder(draggingView)
         bindingStack.basketContainer.translationZ = 100f
@@ -646,35 +741,46 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
     }
     
     private fun moveToScrollBox(block: BlockView, location: Point) {
+        var delta = Point(0f, 0f)
         if (block.parent != bindingScrollBox.scrollBox) {
-            bindingStack.stack.removeView(block)
+            if(block.parent == bindingStack.stack) bindingStack.stack.removeView(block)
+            if(block.parent == bindingListOfBlocks.listOfBlocks) {
+                delta = Point(block.x, block.y)
+                bindingListOfBlocks.listOfBlocks.removeView(block)
+                listOfBlocks.add(block)
+                setListenersForBlock(block)
+                block.setOnClickListener {  }
+            }
+            else {
+                block.scaleX /= scaleInStack
+                block.scaleY /= scaleInStack
+            }
             bindingScrollBox.scrollBox.addView(block)
             changeVisibilityWiresForBlock(block)
-            for(i in listOfBlocks) {
-                if(i == block) {
-                    i.scaleX /= scaleInStack
-                    i.scaleY /= scaleInStack
-                }
-            }
+
         }
-        block.x = location.x - block.width / 2
-        block.y = location.y - block.height / 2
+        block.x = location.x + delta.x - block.width / 2
+        block.y = location.y + delta.y - block.height / 2
     }
     
     private fun moveToStack(block: BlockView, location: Point) {
+        var delta = Point(0f, 0f)
         if (block.parent != bindingStack.stack) {
-            bindingScrollBox.scrollBox.removeView(block)
+            if(block.parent == bindingScrollBox.scrollBox) bindingScrollBox.scrollBox.removeView(block)
+            if(block.parent == bindingListOfBlocks.listOfBlocks) {
+                delta = Point(block.x, block.y)
+                bindingListOfBlocks.listOfBlocks.removeView(block)
+                listOfBlocks.add(block)
+                setListenersForBlock(block)
+                block.setOnClickListener {  }
+            }
             bindingStack.stack.addView(block)
             changeVisibilityWiresForBlock(block)
-            for(i in listOfBlocks) {
-                if(i == block) {
-                    i.scaleX *= scaleInStack
-                    i.scaleY *= scaleInStack
-                }
-            }
+            block.scaleX *= scaleInStack
+            block.scaleY *= scaleInStack
         }
-        block.x = location.x - block.width / 2
-        block.y = location.y - block.height / 2
+        block.x = location.x + delta.x - block.width / 2
+        block.y = location.y + delta.y - block.height / 2
     }
     
     private fun changeVisibilityWiresForBlock(block: BlockView) {

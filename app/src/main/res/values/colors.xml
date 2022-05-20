@@ -25,10 +25,10 @@
     <color name="background">#303030</color>
 
     <!-- color for panel with blocks -->
-    <color name="shortcut">#393939</color>
-    <color name="shortcutBorder">#353535</color>
-    <color name="body">#0E0E0E</color>
+    <color name="shortcut">#CCBBAA</color>
+    <color name="shortcutBorder">#665544</color>
+    <color name="body">#99AABB</color>
     <color name="bodyBorder">#445566</color>
-    <color name="closeButton">#c75450</color>
+    <color name="closeButton">#AA0000</color>
 
 </resources>
