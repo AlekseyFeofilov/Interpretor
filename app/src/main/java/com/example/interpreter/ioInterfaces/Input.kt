@@ -8,6 +8,7 @@ interface Input : IO {
     fun parseValue(value: String)
     fun clone(): Input
     fun generateCoupleOutput(): Output
+    fun getValue(): Any?
     
     override fun convertToString() =
         "Input, $name, $type, $description, $autocomplete, $isDefault, ${getValue()}"

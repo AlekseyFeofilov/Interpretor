@@ -32,8 +32,7 @@ class InputDouble(
         
         default = try {
             parseDouble(value)
-        }
-        catch (e: java.lang.NumberFormatException){
+        } catch (e: java.lang.NumberFormatException) {
             0.0
         }
     }
@@ -45,22 +44,23 @@ class InputDouble(
     override fun getValue() = default
     
     override fun generateCoupleOutput(): Output {
-        return OutputDouble(IO.Name.Fake, FakeBlock(parent.view.context, this), input = this)
+        return OutputDouble(IO.Name.Fake, FakeBlock(parent.view.context, this))
     }
     
     private class FakeBlock @JvmOverloads constructor(
-        context: Context, val input: Input, attrs: AttributeSet? = null
+        context: Context, val input: InputDouble, attrs: AttributeSet? = null
     ) : BlockView(context, attrs) {
         override fun init() {
         
         }
-    
+        
         override fun compile(compiler: Compiler): List<Instruction> {
             return listOf(
                 Number(
-                compiler,
-                    input.getValue() as Double
-            ))
+                    compiler,
+                    input.getValue() ?: throw Error("argument is null")
+                )
+            )
         }
     }
     

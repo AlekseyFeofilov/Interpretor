@@ -9,10 +9,10 @@ interface IO {
     
     enum class Name {
         From, To, By,
-        Double, String, Boolean, Int,
+        Double, String, Boolean, Int, Array,
         Condition, True, False,
         First, Second,
-        Variable, Value,
+        Variable, Value, Key,
         Fake,
         Print,
     }
@@ -22,7 +22,6 @@ interface IO {
     val type: Type
     var parent: IOContainer
     val description: String?
-    fun getValue(): Any?
     
     fun convertToString(): String
 }

@@ -9,11 +9,7 @@ class OutputString(
     override val name: IO.Name,
     override var parent: IOContainer,
     override val description: String = "",
-    override val input: Input? = null
 ) : Output {
     override val color = "#AB954D"
     override val type = IO.Type.String
-    var default: String? = null
-    
-    override fun getValue() = default
 }

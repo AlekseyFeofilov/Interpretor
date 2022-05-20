@@ -35,11 +35,11 @@ class InputAny(
     override fun getValue() = default
     
     override fun generateCoupleOutput(): Output {
-        return OutputString(IO.Name.Fake, FakeBlock(parent.view.context), input = this)
+        return OutputString(IO.Name.Fake, FakeBlock(parent.view.context, this))
     }
     
     private class FakeBlock @JvmOverloads constructor(
-        context: Context, attrs: AttributeSet? = null
+        context: Context, val input: InputAny, attrs: AttributeSet? = null
     ) : BlockView(context, attrs) {
         override fun init() {
         
@@ -49,7 +49,7 @@ class InputAny(
             return listOf(
                 String(
                     compiler,
-                    (outputs[1].first.input!! as InputAny).getValue()!!
+                    input.getValue() ?: throw Error("argument is null")
                 )
             )
         }
