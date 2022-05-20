@@ -77,6 +77,8 @@ open class Compiler {
     }
     
     private fun typeCast(value: Instruction, inp: Input): Instruction{
+        val last = stack.lastOrNull() ?: throw Error("compiler stack corrupted")
+        
         return when(inp){
             is InputBoolean -> if(value !is Bool) Bool(this, value) else value
             is InputDouble -> if(value !is Number) Number(this, value) else value
@@ -84,7 +86,7 @@ open class Compiler {
             is InputInt -> if(value !is String) Int(this, value) else value
             
             else -> { throw Error("compiler auto cast error") }
-        }
+        }.let{ last.second.add(it); it }
     }
     
     operator fun get(name: IO.Name): Any{ /* Register or List<Register> */
@@ -113,7 +115,7 @@ open class Compiler {
                 val ret = blockViewCompile(currBlockView!!, name)
             currBlockView = bv
             
-            return Register(this, ret, name.toString(), env = last.first)
+            return Register(this, typeCast(ret, inNext), name.toString(), env = last.first)
         }
         
         if(inNext is List<*>){
@@ -124,7 +126,7 @@ open class Compiler {
                 val ret = blockViewCompile(currBlockView!!, name)
                 android.util.Log.i("COMPILER", currBlockView.toString())
     
-                listRet.add(Register(this, ret, name.toString(), env = last.first))
+                listRet.add(Register(this, typeCast(ret, i), name.toString(), env = last.first))
             }
             
             currBlockView = bv
