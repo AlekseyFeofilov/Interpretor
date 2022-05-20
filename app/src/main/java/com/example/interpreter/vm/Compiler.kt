@@ -84,11 +84,13 @@ open class Compiler {
             is InputDouble -> if(value !is Number) Number(this, value) else value
             is InputString -> if(value !is String) String(this, value) else value
             is InputInt -> if(value !is Int) Int(this, value) else value
+            is InputObject -> value
             is InputAny -> when(inp.parent.getLinkInput(inp)){
                 is OutputBoolean -> if(value !is Bool) Bool(this, value) else value
                 is OutputDouble -> if(value !is Number) Number(this, value) else value
                 is OutputString -> if(value !is String) String(this, value) else value
                 is OutputInt -> if(value !is Int) Int(this, value) else value
+                is OutputObject -> value
                 is OutputAny -> value
                 
                 else -> { throw Error("compiler: auto cast for output error") }
