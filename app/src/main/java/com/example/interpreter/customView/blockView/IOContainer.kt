@@ -255,10 +255,15 @@ interface IOContainer {
             when {
                 result.containsKey(pair.first.name) -> return@forEach
                 pair.first.autocomplete -> {
+                    val debug = inputs.filter {
+                        it.first.name == pair.first.name &&
+                                !isInputAvailable(it.first)
+                    }.map { it.first }
+                    
                     result[pair.first.name] =
                         inputs.filter {
                             it.first.name == pair.first.name &&
-                            !isInputAvailable(it.first)
+                            isInputAvailable(it.first)
                         }.map { it.first }
                 }
                 !isInputAvailable(pair.first) -> return@forEach
