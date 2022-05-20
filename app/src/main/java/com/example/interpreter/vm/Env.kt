@@ -14,6 +14,7 @@ class Env {
     @Transient
     val register = hashMapOf<Instruction, Instruction>()
     val vars = hashMapOf<String, Instruction>()
+    @Transient
     val compileTimeDefineVars = hashMapOf<String, KClass<out Instruction>>()
     var env: Env? = null
     
@@ -88,7 +89,7 @@ class Env {
     }
     
     fun define(item: String, value: KClass<out Instruction>){
-        if(value !is Object) return
+//        if(value !is Object) return
         compileTimeDefineVars[item] = value
     }
     

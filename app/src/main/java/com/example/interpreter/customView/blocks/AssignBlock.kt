@@ -58,7 +58,8 @@ class AssignBlock @JvmOverloads constructor(
         value: String
     ): Instruction {
         return when (clazz) {
-            Number::class, Int::class -> Math(compiler, value)
+            //приведение типов не может делать компилятор, потому что тут используется математика и toBool
+            Number::class, Int::class -> Register(compiler, Math(compiler, value), env = compiler.env(), exec = true)
             Bool::class -> Bool(compiler, toBool(value))
             else -> {
                 val compilerType = Compiler::class.createType()
@@ -92,7 +93,7 @@ class AssignBlock @JvmOverloads constructor(
     
     private fun checkVariableDeclare(compiler: Compiler, variable: String) {
         if (compiler.checkVar(variable) == null) {
-            throw Error("Variable isn't declare")
+            throw Error("Variable $variable isn't declare")
         }
     }
     

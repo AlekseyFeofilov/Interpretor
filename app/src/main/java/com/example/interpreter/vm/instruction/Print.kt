@@ -28,8 +28,8 @@ open class Print : Instruction {
         context?.activity?.runOnUiThread {
             if(context != null) {
                 when (ln) {
-                    true -> context?.printToConsole(str, color)
-                    false -> context?.printlnToConsole(str, color)
+                    true -> context?.printlnToConsole(str, color)
+                    false -> context?.printToConsole(str, color)
                 }
             }
         }

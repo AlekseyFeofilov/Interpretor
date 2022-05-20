@@ -38,17 +38,16 @@ class CompareBlock @JvmOverloads constructor(
     private fun compare(compiler: Compiler): Bool {
         val first = compiler[IO.Name.First] as Register
         val second = compiler[IO.Name.Second] as Register
-        return Bool(
+        val math = Math(
             compiler,
-            Math(
-                compiler,
-                listOf(
-                    Math.TRegister(first),
-                    comparing[spinner.selectedItem.toString()]!!,
-                    Math.TRegister(second),
-                )
+            listOf(
+                Math.TRegister(first),
+                comparing[spinner.selectedItem.toString()]!!,
+                Math.TRegister(second),
             )
         )
+        val register = Register(compiler, math, env = compiler.env(), exec = true)
+        return Bool(compiler, register)
     }
     
     private fun setSpinner() {

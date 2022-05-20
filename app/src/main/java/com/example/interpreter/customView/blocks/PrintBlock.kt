@@ -37,7 +37,9 @@ class PrintBlock @JvmOverloads constructor(
             if (
                 pair.first !is InputAny ||
                 (!isInputAvailable(pair.first) && pair.first.getValue() == null)
-            ) return@forEach
+            ) {
+                return@forEach
+            }
             
             if (isInputAvailable(pair.first)) {
                 val print = compiledInput.next() as Register

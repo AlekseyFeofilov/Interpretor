@@ -57,12 +57,14 @@ class InitializationBlock @JvmOverloads constructor(
                     
                     if (initialization != assignment?.groups?.get(0)?.value) throw Error("incorrect expression $initialization")
                     compiler.defineVar(assignment.groups[1]!!.value, instruction::class)
-                    val debug = compiler.checkVar(assignment.groups[1]!!.value)
                     
                     if (assignment.groups[2]?.value.let { it != null && it != "" }) {
                         if (assignment.groups[3]?.value.let { it != null && it != "" }) {
                             instruction = when (pair.first.name) {
-                                IO.Name.Double, IO.Name.Int -> Math(compiler, assignment.groups[3]!!.value)
+                                IO.Name.Double, IO.Name.Int -> {
+                                    val math = Math(compiler, assignment.groups[3]!!.value)
+                                    Register(compiler, math, env = compiler.env(), exec = true)
+                                }
                                 IO.Name.String -> String(compiler, assignment.groups[3]!!.value)
                                 IO.Name.Array -> throw Error("you should use Set Array")
                                 else -> Bool(compiler, toBool(assignment.groups[3]!!.value))
