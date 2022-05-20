@@ -10,11 +10,17 @@ import kotlinx.serialization.Transient
 class GetObject : Instruction {
     @Transient
     var obj: Any? = null
-    val name: kotlin.String
+    val name: Instruction
     
     override fun exec(env: Env) = sequence<Instruction> {
-        yield(_toObject(obj!!, env)[name] ?: Nop(Compiler.FCompiler()))
+        yield(_toObject(obj!!, env)[_unRegister(name, env).toString()] ?: Nop(Compiler.FCompiler()))
     }.iterator()
+    
+    private fun _unRegister(value: Instruction, env: Env): Instruction{
+        if(value is Register) return _unRegister(awaitLR(value.exec(env)), env)
+        
+        return value
+    }
     
     private fun _toObject(value: Any, env: Env): Object{
         if(value is Object) return value
@@ -25,7 +31,7 @@ class GetObject : Instruction {
         throw Error("Runtime Error 'to object' instruction not entry")
     }
     
-    constructor(compiler: Compiler, obj: Any, name: kotlin.String) : super(compiler) {
+    constructor(compiler: Compiler, obj: Any, name: Instruction) : super(compiler) {
         this.obj = obj
         this.name = name
     }

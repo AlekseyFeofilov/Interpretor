@@ -10,11 +10,11 @@ import kotlinx.serialization.Transient
 class SetObject : Instruction {
     @Transient
     var obj: Any? = null
-    val name: kotlin.String
+    val name: Instruction
     val value: Instruction
     
     override fun exec(env: Env) = sequence<Instruction> {
-        _toObject(obj!!, env)[name] = _unRegister(value, env)
+        _toObject(obj!!, env)[_unRegister(name, env).toString()] = _unRegister(value, env)
         yield(Nop(Compiler.FCompiler()))
     }.iterator()
     
@@ -33,7 +33,7 @@ class SetObject : Instruction {
         throw Error("Runtime Error 'to object' instruction not entry")
     }
     
-    constructor(compiler: Compiler, obj: Any, name: kotlin.String, value: Instruction) : super(compiler) {
+    constructor(compiler: Compiler, obj: Any, name: Instruction, value: Instruction) : super(compiler) {
         this.obj = obj
         this.name = name
         this.value = value
