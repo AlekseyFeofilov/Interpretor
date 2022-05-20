@@ -1,5 +1,6 @@
 package com.example.interpreter
 
+import android.content.Context
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.window.layout.WindowMetrics
@@ -25,5 +26,9 @@ class MainActivity : AppCompatActivity() {
             .computeCurrentWindowMetrics(this)
 
 //        val test: VM = VM()
+    }
+    
+    fun getContext(): Context {
+        return this
     }
 }

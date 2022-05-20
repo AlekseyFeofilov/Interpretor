@@ -9,54 +9,52 @@
         android:id="@+id/listOfBlocks"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
-        <Button
+        android:orientation="vertical"
+        android:gravity="center">
+        <com.example.interpreter.customView.blocks.AssignBlock
             android:id="@+id/ASSIGN"
-            android:text="ASSIGN"
             android:textSize="36sp"
-            android:layout_width="match_parent"
-            android:layout_height="150dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_margin="8dp"
-            android:background="@drawable/home_buttons"/>
-        <Button
+            android:clickable="false"/>
+        <com.example.interpreter.customView.blocks.WhileBlock
             android:id="@+id/WHILE"
-            android:text="WHILE"
             android:textSize="36sp"
-            android:layout_width="match_parent"
-            android:layout_height="150dp"
-            android:layout_margin="8dp"
-            android:background="@drawable/home_buttons"/>
-        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"/>
+        <com.example.interpreter.customView.blocks.CompareBlock
             android:id="@+id/COMPARE"
-            android:text="COMPARE"
             android:textSize="36sp"
-            android:layout_width="match_parent"
-            android:layout_height="150dp"
-            android:layout_margin="8dp"
-            android:background="@drawable/home_buttons"/>
-        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"/>
+        <com.example.interpreter.customView.blocks.IfBlock
             android:id="@+id/IF"
-            android:text="IF"
             android:textSize="36sp"
-            android:layout_width="match_parent"
-            android:layout_height="150dp"
-            android:layout_margin="8dp"
-            android:background="@drawable/home_buttons"/>
-        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"/>
+        <com.example.interpreter.customView.blocks.InitializationBlock
             android:id="@+id/INIT"
-            android:text="INIT"
             android:textSize="36sp"
-            android:layout_width="match_parent"
-            android:layout_height="150dp"
-            android:layout_margin="8dp"
-            android:background="@drawable/home_buttons"/>
-        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"/>
+        <com.example.interpreter.customView.blocks.BoolBlock
             android:id="@+id/BOOL"
-            android:text="BOOL"
             android:textSize="36sp"
-            android:layout_width="match_parent"
-            android:layout_height="150dp"
-            android:layout_margin="8dp"
-            android:background="@drawable/home_buttons"/>
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"/>
     </LinearLayout>
+<!--    <LinearLayout-->
+<!--        android:id="@+id/listOfGroups"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="match_parent"-->
+<!--        android:orientation="horizontal"-->
+<!--        android:gravity="center">-->
+
+<!--    </LinearLayout>-->
 </merge>
