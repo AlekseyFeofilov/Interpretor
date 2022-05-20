@@ -62,6 +62,7 @@ open class Int : Instruction {
     
     private fun _toInt(value: Any): kotlin.Int{
         if(value is kotlin.Int) return value
+        if(value is Int) return value.v
         if(value is Number) return value.toNumber().toInt()
         if(value is Bool) return if(value.toBool()) 1 else 0
         if(value is String) return value.toString().toIntOrNull() ?: 0

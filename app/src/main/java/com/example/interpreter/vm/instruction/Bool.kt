@@ -61,6 +61,7 @@ open class Bool : Instruction {
     
     private fun _toBool(value: Any): kotlin.Boolean{
         if(value is kotlin.Boolean) return value
+        if(value is Bool) return value.v
         if(value is Int) return value.toNumber() != 0.0
         if(value is Number) return value.toNumber() != 0.0
         if(value is String) return value.toString().isNotEmpty()

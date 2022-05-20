@@ -60,6 +60,7 @@ open class Number : Instruction {
     
     private fun _toNumber(value: Any): kotlin.Double{
         if(value is kotlin.Double) return value
+        if(value is Number) return value.v
         if(value is Int) return value.toNumber()
         if(value is Bool) return if(value.toBool()) 1.0 else 0.0
         if(value is String) return value.toString().toDoubleOrNull() ?: Double.NaN

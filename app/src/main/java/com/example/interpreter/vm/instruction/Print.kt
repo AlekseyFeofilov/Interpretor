@@ -1,19 +1,41 @@
 package com.example.interpreter.vm.instruction
 
 import android.util.Log
+import androidx.appcompat.app.AppCompatActivity
+import com.example.interpreter.WorkspaceFragment
 import com.example.interpreter.vm.Compiler
 import com.example.interpreter.vm.Env
 import com.example.interpreter.vm.yieldAllLR
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.Transient
 
+@Suppress("RemoveRedundantQualifierName", "MemberVisibilityCanBePrivate")
 @Serializable
 open class Print : Instruction {
     val value: Instruction
+    val color: kotlin.String
+    val ln: kotlin.Boolean
+    
+    @Transient
+    var context: WorkspaceFragment? = null
     
     override fun exec(env: Env) = sequence<Instruction> {
-        Log.i(TAG, yieldAllLR(value.exec(env)).toString())
+        val str = yieldAllLR(value.exec(env)).toString()
+        
+        Log.i(TAG, str)
+        
+        when(ln) {
+            true -> context?.printToConsole(str, color)
+            false -> context?.printlnToConsole(str, color)
+        }
+        
         yield(this@Print)
     }.iterator()
-    // todo: color and ln or not
-    constructor(compiler: Compiler, value: Instruction) : super(compiler) { this.value = value }
+    
+    constructor(compiler: Compiler, value: Instruction, context: WorkspaceFragment, color: kotlin.String = "#ffffff", ln: kotlin.Boolean = false) : super(compiler) {
+        this.context = context
+        this.color = color
+        this.value = value
+        this.ln = ln
+    }
 }

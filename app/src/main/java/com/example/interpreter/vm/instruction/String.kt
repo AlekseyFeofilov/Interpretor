@@ -60,6 +60,7 @@ class String : Instruction {
     
     private fun _toString(value: Any): kotlin.String{
         if(value is kotlin.String) return value
+        if(value is String) return value.v
         if(value is Int) return value.toString()
         if(value is Bool) return if(value.toBool()) "True" else "False"
         if(value is Number) return value.toNumber().toString()
