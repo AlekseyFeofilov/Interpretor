@@ -24,10 +24,12 @@ open class Print : Instruction {
         
         Log.i(TAG, str)
         
-        if(context != null) {
-            when (ln) {
-                true -> context?.printToConsole(str, color)
-                false -> context?.printlnToConsole(str, color)
+        context?.activity?.runOnUiThread {
+            if(context != null) {
+                when (ln) {
+                    true -> context?.printToConsole(str, color)
+                    false -> context?.printlnToConsole(str, color)
+                }
             }
         }
         
