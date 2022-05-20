@@ -46,21 +46,19 @@ class InputVarBlock @JvmOverloads constructor(
                     
                     if (initialization != variable?.groups?.get(0)?.value) throw Error("incorrect expression $initialization")
                     
-                    val input =
-                    val instruction = when (it.first.name) {
-                        IO.Name.Double, IO.Name.Int -> Math(compiler, TODO("value") as String)
-                        IO.Name.String -> String(compiler, TODO("value") as String)
-                        else -> Bool(compiler, toBool(TODO("value") as String))
-                    }
-                    
-                    initializationList.add(
-                        SetVar(
+                    /*initializationList.add(
+                        Input(
                             compiler,
                             variable.groups[1]!!.value,
-                            instruction,
-                            true
+                            when(it.first.name){
+                                IO.Name.Int -> com.example.interpreter.vm.instruction.Int::class
+                                IO.Name.Double -> Number::class
+                                IO.Name.String -> com.example.interpreter.vm.instruction.String::class
+                                IO.Name.Boolean -> Bool::class
+                                else -> throw Error("internal error in InitVarBlock")
+                            }
                         )
-                    )
+                    )*/
                 }
             }
         }
