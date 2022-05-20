@@ -158,26 +158,30 @@ open class Compiler {
         if(inNext is InputFunction){
             compileFunc(travelBackFun(inNext))
             
-            return Register(this, last.second.lastOrNull() ?: throw Error("compiler: last instruction is null"), name.toString(), env = last.first)
+            return Register(this, last.second.lastOrNull() ?: throw Error("compiler: last instruction is null"), env = last.first)
         }
         
         if(inNext is Input){
-            currBlockView = bv.getLinkInput(inNext).parent.view as BlockView
+            val out = bv.getLinkInput(inNext)
+            
+            currBlockView = out.parent.view as BlockView
                 val ret = blockViewCompile(currBlockView!!, name)
             currBlockView = bv
             
-            return Register(this, typeCast(ret, inNext), name.toString(), env = last.first)
+            return Register(this, typeCast(ret, inNext), out.name.toString(), env = last.first)
         }
         
         if(inNext is List<*>){
             val listRet = mutableListOf<Register>()
             for(i in inNext) {
-                currBlockView = bv.getLinkInput(i as Input).parent.view as BlockView
+                val out = bv.getLinkInput(i as Input)
+                
+                currBlockView = out.parent.view as BlockView
     
                 val ret = blockViewCompile(currBlockView!!, name)
                 android.util.Log.i("COMPILER", currBlockView.toString())
     
-                listRet.add(Register(this, typeCast(ret, i), name.toString(), env = last.first))
+                listRet.add(Register(this, typeCast(ret, i), out.name.toString(), env = last.first))
             }
             
             currBlockView = bv
