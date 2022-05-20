@@ -134,7 +134,7 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
         addCanvas(canvas)
         
         bindingStack.basketContainer.visibility = INVISIBLE
-        readlnFromConsole()
+        //readlnFromConsole()
         
 //        printlnToConsole("hello, World", "#111111")
 //        printlnToConsole("hello, World", "#222222")
@@ -174,8 +174,12 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
     
     fun printToConsole(text: String) {
         val list = getListOfTextViewFromConsole()
+        if(isConsoleHidden) {
+            takeConsole(200L)
+            isConsoleHidden = false
+        }
         if(list.size > 1) {
-            val newText = list[list.size - 1].text.toString() + text
+            val newText = list[list.size - 2].text.toString() + text
             list[list.size - 2].text = newText
         }else printlnToConsole(text)
     }
@@ -186,13 +190,17 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
         newLine.text = ">> $text"
     }
     
-    fun printToConsole(text: String, color: String) {
-        val list = getListOfTextViewFromConsole()
-        if(list.size > 1) {
-            val newText = list[list.size - 1].text.toString() + text
-            list[list.size - 2].text = newText
-        }else printlnToConsole(text, color)
-    }
+//    fun printToConsole(text: String, color: String) {
+//        val list = getListOfTextViewFromConsole()
+//        if(isConsoleHidden) {
+//            takeConsole(200L)
+//            isConsoleHidden = false
+//        }
+//        if(list.size > 1) {
+//            val newText = list[list.size - 1].text.toString() + text
+//            list[list.size - 2].text = newText
+//        }else printlnToConsole(text, color)
+//    }
     @SuppressLint("SetTextI18n")
     fun printlnToConsole(text: String, color: String) {
         val newLine = TextView(context)
@@ -202,6 +210,10 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
     }
     
     fun readlnFromConsole(): String {
+        if(isConsoleHidden) {
+            takeConsole(200L)
+            isConsoleHidden = false
+        }
         if(listOfReading.isNotEmpty()) {
             val line = listOfReading[0]
             listOfReading.removeAt(0)
@@ -240,7 +252,7 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
         if(!isInScrollBox(fromView)) return@OnTouchListener true
         when (event.action) {
             MotionEvent.ACTION_DOWN -> {
-                vibrate(50L)
+                vibrate(100L)
                 touchPoint = getCoordinatesOfIOPoint(fromView, bindingScrollBox.scrollBox)
             }
             MotionEvent.ACTION_MOVE -> {
@@ -274,7 +286,6 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
                 drawWireInMove(fromView, touchPoint, currentPoint)
                 makeConnect(fromView, toView)
                 
-                
                 recalculateWiresPoint()
                 
                 canvas.draw(listOfWires)
@@ -284,15 +295,16 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
         true
     }
     
-    private fun updateSizeOfBlocks() {
-        for(i in listOfBlocks) {
-            i.invalidate()
-        }
-    }
+//    private fun updateSizeOfBlocks() {
+//        for(i in listOfBlocks) {
+//            i.invalidate()
+//        }
+//    }
+    
+    
+    
     private fun recalculateWiresPoint() {
         for(i in 0 until listOfWires.size) {
-            listOfWires[i].startBlock.invalidate()
-            listOfWires[i].endBlock.invalidate()
             val outputX = getCoordinatesOfIOPoint(listOfWires[i].startBlock.getListOfOutputView()[0], listOfWires[i].startBlock).x
             listOfWires[i].outputPoint.x = outputX
         }
@@ -508,7 +520,7 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
     @SuppressLint("ClickableViewAccessibility")
     private fun dragListener() = OnLongClickListener { view ->
         val data = ClipData.newPlainText("", "")
-        vibrate(50L)
+        vibrate(100L)
     
         //dragShadow = DragShadowBuilder(view)
         draggingView = view as View
@@ -532,7 +544,7 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
         if(!isBlocksPanelHidden) return@OnDragListener true
         when (event.action) {
             DragEvent.ACTION_DRAG_ENTERED -> {
-                if(view == bindingStack.basketContainer) vibrate(50L)
+                if(view == bindingStack.basketContainer) vibrate(100L)
             }
             DragEvent.ACTION_DROP -> {
                 when (view) {
@@ -724,6 +736,7 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
         val from = Point(console.x, console.y)
         val to = Point(0.2f * metrics.bounds.width(), console.y)
         moveContainer(from, to, time, console)
+        
     }
     
     private fun hideConsole(view: View, time: Long) {
