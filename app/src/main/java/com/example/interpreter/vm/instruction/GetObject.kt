@@ -13,7 +13,12 @@ class GetObject : Instruction {
     val name: Instruction
     
     override fun exec(env: Env) = sequence<Instruction> {
-        yield(_toObject(obj!!, env)[_unRegister(name, env).toString()] ?: Nop(Compiler.FCompiler()))
+        val obj = _toObject(obj!!, env)
+        
+        yield(Object(Compiler.FCompiler(),
+            "out" to (obj[_unRegister(name, env).toString()] ?: Nop(Compiler.FCompiler())),
+            "out1" to obj,
+        ))
     }.iterator()
     
     private fun _unRegister(value: Instruction, env: Env): Instruction{

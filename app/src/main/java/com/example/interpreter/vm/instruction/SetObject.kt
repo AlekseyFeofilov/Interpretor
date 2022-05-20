@@ -14,8 +14,13 @@ class SetObject : Instruction {
     val value: Instruction
     
     override fun exec(env: Env) = sequence<Instruction> {
-        _toObject(obj!!, env)[_unRegister(name, env).toString()] = _unRegister(value, env)
-        yield(Nop(Compiler.FCompiler()))
+        val obj = _toObject(obj!!, env)
+        
+        obj[_unRegister(name, env).toString()] = _unRegister(value, env)
+        
+        yield(Object(Compiler.FCompiler(),
+            "out" to obj
+        ))
     }.iterator()
     
     private fun _unRegister(value: Instruction, env: Env): Instruction{
