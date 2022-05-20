@@ -64,6 +64,10 @@ open class Compiler {
         return Executor(exec.first, exec.second, localVar)
     }
     
+    fun env(): Env{
+        return (stack.lastOrNull() ?: throw Error("compiler: stack corrupted")).first
+    }
+    
     open fun defineVar(name: kotlin.String, clazz: KClass<out Instruction>){
         val last = stack.lastOrNull() ?: throw Error("compiler: stack corrupted")
         if(last.first.define(name).let { it != null && it != clazz }) throw Error("compiler: Redefine var to new type")
