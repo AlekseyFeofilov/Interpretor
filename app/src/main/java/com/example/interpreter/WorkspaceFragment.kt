@@ -523,6 +523,12 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
             bindingListOfBlocks.BOOL -> {
                 BoolBlock(context!!)
             }
+            bindingListOfBlocks.PRINT -> {
+                PrintBlock(context!!)
+            }
+            bindingListOfBlocks.START -> {
+                StartBlock(context!!)
+            }
             else -> {
                 InitializationBlock(context!!)
             }

@@ -6,6 +6,8 @@
     <string name="enter_value">Enter value…</string>
     <string name="before">before</string>
     <string name="after">after</string>
+    <string name="START">START</string>
+    <string name="PRINT">PRINT</string>
 
     <string-array name="comparing">
         <item><![CDATA[<]]></item>

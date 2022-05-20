@@ -39,10 +39,10 @@ abstract class BlockView @JvmOverloads constructor(
     
     //todo: error alert in time on type mismatch
     private fun typeMismatch() {
-        inputs.forEach {
+       /* inputs.forEach {
             if (it.second.name != IO.Name.Fake && it.first.type != it.second.type)
                 throw Error("type misMatch: required ${it.first.type} but found ${it.second.type}")
-        }
+        }*/
     }
     
     open fun checkError() {
