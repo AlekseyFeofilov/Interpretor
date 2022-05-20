@@ -4,16 +4,19 @@ import com.example.interpreter.customView.blockView.IOContainer
 
 interface IO {
     enum class Type {
-        Boolean, Double, String, Function, Null
+        Boolean, Double, Int, String, Object, Function, Any, Null
     }
     
+    @Suppress("EnumEntryName")
     enum class Name {
         From, To, By,
-        Double, String, Boolean, Int,
+        Double, String, Boolean, Int, Array,
         Condition, True, False,
         First, Second,
-        Variable, Value,
+        Variable, Value, Key,
         Fake,
+        Print,
+        out, out1, out2, out3,
     }
     
     val name: Name
@@ -21,7 +24,6 @@ interface IO {
     val type: Type
     var parent: IOContainer
     val description: String?
-    fun getValue(): Any?
     
     fun convertToString(): String
 }

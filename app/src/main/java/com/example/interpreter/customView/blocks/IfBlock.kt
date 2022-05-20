@@ -2,6 +2,8 @@ package com.example.interpreter.customView.blocks
 
 import android.content.Context
 import android.util.AttributeSet
+import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
 import com.example.interpreter.customView.blockView.BlockView
 import com.example.interpreter.ioInterfaces.IO
 import com.example.interpreter.ioInterfaces.ioTypes.InputBoolean
@@ -11,6 +13,8 @@ import com.example.interpreter.vm.instruction.Instruction
 import com.example.interpreter.vm.Compiler
 import com.example.interpreter.vm.Executor
 import com.example.interpreter.vm.instruction.If
+import com.example.interpreter.vm.instruction.Input
+import com.example.interpreter.vm.instruction.Nop
 
 class IfBlock @JvmOverloads constructor(
     context: Context,
@@ -22,27 +26,22 @@ class IfBlock @JvmOverloads constructor(
         return listOf(getIfInstruction(compiler))
     }
     
-    private fun getInputExecutor(name: IO.Name, compiler: Compiler): Executor {
-        compiler.push()
-            compiler[name]
-        return compiler.pop()
-    }
-    
+
     private fun getIfInstruction(compiler: Compiler): If {
         return If(
             compiler,
             listOf(
-                getInputExecutor(IO.Name.Condition, compiler),
-                getInputExecutor(IO.Name.True, compiler),
-                getInputExecutor(IO.Name.False, compiler)
+                getInputExecutor(compiler, IO.Name.Condition),
+                getInputExecutor(compiler, IO.Name.True),
+                getInputExecutor(compiler, IO.Name.False)
             )
         )
     }
     
     init {
-        addInput(InputBoolean(IO.Name.Condition, this, "Condition", true, false))
-        addOutput(OutputFunction(IO.Name.True, this, "If condition = true"))
-        addOutput(OutputFunction(IO.Name.False, this, "Else"))
+        addInput(InputBoolean(IO.Name.Condition, this, "Condition", isDefault = false))
+        addInput(InputFunction(IO.Name.True, this, "If condition = true"))
+        addInput(InputFunction(IO.Name.False, this, "Else"))
         
         setHeader("If", "#0B6E4F")
     }

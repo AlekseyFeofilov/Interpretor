@@ -9,10 +9,12 @@ import kotlinx.serialization.Polymorphic
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.modules.subclass
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.encodeToString
 import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.descriptors.buildClassSerialDescriptor
 import kotlinx.serialization.descriptors.element
 import kotlinx.serialization.encoding.*
+import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic
 import kotlin.Error
@@ -20,7 +22,6 @@ import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 import kotlin.reflect.KProperty1
 import kotlin.reflect.full.*
-import kotlin.Int
 import kotlin.math.*
 
 @Serializable
@@ -102,7 +103,7 @@ class Math : Instruction {
         @JvmStatic fun toNumber(obj: Any, env: Env): Double{
             @Suppress("UNCHECKED_CAST")
             val v1 = toInstruction(obj)
-    
+            
             if(v1 !is Number){
                 if(v1 is String){
                     return try {
@@ -199,6 +200,7 @@ class Math : Instruction {
             
             if(ret is String) return TVar(ret)
             if(ret is Number) return TNumber(ret)
+            if(ret is Int) return TNumber(Number(Compiler.FCompiler(), ret.toNumber()))
             
             throw Error("TRegister not found convert type")
         }
@@ -709,12 +711,12 @@ class Math : Instruction {
             
                 if(op::class != TLBrk::class) throw Error("Unexpected ')'")
             }else{
-                val priority = getStaticField(reflectOP::class, "weight").get(reflectOP::class) as Int
+                val priority = getStaticField(reflectOP::class, "weight").get(reflectOP::class) as kotlin.Int
             
                 while(operatorStack.any() && reflectOP::class != TLBrk::class){
                     val op = operatorStack.removeLast()
                 
-                    if(priority > getStaticField(op::class, "weight").get(op::class) as Int){
+                    if(priority > getStaticField(op::class, "weight").get(op::class) as kotlin.Int){
                         operatorStack.add(op)
                         break
                     }
@@ -786,12 +788,12 @@ class Math : Instruction {
                     
                     if(op::class != TLBrk::class) throw Error("Unexpected ')'")
                 }else{
-                    val priority = getStaticField(reflectOP::class, "weight").get(reflectOP::class) as Int
+                    val priority = getStaticField(reflectOP::class, "weight").get(reflectOP::class) as kotlin.Int
                     
                     while(operatorStack.any() && reflectOP::class != TLBrk::class){
                         val op = operatorStack.removeLast()
                         
-                        if(priority > getStaticField(op::class, "weight").get(op::class) as Int){
+                        if(priority > getStaticField(op::class, "weight").get(op::class) as kotlin.Int){
                             operatorStack.add(op)
                             break
                         }

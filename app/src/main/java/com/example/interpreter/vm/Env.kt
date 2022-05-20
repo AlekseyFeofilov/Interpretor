@@ -14,7 +14,7 @@ class Env {
     @Transient
     val register = hashMapOf<Instruction, Instruction>()
     val vars = hashMapOf<String, Instruction>()
-    val compileTimeDefineVars = hashMapOf<String, KClass<Instruction>>()
+    val compileTimeDefineVars = hashMapOf<String, KClass<out Instruction>>()
     var env: Env? = null
     
     constructor()
@@ -81,13 +81,13 @@ class Env {
         return parent
     }
     
-    fun define(item: String): KClass<Instruction>?{
+    fun define(item: String): KClass<out Instruction>?{
         val currEnv = defineRecursiveSearchEnv(item) ?: return null
         
         return currEnv.compileTimeDefineVars[item]
     }
     
-    fun define(item: String, value: KClass<Instruction>){
+    fun define(item: String, value: KClass<out Instruction>){
         if(value !is Object) return
         compileTimeDefineVars[item] = value
     }

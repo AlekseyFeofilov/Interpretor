@@ -9,11 +9,7 @@ class OutputDouble(
     override val name: IO.Name,
     override var parent: IOContainer,
     override val description: String = "",
-    override val input: Input? = null
 ): Output {
     override val color = "#80505B"
     override val type = IO.Type.Double
-    var default: Double? = null
-    
-    override fun getValue() = default
 }

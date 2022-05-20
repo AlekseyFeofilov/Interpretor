@@ -3,48 +3,52 @@ package com.example.interpreter.ioInterfaces.ioTypes
 import android.content.Context
 import android.util.AttributeSet
 import com.example.interpreter.customView.blockView.BlockView
-import com.example.interpreter.ioInterfaces.IO
 import com.example.interpreter.customView.blockView.IOContainer
+import com.example.interpreter.ioInterfaces.IO
 import com.example.interpreter.ioInterfaces.Input
 import com.example.interpreter.ioInterfaces.Output
 import com.example.interpreter.vm.Compiler
-import com.example.interpreter.vm.Executor
 import com.example.interpreter.vm.instruction.Instruction
-import com.example.interpreter.vm.instruction.Number
+import com.example.interpreter.vm.instruction.Object
 
-class InputFunction(
+class InputObject(
     override val name: IO.Name,
     override var parent: IOContainer,
     override val description: String = "",
     override val autocomplete: Boolean = false,
     override val isLink: Boolean = true
 ) : Input {
-    override val type = IO.Type.Function
+    override val type = IO.Type.Object
     override val isDefault = false
-    override val color = "#8B80F9"
-//    var default: Executor? = null
+    override val color = "#732C2C"
+    var default: String? = null
     
-    override fun parseValue(value: String) { }
+    override fun parseValue(value: String) {}
     
     override fun clone(): Input {
-        return InputFunction(name, parent, description, autocomplete, isLink)
+        return InputObject(name, parent, description, autocomplete, isLink)
     }
     
-    override fun getValue() = null
+    override fun getValue() = default
     
     override fun generateCoupleOutput(): Output {
-        return OutputFunction(IO.Name.Fake, FakeBlock(parent.view.context))
+        return OutputObject(IO.Name.Fake, FakeBlock(parent.view.context, this))
     }
     
     private class FakeBlock @JvmOverloads constructor(
-        context: Context, attrs: AttributeSet? = null
+        context: Context, val input: InputObject, attrs: AttributeSet? = null
     ) : BlockView(context, attrs) {
         override fun init() {
         
         }
         
         override fun compile(compiler: Compiler): List<Instruction> {
-            return listOf()
+            return listOf(
+                com.example.interpreter.vm.instruction.String(
+                    compiler,
+                    input.getValue() ?: throw Error("argument is null")
+                )
+            )
         }
     }
 }

@@ -22,9 +22,11 @@ class InputBoolean(
 ) : Input {
     override val type = IO.Type.Boolean
     override val color = "#6CD4FF"
-    var default: Boolean? = null
+    var default: Boolean? = false
     
-    override fun parseValue(value: String) {}
+    override fun parseValue(value: String) {
+        default = !value.matches("""\s*false\s*""".toRegex())
+    }
     
     override fun clone(): Input {
         return InputBoolean(name, parent, description, autocomplete, isDefault, isLink)
@@ -33,11 +35,11 @@ class InputBoolean(
     override fun getValue() = default
     
     override fun generateCoupleOutput(): Output {
-        return OutputBoolean(IO.Name.Fake, FakeBlock(parent.view.context, input = this), input = this)
+        return OutputBoolean(IO.Name.Fake, FakeBlock(parent.view.context, this))
     }
     
     private class FakeBlock @JvmOverloads constructor(
-        context: Context, attrs: AttributeSet? = null, val input: InputBoolean
+        context: Context, val input: InputBoolean, attrs: AttributeSet? = null
     ) : BlockView(context, attrs) {
     
         override fun init() {
@@ -48,8 +50,7 @@ class InputBoolean(
             android.util.Log.i("Input Bool", outputs.toString())
             return listOf(Bool(
                 compiler,
-                input.getValue() ?: false
-//                outputs[1].first.input!!.getValue() as Boolean
+                input.getValue() ?: throw Error("argument is null")
             ))
         }
     }

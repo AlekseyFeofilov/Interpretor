@@ -4,6 +4,7 @@ import com.example.interpreter.vm.Env
 import com.example.interpreter.vm.Compiler
 import com.example.interpreter.vm.awaitLR
 import kotlinx.serialization.*
+import kotlinx.serialization.builtins.serializer
 import kotlinx.serialization.descriptors.*
 import kotlinx.serialization.encoding.*
 import java.lang.Error
@@ -17,6 +18,7 @@ open class Number : Instruction {
     @Transient
     private var value: @Contextual Any = 0.0
     
+    @OptIn(ExperimentalSerializationApi::class)
     class Serializer : KSerializer<Number>{
         override val descriptor: SerialDescriptor = buildClassSerialDescriptor(Number::class.qualifiedName ?: "*EMPTY qualifiedName*") {
             element<kotlin.Int>("id")
@@ -28,7 +30,7 @@ open class Number : Instruction {
             encoder.encodeStructure(descriptor){
                 encodeIntElement(descriptor, 0, value.id)
                 encodeBooleanElement(descriptor, 1, value.isBasic)
-                encodeDoubleElement(descriptor, 2, value.v)
+                encodeNullableSerializableElement(descriptor, 2, Double.serializer(), try{ value.v }catch (e: Error){ null })
             }
         }
     
@@ -58,6 +60,8 @@ open class Number : Instruction {
     
     private fun _toNumber(value: Any): kotlin.Double{
         if(value is kotlin.Double) return value
+        if(value is Number) return value.v
+        if(value is Int) return value.toNumber()
         if(value is Bool) return if(value.toBool()) 1.0 else 0.0
         if(value is String) return value.toString().toDoubleOrNull() ?: Double.NaN
         if(value is Register) return _toNumber(awaitLR(value.exec()))

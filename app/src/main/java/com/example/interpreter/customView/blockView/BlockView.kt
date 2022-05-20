@@ -21,6 +21,7 @@ import com.example.interpreter.ioInterfaces.Output
 import com.example.interpreter.ioInterfaces.ioTypes.InputFunction
 import com.example.interpreter.ioInterfaces.ioTypes.OutputFunction
 import com.example.interpreter.vm.Compiler
+import com.example.interpreter.vm.Executor
 import com.example.interpreter.vm.instruction.Instruction
 
 @SuppressLint("ClickableViewAccessibility")
@@ -38,10 +39,10 @@ abstract class BlockView @JvmOverloads constructor(
     
     //todo: error alert in time on type mismatch
     private fun typeMismatch() {
-        inputs.forEach {
+       /* inputs.forEach {
             if (it.second.name != IO.Name.Fake && it.first.type != it.second.type)
                 throw Error("type misMatch: required ${it.first.type} but found ${it.second.type}")
-        }
+        }*/
     }
     
     open fun checkError() {
@@ -187,6 +188,8 @@ abstract class BlockView @JvmOverloads constructor(
     init {
         init()
     }
+    
+    //todo: add boolean compare, print, logical And and Or
     
     open fun init(){
         addInput(InputFunction(IO.Name.From, this, "before"))

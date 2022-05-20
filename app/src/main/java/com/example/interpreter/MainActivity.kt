@@ -25,7 +25,7 @@ class MainActivity : AppCompatActivity() {
         metrics = WindowMetricsCalculator.getOrCreate()
             .computeCurrentWindowMetrics(this)
 
-//        val test: VM = VM()
+        //val test: VM = VM()
     }
     
     fun getContext(): Context {

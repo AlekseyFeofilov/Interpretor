@@ -121,15 +121,18 @@ class InputView constructor(context: Context?) : LinearLayout(context) {
                     removeComponent(2)
                     initInputBooleanSpinner()
                 }
-                IO.Type.String -> {
-                    removeComponent(3)
-                    initDefaultEditText(InputType.TYPE_CLASS_TEXT)
-                }
                 IO.Type.Double -> {
                     removeComponent(3)
                     initDefaultEditText(InputType.TYPE_NUMBER_FLAG_SIGNED or InputType.TYPE_NUMBER_FLAG_DECIMAL)
                 }
-                else -> {}
+                IO.Type.Int -> {
+                    removeComponent(3)
+                    initDefaultEditText(InputType.TYPE_NUMBER_FLAG_SIGNED)
+                }
+                else -> {
+                    removeComponent(3)
+                    initDefaultEditText(InputType.TYPE_CLASS_TEXT)
+                }
             }
         } else {
             removeComponent(2, 2)
@@ -145,7 +148,7 @@ class InputView constructor(context: Context?) : LinearLayout(context) {
     }
     
     /////////////////////////////////////////////////
-    private var indicator = false
+/*    private var indicator = false
     
     private val connect = OnClickListener {
         it as RadioButton
@@ -157,9 +160,9 @@ class InputView constructor(context: Context?) : LinearLayout(context) {
         }
         
         indicator = !indicator
-    }
+    }*/
     
     init {
-        binding.inputRadioButton.setOnClickListener(connect)
+        //binding.inputRadioButton.setOnClickListener(connect)
     }
 }

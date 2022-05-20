@@ -2,6 +2,7 @@ package com.example.interpreter.customView.blocks
 
 import android.content.Context
 import android.util.AttributeSet
+import androidx.annotation.UiThread
 import com.example.interpreter.customView.blockView.BlockView
 import com.example.interpreter.ioInterfaces.IO
 import com.example.interpreter.ioInterfaces.Output
@@ -25,8 +26,8 @@ class BoolBlock @JvmOverloads constructor(
     
     init {
         addInput(InputBoolean(IO.Name.Boolean, this, "val: "))
-        addOutput(OutputBoolean(IO.Name.Second, this, "val: "))
+        addOutput(OutputBoolean(IO.Name.out, this, "val: "))
         
-        setHeader("BOOL", "#DB5764")
+        setHeader("Bool", "#6CD4FF")
     }
 }
