@@ -41,6 +41,7 @@ class PrintBlock @JvmOverloads constructor(
             if (isInputAvailable(pair.first)) {
                 val print = compiledInput.next() as Register
                 prints.add(Print(compiler, print))
+                endln(compiler)
                 return@forEach
             }
             
@@ -51,18 +52,13 @@ class PrintBlock @JvmOverloads constructor(
                         prints.add(print(compiler, it))
                     }
                 }
-            prints.add(endln(compiler))
+            endln(compiler)
         }
         
         return prints
     }
     
-    private fun endln(compiler: Compiler): Print {
-        return Print(
-            compiler,
-            String(compiler, "")
-        )
-    }
+    private fun endln(compiler: Compiler) = Print(compiler, String(compiler, ""), true)
     
     private fun print(compiler: Compiler, value: String): Print {
         return when {
