@@ -5,7 +5,7 @@ import com.example.interpreter.customView.blockView.IOContainer
 import com.example.interpreter.ioInterfaces.Input
 import com.example.interpreter.ioInterfaces.Output
 
-class OutputString(
+class OutputString (
     override val name: IO.Name,
     override var parent: IOContainer,
     override val description: String = "",

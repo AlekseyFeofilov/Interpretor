@@ -23,6 +23,7 @@ class AssignBlock @JvmOverloads constructor(
         checkVariableDeclare(compiler, assignment.first)
         
         val instruction = getInstruction(compiler, assignment)
+        //todo: make check type
         return listOf(assign(compiler, assignment.first, instruction))
     }
     

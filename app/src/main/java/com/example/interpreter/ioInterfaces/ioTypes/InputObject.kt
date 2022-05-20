@@ -11,7 +11,7 @@ import com.example.interpreter.vm.Compiler
 import com.example.interpreter.vm.instruction.Instruction
 import com.example.interpreter.vm.instruction.Object
 
-class InputObject (
+class InputObject(
     override val name: IO.Name,
     override var parent: IOContainer,
     override val description: String = "",
@@ -21,9 +21,9 @@ class InputObject (
     override val type = IO.Type.Object
     override val isDefault = false
     override val color = "#732C2C"
-    var default: Object? = null
+    var default: String? = null
     
-    override fun parseValue(value: String) { }
+    override fun parseValue(value: String) {}
     
     override fun clone(): Input {
         return InputObject(name, parent, description, autocomplete, isLink)
@@ -32,18 +32,23 @@ class InputObject (
     override fun getValue() = default
     
     override fun generateCoupleOutput(): Output {
-        return OutputObject(IO.Name.Fake, FakeBlock(parent.view.context))
+        return OutputObject(IO.Name.Fake, FakeBlock(parent.view.context, this))
     }
     
     private class FakeBlock @JvmOverloads constructor(
-        context: Context, attrs: AttributeSet? = null
+        context: Context, val input: InputObject, attrs: AttributeSet? = null
     ) : BlockView(context, attrs) {
         override fun init() {
         
         }
         
         override fun compile(compiler: Compiler): List<Instruction> {
-            return listOf()
+            return listOf(
+                com.example.interpreter.vm.instruction.String(
+                    compiler,
+                    input.getValue() ?: throw Error("argument is null")
+                )
+            )
         }
     }
 }

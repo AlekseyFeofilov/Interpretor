@@ -26,7 +26,7 @@ class BoolBlock @JvmOverloads constructor(
     
     init {
         addInput(InputBoolean(IO.Name.Boolean, this, "val: "))
-        addOutput(OutputBoolean(IO.Name.Second, this, "val: "))
+        addOutput(OutputBoolean(IO.Name.out, this, "val: "))
         
         setHeader("Bool", "#6CD4FF")
     }
