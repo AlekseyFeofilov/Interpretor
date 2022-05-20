@@ -28,7 +28,7 @@ open class Print : Instruction {
         context?.activity?.runOnUiThread {
             if(context != null) {
                 when (ln) {
-                    true -> context?.printToConsole(str, color)
+                    //true -> context?.printToConsole(str, color)
                     false -> context?.printlnToConsole(str, color)
                 }
             }
