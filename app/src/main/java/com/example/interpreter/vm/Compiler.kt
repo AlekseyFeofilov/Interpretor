@@ -100,7 +100,7 @@ open class Compiler {
         }.let{ last.second.add(it); it }
     }
     
-    private fun compileFunc(bv: BlockView){
+    private fun compileFunc(bv: BlockView, stop: BlockView? = null){
         val lastBV = currBlockView
         currBlockView = bv
         
@@ -109,6 +109,8 @@ open class Compiler {
             val last = stack.lastOrNull() ?: throw Error("compiler: stack corrupted")
             
             last.second.addAll(currBlockView!!.compile(this))
+            
+            if(currBlockView == stop) break
             
             val outNext = hashOut[IO.Name.To] ?: break
             val inputNext = currBlockView!!.getLinkOutput(outNext).getOrNull(0) ?: break
@@ -156,7 +158,7 @@ open class Compiler {
         }
         
         if(inNext is InputFunction){
-            compileFunc(travelBackFun(inNext))
+            compileFunc(travelBackFun(inNext), bv.getLinkInput(inNext).parent.view as BlockView)
             
             return Register(this, last.second.lastOrNull() ?: throw Error("compiler: last instruction is null"), env = last.first)
         }
