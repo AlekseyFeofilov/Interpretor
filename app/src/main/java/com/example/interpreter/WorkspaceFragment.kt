@@ -31,6 +31,8 @@ import kotlin.random.Random
 import com.example.interpreter.vm.Compiler
 import kotlinx.coroutines.delay
 import java.lang.Exception
+import kotlin.coroutines.Continuation
+import kotlin.coroutines.resume
 
 
 var isConsoleHidden = true
@@ -55,7 +57,6 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
     private lateinit var blocksPanel: ConstraintLayout
     
     private lateinit var consoleBody: LinearLayout
-    private var listOfReading = mutableListOf<String>()
     private lateinit var canvas: DrawView
     
     private lateinit var bindingWorkspace: FragmentWorkspaceBinding
@@ -71,6 +72,9 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
     
     private val listOfBlocks = mutableListOf<BlockView>()
     private val listOfWires = mutableListOf<Wire>()
+    
+    var listOfReading = ArrayDeque<String>()
+    var consoleEvent: Continuation<Int>? = null
     
     @SuppressLint("ClickableViewAccessibility")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -156,7 +160,7 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
         }
         
         bindingStack.basketContainer.visibility = INVISIBLE
-        readlnFromConsole()
+//        readlnFromConsole()
 
 //        printlnToConsole("hello, World", "#111111")
 //        printlnToConsole("hello, World", "#222222")
@@ -217,15 +221,15 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
         newLine.text = ">> $text"
     }
     
-    fun readlnFromConsole(): String {
-        if (listOfReading.isNotEmpty()) {
-            val line = listOfReading[0]
-            listOfReading.removeAt(0)
-            return line
-        } else {
-            return ""
-        }
-    }
+//    fun readlnFromConsole(): String {
+//        if (listOfReading.isNotEmpty()) {
+//            val line = listOfReading[0]
+//            listOfReading.removeAt(0)
+//            return line
+//        } else {
+//            return ""
+//        }
+//    }
     
     @SuppressLint("SetTextI18n")
     private fun keyListener() = OnKeyListener { view, key, event ->
@@ -237,6 +241,10 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
             consoleBody.addView(newLine, consoleBody.childCount - 1)
             newLine.text = "<< ${view.text}"
             listOfReading.add(view.text.toString())
+            
+            if(consoleEvent != null){
+                consoleEvent?.resume(0)
+            }
         }
         (view as EditText).text.clear()
         false
