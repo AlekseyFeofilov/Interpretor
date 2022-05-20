@@ -58,42 +58,70 @@ open class Compiler {
     }
     
     fun pop(localVar: kotlin.Boolean = false): Executor{
-        val exec = stack.removeLastOrNull() ?: throw Error("compiler stack corrupted")
+        val exec = stack.removeLastOrNull() ?: throw Error("compiler: stack corrupted")
         
         return Executor(exec.first, exec.second, localVar)
     }
     
     open fun defineVar(name: kotlin.String, clazz: KClass<out Instruction>){
-        val last = stack.lastOrNull() ?: throw Error("compiler stack corrupted")
-        if(last.first.define(name).let { it != null && it != clazz }) throw Error("Redefine var to new type")
+        val last = stack.lastOrNull() ?: throw Error("compiler: stack corrupted")
+        if(last.first.define(name).let { it != null && it != clazz }) throw Error("compiler: Redefine var to new type")
         
         last.first.define(name, clazz)
     }
     
     open fun checkVar(name: kotlin.String): KClass<out Instruction>? {
-        val last = stack.lastOrNull() ?: throw Error("compiler stack corrupted")
+        val last = stack.lastOrNull() ?: throw Error("compiler: stack corrupted")
         
         return last.first.define(name)
     }
     
     private fun typeCast(value: Instruction, inp: Input): Instruction{
-        val last = stack.lastOrNull() ?: throw Error("compiler stack corrupted")
+        val last = stack.lastOrNull() ?: throw Error("compiler: stack corrupted")
         
         return when(inp){
             is InputBoolean -> if(value !is Bool) Bool(this, value) else value
             is InputDouble -> if(value !is Number) Number(this, value) else value
             is InputString -> if(value !is String) String(this, value) else value
-            is InputInt -> if(value !is String) Int(this, value) else value
+            is InputInt -> if(value !is Int) Int(this, value) else value
+            is InputAny -> when(inp.parent.getLinkInput(inp)){
+                is OutputBoolean -> if(value !is Bool) Bool(this, value) else value
+                is OutputDouble -> if(value !is Number) Number(this, value) else value
+                is OutputString -> if(value !is String) String(this, value) else value
+                is OutputInt -> if(value !is Int) Int(this, value) else value
+                is OutputAny -> value
+                
+                else -> { throw Error("compiler: auto cast for output error") }
+            }
             
-            else -> { throw Error("compiler auto cast error") }
+            else -> { throw Error("compiler: auto cast for input error") }
         }.let{ last.second.add(it); it }
     }
     
-    operator fun get(name: IO.Name): Any{ /* Register or List<Register> */
-        val last = stack.lastOrNull() ?: throw Error("compiler stack corrupted")
-        val bv = currBlockView ?: throw Error("compiler context corrupted")
+    private fun compileFunc(bv: BlockView){
+        val lastBV = currBlockView
+        currBlockView = bv
         
-        val inNext = bv.getInputsHash()[name] ?: throw Error("compiler crash input/output in hashT is null")
+        while(true) {
+            val hashOut = currBlockView!!.getOutputsHash()
+            val last = stack.lastOrNull() ?: throw Error("compiler: stack corrupted")
+            
+            last.second.addAll(currBlockView!!.compile(this))
+            
+            val outNext = hashOut[IO.Name.To] ?: break
+            val inputNext = currBlockView!!.getLinkOutput(outNext).getOrNull(0) ?: break
+            
+            currBlockView = inputNext.parent.view as BlockView
+        }
+        
+        currBlockView = lastBV
+    }
+    
+    operator fun get(name: IO.Name): Any{ /* Register or List<Register> */
+        val last = stack.lastOrNull() ?: throw Error("compiler: stack corrupted")
+        val bv = currBlockView ?: throw Error("compiler: context corrupted")
+        
+        val inNext = bv.getInputsHash()[name] ?: throw Error("compiler: crash input/output in hashT is null")
     
         fun blockViewCompile(curr: BlockView, name: IO.Name): Instruction {
             if (cacheInputs[Pair(curr, name)] == null) {
@@ -105,10 +133,31 @@ open class Compiler {
         
             val listInstruction = cacheInputs[Pair(curr, name)]!!
             
-            return listInstruction.lastOrNull() ?: throw Error("last instruction is null")
+            return listInstruction.lastOrNull() ?: throw Error("compiler: last instruction is null")
         }
         
-        //todo: compile function input
+        fun travelBackFun(inp: Input): BlockView{
+            var retBV = inp.parent
+            
+            while(true) {
+                val hashInp = retBV.getInputsHash()
+                
+                val inpNext = hashInp[IO.Name.From] ?: break
+                val outNext = retBV.getLinkInput(inpNext as Input)
+                
+                if(outNext.name == IO.Name.Fake) break
+                
+                retBV = outNext.parent
+            }
+            
+            return retBV.view as BlockView
+        }
+        
+        if(inNext is InputFunction){
+            compileFunc(travelBackFun(inNext))
+            
+            return Register(this, last.second.lastOrNull() ?: throw Error("compiler: last instruction is null"), name.toString(), env = last.first)
+        }
         
         if(inNext is Input){
             currBlockView = bv.getLinkInput(inNext).parent.view as BlockView
@@ -133,8 +182,7 @@ open class Compiler {
             return  listRet
         }
         
-        throw Error("inNext not input or List<Input>")
-//        return Register(this, Nop(this))
+        throw Error("compiler: inNext not input or List<Input>")
     }
 //    operator fun set(name: kotlin.String, value: Any) {}
     
@@ -144,23 +192,10 @@ open class Compiler {
     }
     
     fun compile(): Executor{
-        currBlockView = blockView ?: throw Error("Fake compiler not call compile method")
+        currBlockView = blockView ?: throw Error("compiler: Fake compiler not call compile method")
         
         push()
-        
-        while(true) {
-            val hashOut = currBlockView!!.getOutputsHash()
-            val last = stack.lastOrNull() ?: throw Error("compiler stack corrupted")
-            
-            last.second.addAll(currBlockView!!.compile(this))
-//            last.second.add(Number(this, 0.0))
-            
-            val outNext = hashOut[IO.Name.To] ?: break
-            val inputNext = currBlockView!!.getLinkOutput(outNext).getOrNull(0) ?: break
-            
-            currBlockView = inputNext.parent.view as BlockView
-        }
-        
+            compileFunc(currBlockView as BlockView)
         return pop().let{ Log.i("Compiler", Json{ prettyPrint = true; serializersModule = Math.module }.encodeToString(it)); it }
     }
 }
