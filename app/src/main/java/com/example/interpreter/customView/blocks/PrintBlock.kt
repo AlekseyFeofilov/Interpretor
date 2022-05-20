@@ -70,48 +70,10 @@ class PrintBlock @JvmOverloads constructor(
                 Print(compiler, String(compiler, value))
             }
             compiler.checkVar(stringWithoutSpaces(value)!!) != null -> {
-                val clazz = compiler.checkVar(stringWithoutSpaces(value)!!)!!
-                Print(compiler, getInstructionByClass(compiler, clazz, value))
+                Print(compiler, GetVar(compiler, stringWithoutSpaces(value)!!))
             }
             else -> {
                 throw Error("variable ${stringWithoutSpaces(value)} isn't exist")
-            }
-        }
-    }
-    
-    private fun toBool(string: String): Boolean {
-        return when {
-            string.matches("""\s*true\s*""".toRegex()) -> true
-            string.matches("""\s*false\s*""".toRegex()) -> false
-            else -> {
-                val value = """\s*(\S*)""".toRegex().find(string)
-                throw Error("${value!!.groups[1]!!.value} isn't boolean value")
-            }
-        }
-    }
-    
-    private fun getInstructionByClass(
-        compiler: Compiler,
-        clazz: KClass<out Instruction>,
-        value: String
-    ): Instruction {
-        return when (clazz) {
-            Number::class, Int::class -> Math(compiler, value)
-            Bool::class -> Bool(compiler, toBool(value))
-            else -> {
-                val compilerType = Compiler::class.createType()
-                val instructionType = Instruction::class.createType()
-                val constructor = clazz.constructors.find {
-                    it.typeParameters == listOf(
-                        compilerType,
-                        instructionType
-                    )
-                }
-                
-                return constructor!!.call(
-                    compiler,
-                    com.example.interpreter.vm.instruction.String(compiler, value)
-                )
             }
         }
     }

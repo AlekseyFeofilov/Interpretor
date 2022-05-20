@@ -25,7 +25,7 @@ class InputAny(
     var default: kotlin.String? = null
     
     override fun parseValue(value: kotlin.String) {
-    
+        default = value.ifEmpty { null }
     }
     
     override fun clone(): Input {
