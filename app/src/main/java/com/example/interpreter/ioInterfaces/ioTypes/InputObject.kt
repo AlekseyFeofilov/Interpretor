@@ -23,7 +23,9 @@ class InputObject(
     override val color = "#732C2C"
     var default: String? = null
     
-    override fun parseValue(value: String) {}
+    override fun parseValue(value: String) {
+        default = value
+    }
     
     override fun clone(): Input {
         return InputObject(name, parent, description, autocomplete, isLink)
