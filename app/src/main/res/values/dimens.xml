@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="buttonsSize">61dp</dimen>
+    <dimen name="stackSize">136dp</dimen>
+    <dimen name="closeButtonSize">30dp</dimen>
+    <dimen name="workspaceSize">10000dp</dimen>
+</resources>

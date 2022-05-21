@@ -10,6 +10,11 @@
     <string name="PRINT">PRINT</string>
     <string name="INPUT">INPUT</string>
     <string name="flush">Flush</string>
+    <string name="settings">settings</string>
+    <string name="exit">exit</string>
+    <string name="cons">cons_</string>
+    <string name="comile_is_start">compile is running</string>
+    <string name="description">description</string>
 
     <string-array name="comparing">
         <item><![CDATA[<]]></item>

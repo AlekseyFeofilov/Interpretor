@@ -12,6 +12,7 @@ import android.view.View.*
 import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.TextView
+import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.forEach
 import androidx.core.view.setMargins
@@ -157,6 +158,7 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
         bindingConsole.run.setOnClickListener {
             for(i in listOfBlocks) {
                 if(i is StartBlock) {
+                    Toast.makeText(context, getString(R.string.comile_is_start), Toast.LENGTH_SHORT)
                     //TODO: change for all start blocks
                     try {
                         VM(Compiler(i, this).compile()).start()
@@ -250,7 +252,6 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
             moveToStack(block, Point(400f, 300f), delta)
             listOfBlocks.add(block)
             //correctNearBorder(block)
-            Log.i("hello", "${block.x}, ${block.y}")
             val params = LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT)
             params.setMargins(8, 8, 8, 8)
             addBlockToGroup(block, params, context!!)
@@ -379,7 +380,6 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
     
     @SuppressLint("SetTextI18n")
     private fun keyListener() = OnKeyListener { view, key, event ->
-        Log.i("bebebe", "$key")
         if (event.action == KeyEvent.ACTION_DOWN &&
             key == KeyEvent.KEYCODE_ENTER &&
             (view as EditText).text.isNotEmpty()
@@ -483,22 +483,24 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
             input = first
             output = second
         }
-        
-        if(!listOfBlocks[findBlockIndByIOView(input)].isInputComplete(input) &&
-            !listOfBlocks[findBlockIndByIOView(output)].isOutputComplete(output)) {
-            addNewWire(input, output)
-        }
-        else if(listOfBlocks[findBlockIndByIOView(input)].isInputComplete(input) &&
-            !listOfBlocks[findBlockIndByIOView(output)].isOutputComplete(output)) {
-            disconnectWireByIO(input)
-            removeWireByIO(input)
-            addNewWire(input, output)
-        }
-        else if(!listOfBlocks[findBlockIndByIOView(input)].isInputComplete(input) &&
-            listOfBlocks[findBlockIndByIOView(output)].isOutputComplete(output)) {
-            disconnectWireByIO(output)
-            removeWireByIO(output)
-            addNewWire(input, output)
+    
+        when {
+            !listOfBlocks[findBlockIndByIOView(input)].isInputComplete(input) &&
+                    !listOfBlocks[findBlockIndByIOView(output)].isOutputComplete(output) -> {
+                addNewWire(input, output)
+            }
+            listOfBlocks[findBlockIndByIOView(input)].isInputComplete(input) &&
+                    !listOfBlocks[findBlockIndByIOView(output)].isOutputComplete(output) -> {
+                disconnectWireByIO(input)
+                removeWireByIO(input)
+                addNewWire(input, output)
+            }
+            !listOfBlocks[findBlockIndByIOView(input)].isInputComplete(input) &&
+                    listOfBlocks[findBlockIndByIOView(output)].isOutputComplete(output) -> {
+                disconnectWireByIO(output)
+                removeWireByIO(output)
+                addNewWire(input, output)
+            }
         }
         
     }

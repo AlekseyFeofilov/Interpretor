@@ -9,12 +9,13 @@
         android:layout_height="match_parent"
         android:layout_marginEnd="3dp"
         android:layout_marginStart="3dp"
-        android:layout_marginBottom="53dp"
+        android:layout_marginBottom="3dp"
         android:layout_marginTop="51dp"
         android:scrollbars="none">
         <HorizontalScrollView
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            tools:ignore="ScrollViewSize">
             <FrameLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
@@ -24,8 +25,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:orientation="vertical"
-                    android:gravity="center"
-                    android:layout_marginBottom="50dp">
+                    android:gravity="center">
                 </LinearLayout>
 <!--                <LinearLayout-->
 <!--                    android:id="@+id/listOfBlocks2"-->
@@ -75,21 +75,21 @@
             </FrameLayout>
         </HorizontalScrollView>
     </ScrollView>
-    <HorizontalScrollView
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:layout_marginEnd="3dp"
-        android:layout_marginStart="3dp"
-        android:layout_marginBottom="3dp"
-        android:scrollbars="none"
-        app:layout_constraintBottom_toBottomOf="parent">
-        <LinearLayout
-            android:id="@+id/listOfGroups"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="horizontal">
+<!--    <HorizontalScrollView-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="50dp"-->
+<!--        android:layout_marginEnd="3dp"-->
+<!--        android:layout_marginStart="3dp"-->
+<!--        android:layout_marginBottom="3dp"-->
+<!--        android:scrollbars="none"-->
+<!--        app:layout_constraintBottom_toBottomOf="parent">-->
+<!--        <LinearLayout-->
+<!--            android:id="@+id/listOfGroups"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="match_parent"-->
+<!--            android:orientation="horizontal">-->
 
-        </LinearLayout>
+<!--        </LinearLayout>-->
 
-    </HorizontalScrollView>
+<!--    </HorizontalScrollView>-->
 </merge>

@@ -6,4 +6,9 @@
         <item name="android:background">@drawable/home_buttons</item>
         <item name="android:textColor">@color/homeTextButtons</item>
     </style>
+
+    <style name="buttons">
+        <item name="android:layout_height">60dp</item>
+        <item name="android:layout_width">0dp</item>
+    </style>
 </resources>

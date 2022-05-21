@@ -9,15 +9,15 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/blockViewContainer"
-        android:background="#222222"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:background="@color/blockBody">
 
         <TextView
             android:id="@+id/headerTextView"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:background="#798086"
+            android:background="@color/textHeader"
             android:gravity="center_vertical|center"
             android:lines="1"
             android:padding="3dp"

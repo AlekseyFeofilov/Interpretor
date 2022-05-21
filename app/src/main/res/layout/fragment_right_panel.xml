@@ -17,8 +17,8 @@
         app:layout_constraintStart_toEndOf="@id/startBorderConsole"
         app:layout_constraintEnd_toEndOf="@id/endBorderConsole">
         <Button
-            android:layout_width="60dp"
-            android:layout_height="60dp"
+            android:layout_width="@dimen/buttonsSize"
+            android:layout_height="@dimen/buttonsSize"
             android:id="@+id/run"
             android:layout_margin="16dp"
             app:layout_constraintDimensionRatio="h, 1:1"
@@ -26,8 +26,8 @@
             app:layout_constraintStart_toStartOf="parent"
             android:background="@drawable/start"/>
         <Button
-            android:layout_width="60dp"
-            android:layout_height="60dp"
+            android:layout_width="@dimen/buttonsSize"
+            android:layout_height="@dimen/buttonsSize"
             android:text="@string/flush"
             android:id="@+id/flush"
             android:layout_margin="16dp"
@@ -83,9 +83,8 @@
 
     <Button
         android:id="@+id/consoleButton"
-        android:layout_height="60dp"
-        android:layout_width="0dp"
-        android:text="cons_"
+        style="@style/buttons"
+        android:text="@string/cons"
         android:textSize="11sp"
         android:layout_marginBottom="64dp"
         android:translationZ="90dp"
