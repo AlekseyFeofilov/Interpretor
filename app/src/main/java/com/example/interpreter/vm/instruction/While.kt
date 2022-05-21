@@ -19,7 +19,11 @@ class While : Instruction {
                 return value
             }
             
-            val bool = _unRegister(ret, env)
+            var bool = _unRegister(ret, env)
+            
+            if(bool is Object){
+                bool = bool["out"]!!
+            }
             
             if (bool is Bool && bool.toBool()) {
                 yieldAllLR(

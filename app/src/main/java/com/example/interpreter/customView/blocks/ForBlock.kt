@@ -44,6 +44,6 @@ class ForBlock @JvmOverloads constructor(
         addInput(InputBoolean(IO.Name.Condition, this, "condition: Boolean", isDefault = false))
         addInput(InputFunction(IO.Name.Iterate, this, "iterate"))
         addInput(InputFunction(IO.Name.Body, this, "body"))
-        setHeader("While", "#6B8C9E")
+        setHeader("For", "#6B8C9E")
     }
 }

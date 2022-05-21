@@ -171,7 +171,7 @@ class VM {
         
         Log.i("VM", Json{ prettyPrint = true; serializersModule = Math.module }.encodeToString(this.block))
         
-        start()
+        start(true)
     }
     
     fun start(debug: Boolean = false){
@@ -277,7 +277,7 @@ class VM {
                             resources("web/static")
                         }
                     }
-                }//.start() //todo: server for debug, double start crash app, port already in use
+                }.start() //todo: server for debug, double start crash app, port already in use
             }
 
 //        var i = 0
