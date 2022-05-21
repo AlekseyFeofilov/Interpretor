@@ -8,6 +8,7 @@ import kotlinx.serialization.builtins.serializer
 import kotlinx.serialization.descriptors.*
 import kotlinx.serialization.encoding.*
 import java.lang.Error
+import java.lang.Exception
 
 @Suppress("FunctionName", "RemoveRedundantQualifierName")
 @Serializable(with = String.Serializer::class)
@@ -30,7 +31,7 @@ class String : Instruction {
             encoder.encodeStructure(descriptor){
                 encodeIntElement(descriptor, 0, value.id)
                 encodeBooleanElement(descriptor, 1, value.isBasic)
-                encodeNullableSerializableElement(descriptor, 2, kotlin.String.serializer(), try{ value.v }catch (e: Error){ null })
+                encodeNullableSerializableElement(descriptor, 2, kotlin.String.serializer(), try{ value.v }catch (e: Exception){ null })
             }
         }
         
