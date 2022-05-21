@@ -21,9 +21,13 @@ open class Register : Instruction {
             is String -> { yield(value); return@sequence }
         }
         
+//        if(value is Object && !value.is_obj){ yield(value); return@sequence }
+        
         if(_exec) env.reg(value, yieldAllLR(value.exec(env)))
         val reg = env.reg(value) ?:
             throw Error("Execution failed, register [${value.types}@${value.id}] is null")
+    
+        if(reg is Object && !reg.is_obj){ yield(reg); return@sequence }
         
         if(reg !is Object){
 //            throw Error("Return is not object")

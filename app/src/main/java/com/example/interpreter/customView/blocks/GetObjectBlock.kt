@@ -20,30 +20,35 @@ class GetObjectBlock @JvmOverloads constructor(
 ) : BlockView(context, attrs, defStyleAttr) {
     override fun compile(compiler: Compiler): List<Instruction> {
         super.compile(compiler)
-        return listOf(getObject(compiler))
+        return getObject(compiler)
     }
     
-    private fun getObject(compiler: Compiler): GetObject {
+    private fun getObject(compiler: Compiler): List<Instruction> {
         val inputVariable = getInput((IO.Name.Variable))!!
         val inputKey = getInput((IO.Name.Key))!!
         val nameVariable = getLinkInput(inputVariable).name
+    
+        val assign: MutableList<Instruction> = mutableListOf()
         
         val obj =
-            if (nameVariable == IO.Name.Fake) {
-                compiler.checkVar(
-                    inputVariable.getValue() as kotlin.String?
-                        ?: {
-                            Log.i("TAG", "Missing variable to get object")
-                            throw Error("Missing variable to get object")
-                        }.toString()
-                ) ?: throw Error("Variable ${inputVariable.getValue()} isn't declare")
-            } else {
-                compiler[IO.Name.Variable]
-            }
-    
-        GetVar(
-                    compiler, inputVariable.getValue() as kotlin.String
-                )
+        if (nameVariable == IO.Name.Fake) {
+            compiler.checkVar(
+                inputVariable.getValue() as kotlin.String?
+                    ?: {
+//                            Log.i("TAG", "Missing variable to get object")
+                        throw Error("Missing variable to get object")
+                    }.toString()
+            ) ?: throw Error("Variable ${inputVariable.getValue()} isn't declare")
+
+            val get = GetVar(
+                compiler, inputVariable.getValue() as kotlin.String
+            )
+
+            assign.add(get)
+            Register(compiler, get)
+        } else {
+            compiler[IO.Name.Variable]
+        }
         
         val key = if (getLinkInput(inputKey).name == IO.Name.Fake) String(
             compiler,
@@ -51,12 +56,14 @@ class GetObjectBlock @JvmOverloads constructor(
         ) else {
             compiler[IO.Name.Value] as Register
         }
-        
-        return GetObject(
+    
+        assign.add(GetObject(
             compiler,
             obj,
             key
-        )
+        ))
+        
+        return assign
     }
     
     init {

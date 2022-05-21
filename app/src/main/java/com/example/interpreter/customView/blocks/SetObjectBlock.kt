@@ -21,16 +21,16 @@ class SetObjectBlock @JvmOverloads constructor(
     override fun compile(compiler: Compiler): List<Instruction> {
         super.compile(compiler)
         
-        return listOf(
-            setObject(compiler)
-        )
+        return setObject(compiler)
     }
     
-    private fun setObject(compiler: Compiler): SetObject {
+    private fun setObject(compiler: Compiler): List<Instruction> {
         val inputVariable = getInput((IO.Name.Variable))!!
         val inputKey = getInput((IO.Name.Key))!!
         val inputValue = getInput((IO.Name.Value))!!
         val nameVariable = getLinkInput(inputVariable).name
+        
+        val assign: MutableList<Instruction> = mutableListOf()
         
         val obj =
             if (nameVariable == IO.Name.Fake) {
@@ -39,9 +39,12 @@ class SetObjectBlock @JvmOverloads constructor(
                         ?: throw Error("Missing variable to set object")
                 ) ?: throw Error("Variable ${inputVariable.getValue()} isn't declare")
                 
-                GetVar(
+                val get = GetVar(
                     compiler, inputVariable.getValue() as String
                 )
+                
+                assign.add(get)
+                Register(compiler, get)
             } else {
                 compiler[IO.Name.Variable]
             }
@@ -51,23 +54,25 @@ class SetObjectBlock @JvmOverloads constructor(
                 compiler,
                 inputKey.getValue() as String? ?: throw Error("Missing key to set object")
             ) else {
-                compiler[IO.Name.Value] as Register
+                compiler[IO.Name.Key] as Register
             }
         
         val value =
-            if (getLinkInput(inputKey).name == IO.Name.Fake) com.example.interpreter.vm.instruction.String(
+            if (getLinkInput(inputValue).name == IO.Name.Fake) com.example.interpreter.vm.instruction.String(
                 compiler,
-                inputKey.getValue() as String? ?: throw Error("Missing value to set object")
+                inputValue.getValue() as String? ?: throw Error("Missing value to set object")
             ) else {
                 compiler[IO.Name.Value] as Register
             }
         
-        return SetObject(
+        assign.add(SetObject(
             compiler,
             obj,
             key,
             value
-        )
+        ))
+        
+        return assign
         
     }
     

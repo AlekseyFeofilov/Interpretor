@@ -9,6 +9,7 @@ import kotlinx.serialization.Serializable
 open class Object : Instruction {
     @SerialName("_isBasic")
     override val isBasic: Boolean = true
+    var is_obj = true
     
     private var value: HashMap<kotlin.String, Instruction> = hashMapOf()
     
