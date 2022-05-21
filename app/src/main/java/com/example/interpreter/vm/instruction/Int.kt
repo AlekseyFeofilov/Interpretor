@@ -33,7 +33,7 @@ open class Int : Instruction {
             encoder.encodeStructure(descriptor){
                 encodeIntElement(descriptor, 0, value.id)
                 encodeBooleanElement(descriptor, 1, value.isBasic)
-                encodeNullableSerializableElement(descriptor, 2, kotlin.Int.serializer(), try{ value.v }catch (e: Exception){ null })
+                encodeNullableSerializableElement(descriptor, 2, kotlin.Int.serializer(), try{ value.v }catch (e: Error){ null }catch (e: Exception){ null })
             }
         }
         
