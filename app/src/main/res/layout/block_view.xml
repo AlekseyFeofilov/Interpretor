@@ -11,13 +11,13 @@
         android:id="@+id/blockViewContainer"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@drawable/block_body">
+        android:background="@color/blockBody">
 
         <TextView
             android:id="@+id/headerTextView"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:background="@drawable/block_header"
+            android:background="@color/textHeader"
             android:gravity="center_vertical|center"
             android:lines="1"
             android:padding="3dp"

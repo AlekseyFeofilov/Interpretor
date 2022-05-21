@@ -19,7 +19,7 @@ class InputObject(
     override val isLink: Boolean = true
 ) : Input {
     override val type = IO.Type.Object
-    override val isDefault = false
+    override val isDefault = true
     override val color = "#732C2C"
     var default: String? = null
     

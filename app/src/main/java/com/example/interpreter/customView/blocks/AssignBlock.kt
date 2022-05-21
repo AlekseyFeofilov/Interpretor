@@ -28,6 +28,10 @@ class AssignBlock @JvmOverloads constructor(
         return listOf(assign(compiler, assignment.first, instruction))
     }
     
+    private fun stringWithoutSpaces(string: String): String? {
+        return """\s*(\S+)\s*""".toRegex().find(string)?.groups?.get(1)?.value
+    }
+    
     private fun toBool(string: String): Boolean {
         return when {
             string.matches("""\s*true\s*""".toRegex()) -> true
@@ -82,8 +86,9 @@ class AssignBlock @JvmOverloads constructor(
     private fun getAssignment(): Pair<String, String?> {
         val input = getInput(IO.Name.Value) as InputAny
     
-        val variable = (getInput(IO.Name.Variable) as InputString).getValue()
+        var variable = (getInput(IO.Name.Variable) as InputString).getValue()
             ?: throw Error("Missing variable to assign")
+        variable = stringWithoutSpaces(variable)!!
 
         val value = if (isInputAvailable(input)) null
         else input.getValue() ?: throw Error("Missing value to assign")
