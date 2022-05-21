@@ -1,5 +1,6 @@
 package com.example.interpreter.customView.blockView
 
+import android.util.Log
 import android.view.View
 import android.widget.LinearLayout
 import androidx.core.view.children
@@ -240,8 +241,7 @@ interface IOContainer {
     }
     
     fun isInputAvailable(input: Input): Boolean {
-        return !((getLinkInput(input).name == IO.Name.Fake && input.getValue() == null) ||
-                (input.getValue() != null && input.type == IO.Type.Any))
+        return !((getLinkInput(input).name == IO.Name.Fake && (input.getValue() == null || input.type == IO.Type.Any)))
     }
     
     fun isOutputAvailable(output: Output): Boolean {
@@ -253,22 +253,23 @@ interface IOContainer {
         val result = hashMapOf<IO.Name, Any>()
         
         inputs.forEach { pair ->
-            if (result.containsKey(pair.first.name)) return@forEach
             when {
                 result.containsKey(pair.first.name) -> return@forEach
-                !isInputAvailable(pair.first) -> {
-                    if (pair.first.autocomplete) {
-                        result[pair.first.name] = listOf<Input>()
-                    } else {
-                        return@forEach
-                    }
+                pair.first.autocomplete -> {
+                    val debug = inputs.filter {
+                        it.first.name == pair.first.name &&
+                                !isInputAvailable(it.first)
+                    }.map { it.first }
+                    
+                    result[pair.first.name] =
+                        inputs.filter {
+                            it.first.name == pair.first.name &&
+                            isInputAvailable(it.first)
+                        }.map { it.first }.let { Log.i("IOCOMNT", it.toString()); it }
                 }
+                !isInputAvailable(pair.first) -> return@forEach
                 !pair.first.autocomplete -> {
                     result[pair.first.name] = pair.first
-                }
-                pair.first.autocomplete -> {
-                    result[pair.first.name] =
-                        inputs.filter { it.first.name == pair.first.name }.map { it.first }
                 }
             }
         }

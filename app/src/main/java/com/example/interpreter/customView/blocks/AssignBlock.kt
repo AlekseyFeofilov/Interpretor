@@ -10,6 +10,7 @@ import com.example.interpreter.vm.Compiler
 import com.example.interpreter.vm.instruction.*
 import com.example.interpreter.vm.instruction.Number
 import kotlin.reflect.KClass
+import kotlin.reflect.KTypeParameter
 import kotlin.reflect.full.createType
 
 class AssignBlock @JvmOverloads constructor(
@@ -43,8 +44,7 @@ class AssignBlock @JvmOverloads constructor(
         assignment: Pair<String, String?>
     ): Instruction {
         return if (assignment.second != null) {
-            val value = assignment.first
-            getInstructionByClass(compiler, compiler.checkVar(value)!!, value)
+            getInstructionByClass(compiler, compiler.checkVar(assignment.first)!!, assignment.second!!)
         } else getInstructionByCompiler(compiler)
     }
     
@@ -58,11 +58,12 @@ class AssignBlock @JvmOverloads constructor(
         value: String
     ): Instruction {
         return when (clazz) {
-            Number::class, Int::class -> Math(compiler, value)
+            //приведение типов не может делать компилятор, потому что тут используется математика и toBool
+            Number::class, com.example.interpreter.vm.instruction.Int::class -> Register(compiler, Math(compiler, value), env = compiler.env(), exec = true)
             Bool::class -> Bool(compiler, toBool(value))
             else -> {
-                val compilerType = Compiler::class.createType()
-                val instructionType = Instruction::class.createType()
+                val compilerType = Compiler::class.typeParameters[0]
+                val instructionType = Instruction::class.typeParameters[0]
                 val constructor = clazz.constructors.find {
                     it.typeParameters == listOf(
                         compilerType,
@@ -92,7 +93,7 @@ class AssignBlock @JvmOverloads constructor(
     
     private fun checkVariableDeclare(compiler: Compiler, variable: String) {
         if (compiler.checkVar(variable) == null) {
-            throw Error("Variable isn't declare")
+            throw Error("Variable isn't declare [${variable}]")
         }
     }
     
