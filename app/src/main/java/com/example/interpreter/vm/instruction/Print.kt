@@ -34,7 +34,7 @@ open class Print : Instruction {
                     if(context != null) {
                         when (ln) {
                             true -> context?.printlnToConsole(str, color)
-                            false -> context?.printToConsole(str, color)
+                            false -> context?.printToConsole(str)
                         }
                     }
                     

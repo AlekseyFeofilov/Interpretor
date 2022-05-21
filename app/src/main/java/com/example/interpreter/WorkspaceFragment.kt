@@ -21,6 +21,8 @@ import com.example.interpreter.customView.Line
 import com.example.interpreter.customView.blockView.BlockView
 import com.example.interpreter.customView.blocks.*
 import com.example.interpreter.databinding.*
+import com.example.interpreter.vm.Compiler
+import com.example.interpreter.vm.VM
 import com.example.interpreter.vm.instruction.If
 import kotlin.math.pow
 import kotlin.math.sqrt
@@ -130,12 +132,12 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
         
         
         // set on click listener for button that add block from panel to stack
-        for (i in 0 until bindingListOfBlocks.listOfBlocks.childCount) {
-            bindingListOfBlocks.listOfBlocks.getChildAt(i).scaleX = 0.95f
-            bindingListOfBlocks.listOfBlocks.getChildAt(i).setOnClickListener { block ->
-//                addBlockToStack(createBlockByClickedButton(block))
-            }
-        }
+//        for (i in 0 until bindingListOfBlocks.listOfBlocks.childCount) {
+//            bindingListOfBlocks.listOfBlocks.getChildAt(i).scaleX = 0.95f
+//            bindingListOfBlocks.listOfBlocks.getChildAt(i).setOnClickListener { block ->
+////                addBlockToStack(createBlockByClickedButton(block))
+//            }
+//        }
         
         // turn on drag-n-drop
         bindingScrollBox.scrollBox.setOnDragListener(dropListener())
@@ -151,7 +153,22 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
 
         console.x = metrics.bounds.width().toFloat()
         //bindingScrollBox.scrollBox.setOnTouchListener{ view, event -> vibrate(1000L); true }
-    
+        bindingConsole.run.setOnClickListener {
+            for(i in listOfBlocks) {
+                if(i is StartBlock) {
+                    //TODO: change for all start blocks
+                    try {
+                        VM(Compiler(i, this).compile()).start()
+                    } catch (e: Error) {
+                        printlnToConsole(e.toString(), "#FF3F00")
+                        Log.i("TAG", e.stackTraceToString())
+                    } catch (e: Exception) {
+                        printlnToConsole("look at logcat", "#FF3F00")
+                        Log.i("TAG", e.stackTraceToString())
+                    }
+                }
+            }
+        }
     }
     
     private fun addBlockToGroup(block: BlockView, params: LinearLayout.LayoutParams, context: Context) {
@@ -226,9 +243,12 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
         translationForBlocks++
         
         block.setOnClickListener {
-            Log.i("hello", "i'm here")
-            moveToStack(block, Point(0f, 0f))
-            correctNearBorder(block)
+            val delta = Point(block.x, block.y)
+            bindingListOfBlocks.listOfBlocks.removeView(block)
+            moveToStack(block, Point(400f, 300f), delta)
+            listOfBlocks.add(block)
+            //correctNearBorder(block)
+            Log.i("hello", "${block.x}, ${block.y}")
             val params = LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT)
             params.setMargins(8, 8, 8, 8)
             addBlockToGroup(block, params, context!!)
@@ -310,9 +330,13 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
     }
     @SuppressLint("SetTextI18n")
     fun printlnToConsole(text: String) {
+        val list = getListOfTextViewFromConsole()
+        if(list.size > 1) {
+            val newText = list[list.size - 2].text.toString() + text
+            list[list.size - 2].text = newText
+        }
         val newLine = TextView(context)
         consoleBody.addView(newLine, consoleBody.childCount - 1)
-        newLine.text = ">> $text"
     }
     
 //    fun printToConsole(text: String, color: String) {
@@ -625,6 +649,7 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
     
         //dragShadow = DragShadowBuilder(view)
         if(view.parent == bindingListOfBlocks.listOfBlocks) {
+            
             movePanelWithBlocks(200L)
             val params = LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT)
             params.setMargins(8, 8, 8, 8)
@@ -654,6 +679,11 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
                 if(view == bindingStack.basketContainer) vibrate(100L)
             }
             DragEvent.ACTION_DROP -> {
+                var delta = Point(0f, 0f)
+                if(draggingView.parent == bindingListOfBlocks.listOfBlocks) {
+                    bindingListOfBlocks.listOfBlocks.removeView(draggingView)
+                    delta = Point(draggingView.x, draggingView.y)
+                }
                 when (view) {
                     bindingStack.basketContainer -> {
                         removeAllWiresToBlock(draggingView as BlockView)
@@ -661,18 +691,20 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
                         canvas.draw(listOfWires)
                     }
                     bindingStack.stack -> {
-                        moveToStack(draggingView as BlockView, Point(event.x, event.y))
+                        moveToStack(draggingView as BlockView, Point(event.x, event.y), delta)
                         correctNearBorder(draggingView as BlockView)
                         canvas.draw(listOfWires)
                     }
                     bindingScrollBox.scrollBox -> {
-                        moveToScrollBox(draggingView as BlockView, Point(event.x, event.y))
+                        moveToScrollBox(draggingView as BlockView, Point(event.x, event.y), delta)
                         correctNearBorder(draggingView as BlockView)
                         canvas.draw(listOfWires)
                     }
                 }
             }
             DragEvent.ACTION_DRAG_ENDED -> {
+                if(draggingView.parent == bindingListOfBlocks.listOfBlocks)
+                    bindingListOfBlocks.listOfBlocks.removeView(draggingView)
                 bindingStack.basketContainer.visibility = INVISIBLE
             }
         }
@@ -743,15 +775,11 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
         }
     }
     
-    private fun moveToScrollBox(block: BlockView, location: Point) {
-        var delta = Point(0f, 0f)
+    private fun moveToScrollBox(block: BlockView, location: Point, delta: Point) {
         if (block.parent != bindingScrollBox.scrollBox) {
             if(block.parent == bindingStack.stack) bindingStack.stack.removeView(block)
             if(block.parent == bindingListOfBlocks.listOfBlocks) {
-                delta = Point(block.x, block.y)
-                bindingListOfBlocks.listOfBlocks.removeView(block)
                 listOfBlocks.add(block)
-                setListenersForBlock(block)
                 block.setOnClickListener {  }
             }
             else {
@@ -766,15 +794,11 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
         block.y = location.y + delta.y - block.height / 2
     }
     
-    private fun moveToStack(block: BlockView, location: Point) {
-        var delta = Point(0f, 0f)
+    private fun moveToStack(block: BlockView, location: Point, delta: Point) {
         if (block.parent != bindingStack.stack) {
             if(block.parent == bindingScrollBox.scrollBox) bindingScrollBox.scrollBox.removeView(block)
             if(block.parent == bindingListOfBlocks.listOfBlocks) {
-                delta = Point(block.x, block.y)
-                bindingListOfBlocks.listOfBlocks.removeView(block)
                 listOfBlocks.add(block)
-                setListenersForBlock(block)
                 block.setOnClickListener {  }
             }
             bindingStack.stack.addView(block)
