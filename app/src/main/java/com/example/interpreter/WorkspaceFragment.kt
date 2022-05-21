@@ -152,6 +152,7 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
         bindingStack.basketContainer.visibility = INVISIBLE
 
         console.x = metrics.bounds.width().toFloat()
+        bindingConsole.flush.setOnClickListener{ flushConsole() }
         //bindingScrollBox.scrollBox.setOnTouchListener{ view, event -> vibrate(1000L); true }
         bindingConsole.run.setOnClickListener {
             for(i in listOfBlocks) {
@@ -166,6 +167,7 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
                         printlnToConsole("look at logcat", "#FF3F00")
                         Log.i("TAG", e.stackTraceToString())
                     }
+                    break
                 }
             }
         }
@@ -315,6 +317,8 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
     
     fun flushConsole() {
         consoleBody.removeAllViews()
+        consoleBody.addView(EditText(context!!))
+        listOfReading.removeAll(listOfReading)
     }
     
     fun printToConsole(text: String) {

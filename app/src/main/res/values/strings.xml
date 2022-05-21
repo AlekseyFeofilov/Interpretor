@@ -9,6 +9,7 @@
     <string name="START">START</string>
     <string name="PRINT">PRINT</string>
     <string name="INPUT">INPUT</string>
+    <string name="flush">Flush</string>
 
     <string-array name="comparing">
         <item><![CDATA[<]]></item>
