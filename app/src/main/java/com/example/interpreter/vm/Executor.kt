@@ -5,7 +5,7 @@ import kotlinx.serialization.Serializable
 
 @Suppress("MemberVisibilityCanBePrivate")
 @Serializable
-class Executor(val env: Env, val tree: List<Instruction>, val localEnv: Boolean = false) {
+class Executor(val env: Env, val tree: MutableList<Instruction>, val localEnv: Boolean = false) {
     
     fun exec() = sequence {
         for(i in tree) {

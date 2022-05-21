@@ -17,6 +17,7 @@ interface IO {
         Fake,
         Print,
         out, out1, out2, out3,
+        Iterate, Body
     }
     
     val name: Name
