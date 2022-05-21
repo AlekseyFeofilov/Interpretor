@@ -7,8 +7,10 @@ import com.example.interpreter.ioInterfaces.IO
 import com.example.interpreter.ioInterfaces.ioTypes.*
 import com.example.interpreter.vm.Compiler
 import com.example.interpreter.vm.instruction.GetObject
+import com.example.interpreter.vm.instruction.GetVar
 import com.example.interpreter.vm.instruction.Instruction
 import com.example.interpreter.vm.instruction.Register
+import com.example.interpreter.vm.instruction.String
 
 class GetObjectBlock @JvmOverloads constructor(
     context: Context,
