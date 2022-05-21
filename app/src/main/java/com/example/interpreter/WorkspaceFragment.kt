@@ -158,15 +158,15 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
         bindingConsole.run.setOnClickListener {
             for(i in listOfBlocks) {
                 if(i is StartBlock) {
-                    Toast.makeText(context, getString(R.string.comile_is_start), Toast.LENGTH_SHORT)
+                    Toast.makeText(context, getString(R.string.comile_is_start), Toast.LENGTH_SHORT).show()
                     //TODO: change for all start blocks
                     try {
                         VM(Compiler(i, this).compile()).start()
                     } catch (e: Error) {
-                        printlnToConsole(e.toString(), "#FF3F00")
+                        printlnToConsole(e.toString(), getString(R.string.errorColor))
                         Log.i("TAG", e.stackTraceToString())
                     } catch (e: Exception) {
-                        printlnToConsole("look at logcat", "#FF3F00")
+                        printlnToConsole("look at logcat", getString(R.string.errorColor))
                         Log.i("TAG", e.stackTraceToString())
                     }
                     break
@@ -688,6 +688,7 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
                 var delta = Point(0f, 0f)
                 if(draggingView.parent == bindingListOfBlocks.listOfBlocks) {
                     bindingListOfBlocks.listOfBlocks.removeView(draggingView)
+                    listOfBlocks.add(draggingView as BlockView)
                     delta = Point(draggingView.x, draggingView.y)
                 }
                 when (view) {
