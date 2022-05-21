@@ -56,7 +56,13 @@ open class Number : Instruction {
     
     override fun exec(env: Env) = sequence<Instruction> { yield(this@Number) }.iterator()
     override fun toNumber(): Double = _toNumber(value)
-    override fun toString(): kotlin.String = _toNumber(value).toString()
+    override fun toString(): kotlin.String{
+        val _val = _toNumber(value)
+        
+        return if(_val % 1 != 0.0)
+            _val.toString()
+        else _val.toInt().toString()
+    }// = _toNumber(value).toString()
     
     private fun _toNumber(value: Any): kotlin.Double{
         if(value is kotlin.Double) return value

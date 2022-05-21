@@ -7,8 +7,11 @@ import com.example.interpreter.vm.Compiler
 import com.example.interpreter.vm.Env
 import com.example.interpreter.vm.awaitLR
 import com.example.interpreter.vm.yieldAllLR
+import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
 
 @Suppress("RemoveRedundantQualifierName", "MemberVisibilityCanBePrivate")
 @Serializable
@@ -24,12 +27,18 @@ open class Print : Instruction {
         val str = yieldAllLR(_unRegister(value, env).exec(env)).toString()
         
         Log.i(TAG, str)
-        
-        context?.activity?.runOnUiThread {
-            if(context != null) {
-                when (ln) {
-                    true -> context?.printlnToConsole(str, color)
-                    false -> context?.printToConsole(str, color)
+    
+        runBlocking {
+            suspendCoroutine<kotlin.Int> {
+                context?.activity?.runOnUiThread {
+                    if(context != null) {
+                        when (ln) {
+                            true -> context?.printlnToConsole(str, color)
+                            false -> context?.printToConsole(str, color)
+                        }
+                    }
+                    
+                    it.resume(0)
                 }
             }
         }

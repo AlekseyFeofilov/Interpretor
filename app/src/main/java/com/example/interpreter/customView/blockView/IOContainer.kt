@@ -1,5 +1,6 @@
 package com.example.interpreter.customView.blockView
 
+import android.util.Log
 import android.view.View
 import android.widget.LinearLayout
 import androidx.core.view.children
@@ -264,7 +265,7 @@ interface IOContainer {
                         inputs.filter {
                             it.first.name == pair.first.name &&
                             isInputAvailable(it.first)
-                        }.map { it.first }
+                        }.map { it.first }.let { Log.i("IOCOMNT", it.toString()); it }
                 }
                 !isInputAvailable(pair.first) -> return@forEach
                 !pair.first.autocomplete -> {

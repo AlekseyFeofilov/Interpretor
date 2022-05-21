@@ -245,8 +245,9 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
                 consoleEvent?.resume(view.text.toString())
                 consoleEvent = null
             }else listOfReading.add(view.text.toString())
+            
+            (view as EditText).text.clear()
         }
-        (view as EditText).text.clear()
         false
     }
     
@@ -689,7 +690,7 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
                 block
             )
         ) block.disconnectInput(block.findInputByInputRadioButton(IO)!!)
-        else block.disconnectOutputAll(block.findOutputByOutputRadioButton(IO)!!)
+        else block.disconnectOutputAll(block.findOutputByOutputRadioButton(IO)!!) //todo: соединеённый print ломает эту фню с ошибкой NPE
     }
     
     private fun removeWireByIO(IO: View) {

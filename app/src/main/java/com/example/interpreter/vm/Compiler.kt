@@ -37,7 +37,7 @@ open class Compiler {
     
 //    private var definedVars = hashMapOf<kotlin.String, KClass<Instruction>>()
     private val stack: ArrayDeque<Pair<Env, MutableList<Instruction>>> = ArrayDeque()
-    private val cacheInputs: HashMap<Pair<BlockView, IO.Name>, List<Instruction>> = hashMapOf()
+    private val cacheInputs: HashMap<BlockView, List<Instruction>> = hashMapOf()
     
     val blockView: BlockView?
     var currBlockView: BlockView? = null
@@ -89,14 +89,14 @@ open class Compiler {
             is InputDouble -> if(value !is Number) Number(this, value) else value
             is InputString -> if(value !is String) String(this, value) else value
             is InputInt -> if(value !is Int) Int(this, value) else value
-            is InputObject -> value
+            is InputObject -> return value
             is InputAny -> when(inp.parent.getLinkInput(inp)){
                 is OutputBoolean -> if(value !is Bool) Bool(this, value) else value
                 is OutputDouble -> if(value !is Number) Number(this, value) else value
                 is OutputString -> if(value !is String) String(this, value) else value
                 is OutputInt -> if(value !is Int) Int(this, value) else value
-                is OutputObject -> value
-                is OutputAny -> value
+                is OutputObject -> return value
+                is OutputAny -> return value
                 
                 else -> { throw Error("compiler: auto cast for output error") }
             }
@@ -113,7 +113,16 @@ open class Compiler {
             val hashOut = currBlockView!!.getOutputsHash()
             val last = stack.lastOrNull() ?: throw Error("compiler: stack corrupted")
             
-            last.second.addAll(currBlockView!!.compile(this))
+            Log.i("Compiler [Info]", currBlockView.toString())
+    
+            if (cacheInputs[currBlockView] == null) {
+                val ret = currBlockView!!.compile(this)
+        
+                cacheInputs[currBlockView!!] = ret
+                last.second.addAll(ret)
+            }
+            
+//            last.second.addAll(currBlockView!!.compile(this))
             
             if(currBlockView == stop) break
             
@@ -133,14 +142,14 @@ open class Compiler {
         val inNext = bv.getInputsHash()[name] ?: throw Error("compiler: crash input/output in hashT is null")
     
         fun blockViewCompile(curr: BlockView, name: IO.Name): Instruction {
-            if (cacheInputs[Pair(curr, name)] == null) {
+            if (cacheInputs[curr] == null) {
                 val ret = curr.compile(this)
                 
-                cacheInputs[Pair(curr, name)] = ret
+                cacheInputs[curr] = ret
                 last.second.addAll(ret)
             }
         
-            val listInstruction = cacheInputs[Pair(curr, name)]!!
+            val listInstruction = cacheInputs[curr]!!
             
             return listInstruction.lastOrNull() ?: throw Error("compiler: last instruction is null")
         }
@@ -179,6 +188,8 @@ open class Compiler {
         }
         
         if(inNext is List<*>){
+            Log.i("Compiler[Info]:", "autocomplete load (${inNext.size})")
+            
             val listRet = mutableListOf<Register>()
             for(i in inNext) {
                 val out = bv.getLinkInput(i as Input)

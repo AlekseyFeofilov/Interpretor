@@ -93,7 +93,7 @@ class AssignBlock @JvmOverloads constructor(
     
     private fun checkVariableDeclare(compiler: Compiler, variable: String) {
         if (compiler.checkVar(variable) == null) {
-            throw Error("Variable $variable isn't declare")
+            throw Error("Variable isn't declare [${variable}]")
         }
     }
     
