@@ -351,6 +351,7 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
     
     @SuppressLint("SetTextI18n")
     private fun keyListener() = OnKeyListener { view, key, event ->
+        Log.i("bebebe", "$key")
         if (event.action == KeyEvent.ACTION_DOWN &&
             key == KeyEvent.KEYCODE_ENTER &&
             (view as EditText).text.isNotEmpty()
@@ -360,7 +361,9 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
             newLine.text = "<< ${view.text}"
             listOfReading.add(view.text.toString())
         }
-        (view as EditText).text.clear()
+        if(key == KeyEvent.KEYCODE_ENTER) {
+            (view as EditText).text.clear()
+        }
         false
     }
     
