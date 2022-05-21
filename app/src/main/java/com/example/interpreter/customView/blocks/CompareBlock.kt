@@ -34,7 +34,9 @@ class CompareBlock @JvmOverloads constructor(
     
     override fun compile(compiler: Compiler): List<Instruction> {
         super.compile(compiler)
-        return listOf(Object(compiler, "out" to compare(compiler)))
+        
+        val bool = compare(compiler)
+        return listOf(bool, Object(compiler, "out" to bool))
     }
     
     private fun compare(compiler: Compiler): Bool {
