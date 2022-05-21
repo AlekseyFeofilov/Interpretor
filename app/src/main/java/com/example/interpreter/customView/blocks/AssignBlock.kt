@@ -10,6 +10,7 @@ import com.example.interpreter.vm.Compiler
 import com.example.interpreter.vm.instruction.*
 import com.example.interpreter.vm.instruction.Number
 import kotlin.reflect.KClass
+import kotlin.reflect.KTypeParameter
 import kotlin.reflect.full.createType
 
 class AssignBlock @JvmOverloads constructor(
@@ -25,6 +26,10 @@ class AssignBlock @JvmOverloads constructor(
         val instruction = getInstruction(compiler, assignment)
         //todo: make check type
         return listOf(assign(compiler, assignment.first, instruction))
+    }
+    
+    private fun stringWithoutSpaces(string: String): String? {
+        return """\s*(\S+)\s*""".toRegex().find(string)?.groups?.get(1)?.value
     }
     
     private fun toBool(string: String): Boolean {
@@ -43,8 +48,7 @@ class AssignBlock @JvmOverloads constructor(
         assignment: Pair<String, String?>
     ): Instruction {
         return if (assignment.second != null) {
-            val value = assignment.first
-            getInstructionByClass(compiler, compiler.checkVar(value)!!, value)
+            getInstructionByClass(compiler, compiler.checkVar(assignment.first)!!, assignment.second!!)
         } else getInstructionByCompiler(compiler)
     }
     
@@ -59,11 +63,11 @@ class AssignBlock @JvmOverloads constructor(
     ): Instruction {
         return when (clazz) {
             //приведение типов не может делать компилятор, потому что тут используется математика и toBool
-            Number::class, Int::class -> Register(compiler, Math(compiler, value), env = compiler.env(), exec = true)
+            Number::class, com.example.interpreter.vm.instruction.Int::class -> Register(compiler, Math(compiler, value), env = compiler.env(), exec = true)
             Bool::class -> Bool(compiler, toBool(value))
             else -> {
-                val compilerType = Compiler::class.createType()
-                val instructionType = Instruction::class.createType()
+                val compilerType = Compiler::class.typeParameters[0]
+                val instructionType = Instruction::class.typeParameters[0]
                 val constructor = clazz.constructors.find {
                     it.typeParameters == listOf(
                         compilerType,
@@ -82,8 +86,9 @@ class AssignBlock @JvmOverloads constructor(
     private fun getAssignment(): Pair<String, String?> {
         val input = getInput(IO.Name.Value) as InputAny
     
-        val variable = (getInput(IO.Name.Variable) as InputString).getValue()
+        var variable = (getInput(IO.Name.Variable) as InputString).getValue()
             ?: throw Error("Missing variable to assign")
+        variable = stringWithoutSpaces(variable)!!
 
         val value = if (isInputAvailable(input)) null
         else input.getValue() ?: throw Error("Missing value to assign")

@@ -85,7 +85,7 @@ class InitializationBlock @JvmOverloads constructor(
         addInput(InputString(IO.Name.Double, this, "Double:",true, isLink = false))
         addInput(InputString(IO.Name.String, this, "String:",true, isLink = false))
         addInput(InputString(IO.Name.Boolean, this, "Boolean:", true, isLink = false))
-        addInput(InputString(IO.Name.Array, this, "Array:", true, isLink = false))
+        addInput(InputString(IO.Name.Array, this, "Object:", true, isLink = false))
         
         setHeader("Init", "#8281B1")
     }
