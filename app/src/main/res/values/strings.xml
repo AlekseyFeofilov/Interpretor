@@ -16,6 +16,14 @@
     <string name="comile_is_start">compile is running</string>
     <string name="description">description</string>
     <string name="errorColor">#FF3F00</string>
+    <string name="assign">ASSIGN</string>
+    <string name="WHILE">WHILE</string>
+    <string name="compare">COMPARE</string>
+    <string name="IF">IF</string>
+    <string name="init">INIT</string>
+    <string name="bool">BOOL</string>
+    <string name="set_object">SET OBJECT</string>
+    <string name="get_object">GET OBJECT</string>
 
     <string-array name="comparing">
         <item><![CDATA[<]]></item>

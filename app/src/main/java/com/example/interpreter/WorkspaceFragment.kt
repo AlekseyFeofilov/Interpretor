@@ -49,7 +49,6 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
     private lateinit var blocksPanel: ConstraintLayout
     
     private lateinit var consoleBody: LinearLayout
-    var listOfReading = mutableListOf<String>()
     private lateinit var canvas: DrawView
     
     private lateinit var bindingWorkspace: FragmentWorkspaceBinding
@@ -66,7 +65,10 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
     private val listOfBlocks = mutableListOf<BlockView>()
     private val listOfWires = mutableListOf<Wire>()
     
-    @SuppressLint("ClickableViewAccessibility", "UseRequireInsteadOfGet")
+    var listOfReading = ArrayDeque<String>()
+    var consoleEvent: Continuation<String>? = null
+    
+    @SuppressLint("ClickableViewAccessibility")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         bindingWorkspace = FragmentWorkspaceBinding.bind(view)
@@ -387,9 +389,12 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
             val newLine = TextView(context)
             consoleBody.addView(newLine, consoleBody.childCount - 1)
             newLine.text = "<< ${view.text}"
-            listOfReading.add(view.text.toString())
-        }
-        if(key == KeyEvent.KEYCODE_ENTER) {
+            
+            if(consoleEvent != null){
+                consoleEvent?.resume(view.text.toString())
+                consoleEvent = null
+            }else listOfReading.add(view.text.toString())
+            
             (view as EditText).text.clear()
         }
         false
@@ -644,7 +649,58 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
         return point
     }
     
-    
+//    // generate and put in stack blocks
+//    @SuppressLint("UseRequireInsteadOfGet")
+//    private fun createBlockByClickedButton(view: View): BlockView =
+//        when (view) {
+//            bindingListOfBlocks.ASSIGN -> {
+//                AssignBlock(context!!)
+//            }
+//            bindingListOfBlocks.WHILE -> {
+//                WhileBlock(context!!)
+//            }
+//            bindingListOfBlocks.COMPARE -> {
+//                CompareBlock(context!!)
+//            }
+//            bindingListOfBlocks.IF -> {
+//                IfBlock(context!!)
+//            }
+//            bindingListOfBlocks.INIT -> {
+//                InitializationBlock(context!!)
+//            }
+//            bindingListOfBlocks.BOOL -> {
+//                BoolBlock(context!!)
+//            }
+//            bindingListOfBlocks.PRINT -> {
+//                PrintBlock(context!!)
+//            }
+//            bindingListOfBlocks.START -> {
+//                StartBlock(context!!)
+//            }
+//            bindingListOfBlocks.INPUT -> {
+//                InputBlock(context!!)
+//            }
+//            else -> {
+//                InitializationBlock(context!!)
+//            }
+//        }
+//
+//    @SuppressLint("ClickableViewAccessibility")
+//    private fun addBlockToStack(block: BlockView) {
+//        bindingStack.stack.addView(block)
+//        for (i in block.getListOfOutputView()) {
+//            i.setOnTouchListener(onTouchIO())
+//        }
+//        for (i in block.getListOfInputView()) {
+//            i.setOnTouchListener(onTouchIO())
+//        }
+//        block.setOnLongClickListener(dragListener())
+//        block.translationZ = translationForBlocks
+//        translationForBlocks++
+//        block.scaleX *= scaleInStack
+//        block.scaleY *= scaleInStack
+//        listOfBlocks.add(block)
+//    }
     
     
     // drag-n-drop for blocks
