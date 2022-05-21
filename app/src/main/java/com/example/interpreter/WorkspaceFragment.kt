@@ -207,9 +207,9 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
     
     fun printToConsole(text: String, color: String) {
         val list = getListOfTextViewFromConsole()
-        if (list.size > 1) {
-            val newText = list[list.size - 2].text.toString() + text
-            list[list.size - 2].text = newText
+        if (list.size > 0) {
+            val newText = list[list.size - 1].text.toString() + text
+            list[list.size - 1].text = newText
         } else printlnToConsole(text, color)
     }
     
@@ -545,6 +545,12 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
             }
             bindingListOfBlocks.INPUT -> {
                 InputBlock(context!!)
+            }
+            bindingListOfBlocks.GETOBJECT -> {
+                GetObjectBlock(context!!)
+            }
+            bindingListOfBlocks.SETOBJECT -> {
+                SetObjectBlock(context!!)
             }
             else -> {
                 InitializationBlock(context!!)

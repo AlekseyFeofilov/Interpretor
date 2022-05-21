@@ -12,7 +12,7 @@
         android:orientation="vertical">
         <Button
             android:id="@+id/ASSIGN"
-            android:text="ASSIGN"
+            android:text="@string/assign"
             android:textSize="36sp"
             android:layout_width="match_parent"
             android:layout_height="150dp"
@@ -20,7 +20,7 @@
             android:background="@drawable/home_buttons"/>
         <Button
             android:id="@+id/WHILE"
-            android:text="WHILE"
+            android:text="@string/WHILE"
             android:textSize="36sp"
             android:layout_width="match_parent"
             android:layout_height="150dp"
@@ -28,7 +28,7 @@
             android:background="@drawable/home_buttons"/>
         <Button
             android:id="@+id/COMPARE"
-            android:text="COMPARE"
+            android:text="@string/compare"
             android:textSize="36sp"
             android:layout_width="match_parent"
             android:layout_height="150dp"
@@ -36,7 +36,7 @@
             android:background="@drawable/home_buttons"/>
         <Button
             android:id="@+id/IF"
-            android:text="IF"
+            android:text="@string/IF"
             android:textSize="36sp"
             android:layout_width="match_parent"
             android:layout_height="150dp"
@@ -44,7 +44,7 @@
             android:background="@drawable/home_buttons"/>
         <Button
             android:id="@+id/INIT"
-            android:text="INIT"
+            android:text="@string/init"
             android:textSize="36sp"
             android:layout_width="match_parent"
             android:layout_height="150dp"
@@ -52,7 +52,7 @@
             android:background="@drawable/home_buttons"/>
         <Button
             android:id="@+id/BOOL"
-            android:text="BOOL"
+            android:text="@string/bool"
             android:textSize="36sp"
             android:layout_width="match_parent"
             android:layout_height="150dp"
@@ -77,6 +77,22 @@
         <Button
             android:id="@+id/INPUT"
             android:text="@string/INPUT"
+            android:textSize="36sp"
+            android:layout_width="match_parent"
+            android:layout_height="150dp"
+            android:layout_margin="8dp"
+            android:background="@drawable/home_buttons"/>
+        <Button
+            android:id="@+id/GET_OBJECT"
+            android:text="@string/get_object"
+            android:textSize="36sp"
+            android:layout_width="match_parent"
+            android:layout_height="150dp"
+            android:layout_margin="8dp"
+            android:background="@drawable/home_buttons"/>
+        <Button
+            android:id="@+id/SET_OBJECT"
+            android:text="@string/set_object"
             android:textSize="36sp"
             android:layout_width="match_parent"
             android:layout_height="150dp"

@@ -9,10 +9,12 @@ import com.example.interpreter.customView.blockView.BlockView
 import com.example.interpreter.ioInterfaces.IO
 import com.example.interpreter.ioInterfaces.ioTypes.InputBoolean
 import com.example.interpreter.ioInterfaces.ioTypes.InputDouble
+import com.example.interpreter.ioInterfaces.ioTypes.OutputBoolean
 import com.example.interpreter.vm.Compiler
 import com.example.interpreter.vm.instruction.Bool
 import com.example.interpreter.vm.instruction.Instruction
 import com.example.interpreter.vm.instruction.Math
+import com.example.interpreter.vm.instruction.Object
 import com.example.interpreter.vm.instruction.Register
 
 class CompareBlock @JvmOverloads constructor(
@@ -32,7 +34,7 @@ class CompareBlock @JvmOverloads constructor(
     
     override fun compile(compiler: Compiler): List<Instruction> {
         super.compile(compiler)
-        return listOf(compare(compiler))
+        return listOf(Object(compiler, "out" to compare(compiler)))
     }
     
     private fun compare(compiler: Compiler): Bool {
@@ -62,6 +64,7 @@ class CompareBlock @JvmOverloads constructor(
         addInput(InputDouble(IO.Name.First, this, "Compare this:"))
         addInput(InputBoolean(IO.Name.By, this, "By sign:", isLink = false))
         addInput(InputDouble(IO.Name.Second, this, "With this:"))
+        addOutput(OutputBoolean(IO.Name.out, this, "answer:"))
         
         spinner = (((binding.listOfInputLinearLayout.getChildAt(2) as LinearLayout)
             .getChildAt(0) as LinearLayout)
