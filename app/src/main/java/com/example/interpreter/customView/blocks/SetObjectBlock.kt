@@ -22,13 +22,53 @@ class SetObjectBlock @JvmOverloads constructor(
         super.compile(compiler)
         
         return listOf(
-            SetObject(
-                compiler,
-                compiler[IO.Name.Variable],
-                compiler[IO.Name.Key] as Register,
-                compiler[IO.Name.Value] as Register
-            )
+            setObject(compiler)
         )
+    }
+    
+    private fun setObject(compiler: Compiler): SetObject {
+        val inputVariable = getInput((IO.Name.Variable))!!
+        val inputKey = getInput((IO.Name.Key))!!
+        val inputValue = getInput((IO.Name.Value))!!
+        val nameVariable = getLinkInput(inputVariable).name
+        
+        val obj =
+            if (nameVariable == IO.Name.Fake) {
+                compiler.checkVar(
+                    inputVariable.getValue() as String?
+                        ?: throw Error("Missing variable to set object")
+                ) ?: throw Error("Variable ${inputVariable.getValue()} isn't declare")
+                
+                GetVar(
+                    compiler, inputVariable.getValue() as String
+                )
+            } else {
+                compiler[IO.Name.Variable]
+            }
+        
+        val key =
+            if (getLinkInput(inputKey).name == IO.Name.Fake) com.example.interpreter.vm.instruction.String(
+                compiler,
+                inputKey.getValue() as String? ?: throw Error("Missing key to set object")
+            ) else {
+                compiler[IO.Name.Value] as Register
+            }
+        
+        val value =
+            if (getLinkInput(inputKey).name == IO.Name.Fake) com.example.interpreter.vm.instruction.String(
+                compiler,
+                inputKey.getValue() as String? ?: throw Error("Missing value to set object")
+            ) else {
+                compiler[IO.Name.Value] as Register
+            }
+        
+        return SetObject(
+            compiler,
+            obj,
+            key,
+            value
+        )
+        
     }
     
     init {

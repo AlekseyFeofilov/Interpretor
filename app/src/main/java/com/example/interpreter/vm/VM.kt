@@ -35,7 +35,7 @@ import kotlin.system.exitProcess
 class VM {
     lateinit var block: Executor
     
-    constructor(instructions: List<Instruction>){
+    constructor(instructions: MutableList<Instruction>){
         this.block = Executor(Env(), instructions)
     }
     
