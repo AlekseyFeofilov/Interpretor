@@ -790,8 +790,8 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
                 block.setOnClickListener {  }
             }
             else {
-                block.scaleX /= scaleInStack
-                block.scaleY /= scaleInStack
+                block.scaleX = 1f
+                block.scaleY = 1f
             }
             bindingScrollBox.scrollBox.addView(block)
             changeVisibilityWiresForBlock(block)
