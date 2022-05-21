@@ -20,6 +20,7 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.*
+import java.lang.Exception
 import java.time.Duration
 import java.util.*
 import java.util.concurrent.atomic.AtomicInteger
@@ -337,6 +338,8 @@ class VM {
 //                exitProcess(0)
                 }
             }catch(e: Error) {
+                e.printStackTrace()
+            }catch(e: Exception) {
                 e.printStackTrace()
             }
         }
