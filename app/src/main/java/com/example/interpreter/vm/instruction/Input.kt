@@ -52,8 +52,8 @@ class Input : Instruction {
                         it.resume(context!!.listOfReading.removeFirst())
                         return@runOnUiThread
                     }
-                    
-                    context!!.consoleEvent = it
+                    //TODO: была ошибка
+                    //context!!.consoleEvent = it
                 }
             }
         }

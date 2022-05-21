@@ -26,7 +26,7 @@
         android:left="2dp">
         <shape android:shape="rectangle">
             <corners android:radius="15dp"/>
-            <solid android:color="#111111"/>
+            <solid android:color="@color/border"/>
         </shape>
     </item>
     <!-- upper shortcut -->
@@ -47,7 +47,7 @@
             <corners
                 android:bottomRightRadius="15dp"
                 android:bottomLeftRadius="15dp"/>
-            <solid android:color="#111111"/>
+            <solid android:color="@color/border"/>
         </shape>
     </item>
     <!-- second border for body -->
@@ -73,7 +73,7 @@
             <corners
                 android:bottomRightRadius="15dp"
                 android:bottomLeftRadius="15dp"/>
-            <solid android:color="#111111"/>
+            <solid android:color="@color/border"/>
         </shape>
     </item>
     <!-- body -->

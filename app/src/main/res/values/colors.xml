@@ -30,5 +30,10 @@
     <color name="body">#99AABB</color>
     <color name="bodyBorder">#445566</color>
     <color name="closeButton">#AA0000</color>
+    <color name="border">#111111</color>
+    <color name="textHeader">#798086</color>
+    <color name="input">#B10808</color>
+    <color name="output">#B10808</color>
+    <color name="blockBody">#333333</color>
 
 </resources>

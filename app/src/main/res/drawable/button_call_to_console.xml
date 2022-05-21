@@ -4,8 +4,8 @@
     <!-- border -->
     <item>
         <shape android:shape="oval">
-            <size android:height="61dp" android:width="61dp"/>
-            <solid android:color="#111111"/>
+            <size android:height="@dimen/buttonsSize" android:width="@dimen/buttonsSize"/>
+            <solid android:color="@color/border"/>
         </shape>
     </item>
 
@@ -47,7 +47,7 @@
         android:right="10dp">
         <shape android:shape="rectangle">
             <corners android:radius="5dp"/>
-            <solid android:color="#111111"/>
+            <solid android:color="@color/border"/>
         </shape>
     </item>
     <item
@@ -68,7 +68,7 @@
         <shape android:shape="rectangle">
             <corners android:bottomLeftRadius="5dp"
                 android:bottomRightRadius="5dp"/>
-            <solid android:color="#111111"/>
+            <solid android:color="@color/border"/>
         </shape>
     </item>
     <item

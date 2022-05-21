@@ -10,20 +10,20 @@
         android:layout_width="wrap_content"
         android:layout_height="35dp"
         android:orientation="horizontal"
-        tools:background="#222222">
+        tools:background="@color/border">
 
         <RadioButton
             android:id="@+id/inputRadioButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:buttonTint="#B10808"/>
+            android:buttonTint="@color/input"/>
 
         <TextView
             android:id="@+id/inputDescriptionTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@color/white"
-            android:text="description"
+            android:text="@string/description"
             android:gravity="center"
             android:layout_marginHorizontal="6dp"/>
 

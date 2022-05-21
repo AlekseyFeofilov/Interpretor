@@ -71,6 +71,8 @@ dependencies {
     implementation "io.ktor:ktor-server-netty-jvm:2.0.1"
 //    implementation "ch.qos.logback:logback-classic:$logback_version"
 
+    implementation 'androidx.recyclerview:recyclerview:1.2.1'
+
     runtimeOnly group: 'org.jetbrains.kotlin', name: 'kotlin-reflect', version: '1.6.21'
     api("com.otaliastudios:zoomlayout:latest-SNAPSHOT")
     implementation("com.otaliastudios:zoomlayout:1.9.0")

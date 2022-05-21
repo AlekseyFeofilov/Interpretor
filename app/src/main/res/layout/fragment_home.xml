@@ -32,7 +32,7 @@
 
         style="@style/homeFragmentButton"
 
-        android:text="settings"
+        android:text="@string/settings"
 
         app:layout_constraintBottom_toTopOf="@id/exit_Button"
         app:layout_constraintEnd_toEndOf="@id/rightKeyboardBorder"
@@ -43,7 +43,7 @@
 
         style="@style/homeFragmentButton"
 
-        android:text="exit"
+        android:text="@string/exit"
 
         app:layout_constraintBottom_toBottomOf="@id/downKeyboardBorder"
         app:layout_constraintEnd_toEndOf="@id/rightKeyboardBorder"

@@ -4,7 +4,7 @@
     <!-- border -->
     <item>
         <shape android:shape="oval">
-            <size android:height="@dimen/buttonsSize" android:width="@dimen/buttonsSize"/>
+            <size android:height="61dp" android:width="61dp"/>
             <solid android:color="@color/border"/>
         </shape>
     </item>
@@ -38,30 +38,4 @@
                 android:endColor="@color/blocksButtonCircleEdgeUp" />
         </shape>
     </item>
-
-    <!-- basket -->
-    <item
-        android:top="15dp"
-        android:left="15dp"
-        android:right="15dp"
-        android:bottom="10dp">
-        <shape android:shape="rectangle">
-            <corners android:bottomLeftRadius="7dp"
-                android:bottomRightRadius="7dp"/>
-            <solid android:color="@color/border"/>
-        </shape>
-    </item>
-    <item
-        android:top="16dp"
-        android:left="17dp"
-        android:right="17dp"
-        android:bottom="12dp">
-        <shape android:shape="rectangle">
-            <corners android:bottomLeftRadius="7dp"
-                android:bottomRightRadius="7dp"/>
-            <solid android:color="@color/blocksButtonCircleEdgeUp"/>
-        </shape>
-    </item>
-
-
 </layer-list>

@@ -41,14 +41,14 @@
                     <androidx.constraintlayout.widget.ConstraintLayout
                         android:id="@+id/scrollBox"
                         android:background="@drawable/back"
-                        android:layout_width="10000dp"
-                        android:layout_height="10000dp">
+                        android:layout_width="@dimen/workspaceSize"
+                        android:layout_height="@dimen/workspaceSize">
 
                         <View
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="10000dp"
-                            android:layout_marginStart="10000dp"
+                            android:layout_marginTop="@dimen/workspaceSize"
+                            android:layout_marginStart="@dimen/workspaceSize"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintBottom_toBottomOf="parent"/>
 

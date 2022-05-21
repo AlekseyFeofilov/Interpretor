@@ -12,6 +12,7 @@ import android.view.View.*
 import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.TextView
+import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.forEach
 import androidx.core.view.setMargins
@@ -21,6 +22,8 @@ import com.example.interpreter.customView.Line
 import com.example.interpreter.customView.blockView.BlockView
 import com.example.interpreter.customView.blocks.*
 import com.example.interpreter.databinding.*
+import com.example.interpreter.vm.Compiler
+import com.example.interpreter.vm.VM
 import com.example.interpreter.vm.instruction.If
 import kotlin.coroutines.Continuation
 import kotlin.coroutines.resume
@@ -319,6 +322,7 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
         newLine.text = ">> $text"
     }
     
+<<<<<<<<< Temporary merge branch 1
 //    fun printToConsole(text: String, color: String) {
 //        val list = getListOfTextViewFromConsole()
 //        if(isConsoleHidden) {
@@ -330,11 +334,20 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
 //            list[list.size - 2].text = newText
 //        }else printlnToConsole(text, color)
 //    }
+=========
+    fun printToConsole(text: String, color: String) {
+        val list = getListOfTextViewFromConsole()
+        if (list.size > 1) {
+            val newText = list[list.size - 2].text.toString() + text
+            list[list.size - 2].text = newText
+        } else printlnToConsole(text, color)
+    }
+>>>>>>>>> Temporary merge branch 2
     
     @SuppressLint("SetTextI18n")
     fun printlnToConsole(text: String, color: String) {
         val newLine = TextView(context)
-        consoleBody.addView(newLine, consoleBody.childCount - 1)
+        consoleBody.addView(newLine)
         newLine.setTextColor(Color.parseColor(color))
         newLine.text = ">> $text"
     }
@@ -355,6 +368,7 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
     
     @SuppressLint("SetTextI18n")
     private fun keyListener() = OnKeyListener { view, key, event ->
+        Log.i("bebebe", "$key")
         if (event.action == KeyEvent.ACTION_DOWN &&
             key == KeyEvent.KEYCODE_ENTER &&
             (view as EditText).text.isNotEmpty()

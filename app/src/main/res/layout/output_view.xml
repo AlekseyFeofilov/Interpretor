@@ -10,14 +10,14 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        tools:background="#222222">
+        tools:background="@color/border">
 
         <TextView
             android:id="@+id/outputDescriptionTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@color/white"
-            android:text="description"
+            android:text="@string/description"
             android:gravity="center"
             android:layout_marginStart="24dp"/>
 
@@ -25,7 +25,7 @@
             android:id="@+id/outputRadioButton"
             android:layout_height="wrap_content"
             android:layout_width="wrap_content"
-            android:buttonTint="#B10808"
+            android:buttonTint="@color/output"
             />
 
     </LinearLayout>

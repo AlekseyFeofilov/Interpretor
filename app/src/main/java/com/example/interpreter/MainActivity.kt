@@ -8,10 +8,6 @@ import androidx.window.layout.WindowMetricsCalculator
 import com.example.interpreter.databinding.ActivityMainBinding
 import com.example.interpreter.vm.VM
 
-// settings:
-var isButtonForConsoleVisibility = false
-
-
 lateinit var metrics: WindowMetrics
 
 class MainActivity : AppCompatActivity() {
@@ -26,9 +22,5 @@ class MainActivity : AppCompatActivity() {
             .computeCurrentWindowMetrics(this)
 
         //val test: VM = VM()
-    }
-    
-    fun getContext(): Context {
-        return this
     }
 }

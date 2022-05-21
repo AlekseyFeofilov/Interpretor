@@ -10,7 +10,7 @@
         android:id="@+id/blocksContainer"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginBottom="136dp"
+        android:layout_marginBottom="@dimen/stackSize"
         app:layout_constraintTop_toTopOf="@id/topBorderPanel"
         app:layout_constraintEnd_toEndOf="@id/endBorderPanel"
         app:layout_constraintStart_toStartOf="@id/startBorderPanel"
@@ -25,8 +25,8 @@
         </View>
         <Button
             android:id="@+id/closeButton"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
+            android:layout_width="@dimen/closeButtonSize"
+            android:layout_height="@dimen/closeButtonSize"
             android:layout_margin="10dp"
             android:gravity="center"
             android:background="@drawable/close_panel_button"
@@ -38,13 +38,12 @@
 
     <Button
         android:id="@+id/blocksButton"
-        android:layout_height="60dp"
-        android:layout_width="0dp"
         app:layout_constraintDimensionRatio="1:1"
         android:background="@drawable/blocks_button"
         android:translationZ="90dp"
         app:layout_constraintBottom_toBottomOf="@id/bottomBorderCallPanelButton"
-        app:layout_constraintEnd_toEndOf="@id/endBorderCallPanelButton"/>
+        app:layout_constraintEnd_toEndOf="@id/endBorderCallPanelButton"
+        style="@style/buttons" />
 
     <androidx.constraintlayout.widget.Guideline
         android:layout_width="wrap_content"
