@@ -22,6 +22,8 @@ import com.example.interpreter.customView.blockView.BlockView
 import com.example.interpreter.customView.blocks.*
 import com.example.interpreter.databinding.*
 import com.example.interpreter.vm.instruction.If
+import kotlin.coroutines.Continuation
+import kotlin.coroutines.resume
 import kotlin.math.pow
 import kotlin.math.sqrt
 
@@ -46,7 +48,6 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
     private lateinit var blocksPanel: ConstraintLayout
     
     private lateinit var consoleBody: LinearLayout
-    var listOfReading = mutableListOf<String>()
     private lateinit var canvas: DrawView
     
     private lateinit var bindingWorkspace: FragmentWorkspaceBinding
@@ -62,6 +63,9 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
     
     private val listOfBlocks = mutableListOf<BlockView>()
     private val listOfWires = mutableListOf<Wire>()
+    
+    var listOfReading = ArrayDeque<String>()
+    var consoleEvent: Continuation<String>? = null
     
     @SuppressLint("ClickableViewAccessibility", "UseRequireInsteadOfGet")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -351,7 +355,6 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
     
     @SuppressLint("SetTextI18n")
     private fun keyListener() = OnKeyListener { view, key, event ->
-        Log.i("bebebe", "$key")
         if (event.action == KeyEvent.ACTION_DOWN &&
             key == KeyEvent.KEYCODE_ENTER &&
             (view as EditText).text.isNotEmpty()
@@ -359,9 +362,12 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
             val newLine = TextView(context)
             consoleBody.addView(newLine, consoleBody.childCount - 1)
             newLine.text = "<< ${view.text}"
-            listOfReading.add(view.text.toString())
-        }
-        if(key == KeyEvent.KEYCODE_ENTER) {
+            
+            if(consoleEvent != null){
+                consoleEvent?.resume(view.text.toString())
+                consoleEvent = null
+            }else listOfReading.add(view.text.toString())
+    
             (view as EditText).text.clear()
         }
         false
