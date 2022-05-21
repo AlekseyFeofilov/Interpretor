@@ -1,9 +1,6 @@
 package com.example.interpreter.vm.instruction
 
-import com.example.interpreter.vm.Compiler
-import com.example.interpreter.vm.Env
-import com.example.interpreter.vm.Executor
-import com.example.interpreter.vm.yieldAllLR
+import com.example.interpreter.vm.*
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -15,8 +12,16 @@ class While : Instruction {
             val ret = yieldAllLR(
                 blocks?.getOrNull(0)?.exec() ?: throw Error("Runtime error 'While[0]' not condition")
             )
+    
+            fun _unRegister(value: Instruction, env: Env): Instruction{
+                if(value is Register) return _unRegister(awaitLR(value.exec(env)), env)
+        
+                return value
+            }
             
-            if (ret is Bool && ret.toBool()) {
+            val bool = _unRegister(ret, env)
+            
+            if (bool is Bool && bool.toBool()) {
                 yieldAllLR(
                     blocks?.getOrNull(1)?.exec() ?: throw Error("Runtime error 'While[1]' not body")
                 )
