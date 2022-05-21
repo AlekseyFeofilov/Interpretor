@@ -12,6 +12,7 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.children
 import androidx.core.view.forEach
 import androidx.core.view.forEachIndexed
+import com.example.interpreter.R
 import com.example.interpreter.customView.ioView.InputView
 import com.example.interpreter.customView.ioView.OutputView
 import com.example.interpreter.databinding.BlockViewBinding
@@ -114,6 +115,7 @@ abstract class BlockView @JvmOverloads constructor(
     override fun setHeader(name: String, colorHEX: String) {
         binding.headerTextView.text = name
         binding.headerTextView.setBackgroundColor(Color.parseColor(colorHEX))
+//        binding.headerTextView.cor = 10
     }
     
     fun findInputByInputRadioButton(view: View): Input? {
