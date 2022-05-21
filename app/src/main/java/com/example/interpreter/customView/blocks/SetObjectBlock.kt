@@ -8,6 +8,7 @@ import com.example.interpreter.ioInterfaces.ioTypes.InputAny
 import com.example.interpreter.ioInterfaces.ioTypes.InputString
 import com.example.interpreter.ioInterfaces.ioTypes.OutputAny
 import com.example.interpreter.vm.Compiler
+import com.example.interpreter.vm.instruction.GetVar
 import com.example.interpreter.vm.instruction.Instruction
 import com.example.interpreter.vm.instruction.Register
 import com.example.interpreter.vm.instruction.SetObject
@@ -35,7 +36,7 @@ class SetObjectBlock @JvmOverloads constructor(
         addInput(InputAny(IO.Name.Key, this, "Key"))
         addInput(InputAny(IO.Name.Value, this, "Value"))
         addOutput(OutputAny(IO.Name.out, this, "Object:"))
-    
+        
         setHeader("Set Array", "#E9724C")
     }
 }
