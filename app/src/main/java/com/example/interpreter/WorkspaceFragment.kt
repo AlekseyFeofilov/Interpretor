@@ -208,7 +208,7 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
     fun printToConsole(text: String, color: String) {
         val list = getListOfTextViewFromConsole()
         if (list.size > 1) {
-            val newText = list[list.size - 1].text.toString() + text
+            val newText = list[list.size - 2].text.toString() + text
             list[list.size - 2].text = newText
         } else printlnToConsole(text, color)
     }
@@ -216,7 +216,7 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
     @SuppressLint("SetTextI18n")
     fun printlnToConsole(text: String, color: String) {
         val newLine = TextView(context)
-        consoleBody.addView(newLine, consoleBody.childCount - 1)
+        consoleBody.addView(newLine)
         newLine.setTextColor(Color.parseColor(color))
         newLine.text = ">> $text"
     }
