@@ -14,8 +14,16 @@ open class Register : Instruction {
     private val _exec: kotlin.Boolean
     
     override fun exec(env: Env) = sequence<Instruction> {
+        when(value){
+            is Bool -> { yield(value); return@sequence }
+            is Int -> { yield(value); return@sequence }
+            is Number -> { yield(value); return@sequence }
+            is String -> { yield(value); return@sequence }
+        }
+        
         if(_exec) env.reg(value, yieldAllLR(value.exec(env)))
-        val reg = env.reg(value) ?: throw Error("Execution failed, register [${value.types}@${value.id}] is null")
+        val reg = env.reg(value) ?:
+            throw Error("Execution failed, register [${value.types}@${value.id}] is null")
         
         if(reg !is Object){
 //            throw Error("Return is not object")

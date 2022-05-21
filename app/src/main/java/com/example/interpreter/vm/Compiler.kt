@@ -84,6 +84,8 @@ open class Compiler {
     private fun typeCast(value: Instruction, inp: Input): Instruction{
         val last = stack.lastOrNull() ?: throw Error("compiler: stack corrupted")
         
+        if(value is Object) return value
+        
         return when(inp){
             is InputBoolean -> if(value !is Bool) Bool(this, value) else value
             is InputDouble -> if(value !is Number) Number(this, value) else value
