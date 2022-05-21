@@ -11,40 +11,46 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:translationZ="15dp"
+        android:background="@drawable/right_panel_body"
         app:layout_constraintTop_toTopOf="@id/topBorderConsole"
         app:layout_constraintBottom_toBottomOf="@id/BottomBorderConsole"
         app:layout_constraintStart_toEndOf="@id/startBorderConsole"
         app:layout_constraintEnd_toEndOf="@id/endBorderConsole">
+        <Button
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:id="@+id/run"
+            android:layout_margin="16dp"
+            app:layout_constraintDimensionRatio="h, 1:1"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            android:background="@drawable/start"/>
         <ScrollView
             android:id="@+id/body_panel"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:padding="16dp"
-            android:background="@drawable/right_panel_body"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toEndOf="@id/button_panel"
-            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/run"
             app:layout_constraintEnd_toEndOf="parent">
-            <LinearLayout
-                android:id="@+id/consoleBody"
-                android:layout_width="match_parent"
-                android:orientation="vertical"
-                android:layout_height="match_parent"
-                android:layout_marginEnd="64dp">
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+                <LinearLayout
+                    android:id="@+id/consoleBody"
+                    android:layout_width="match_parent"
+                    android:orientation="vertical"
+                    android:layout_height="match_parent"
+                    android:layout_marginEnd="64dp"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toStartOf="parent">
 
 
 
-            </LinearLayout>
+                </LinearLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
         </ScrollView>
-        <Button
-            android:id="@+id/button_panel"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:background="@drawable/right_panel_button"
-            app:layout_constraintEnd_toStartOf="@id/endBorderConsoleButton"
-            app:layout_constraintBottom_toBottomOf="@id/BottomBorderConsoleButton"
-            app:layout_constraintTop_toTopOf="@id/topBorderConsoleButton"
-            app:layout_constraintStart_toStartOf="@id/console" />
         <androidx.constraintlayout.widget.Guideline
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

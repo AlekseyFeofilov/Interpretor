@@ -1,53 +1,42 @@
 package com.example.interpreter
 
 import android.annotation.SuppressLint
+import android.app.ActionBar
 import android.content.ClipData
+import android.content.Context
 import android.graphics.Color
-import android.os.Build
-import android.os.Bundle
-import android.os.CountDownTimer
+import android.os.*
 import android.util.Log
-import android.view.DragEvent
-import android.view.KeyEvent
-import android.view.MotionEvent
-import android.view.View
+import android.view.*
 import android.view.View.*
 import android.widget.EditText
-import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.forEach
+import androidx.core.view.setMargins
 import androidx.fragment.app.Fragment
-import com.example.interpreter.customView.blockView.BlockView
 import com.example.interpreter.customView.DrawView
+import com.example.interpreter.customView.Line
+import com.example.interpreter.customView.blockView.BlockView
 import com.example.interpreter.customView.blocks.*
-import com.example.interpreter.customView.blocks.WhileBlock
 import com.example.interpreter.databinding.*
-import com.example.interpreter.vm.VM
+import com.example.interpreter.vm.instruction.If
 import kotlin.math.pow
 import kotlin.math.sqrt
-import kotlin.random.Random
-import com.example.interpreter.vm.Compiler
-import kotlinx.coroutines.delay
-import java.lang.Exception
-import kotlin.coroutines.Continuation
-import kotlin.coroutines.resume
 
 
 var isConsoleHidden = true
 var isBlocksPanelHidden = true
 
-data class Point(var x: Float, var y: Float)
-data class Wire(
-    var isVisible: Boolean,
-    var startBlock: BlockView, var endBlock: BlockView,
-    var outputPoint: Point, var inputPoint: Point
-)
+data class Point(var x:Float, var y:Float)
+data class Wire(var isVisible: Boolean,
+                var startBlock: BlockView, var endBlock: BlockView,
+                var outputPoint: Point, var inputPoint: Point)
 
 class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
     private var touchPoint = Point(0f, 0f)
-
+    
     private var scaleInStack = 0.5f
     
     private var isPanelMoving = false
@@ -57,6 +46,7 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
     private lateinit var blocksPanel: ConstraintLayout
     
     private lateinit var consoleBody: LinearLayout
+    var listOfReading = mutableListOf<String>()
     private lateinit var canvas: DrawView
     
     private lateinit var bindingWorkspace: FragmentWorkspaceBinding
@@ -73,13 +63,9 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
     private val listOfBlocks = mutableListOf<BlockView>()
     private val listOfWires = mutableListOf<Wire>()
     
-    var listOfReading = ArrayDeque<String>()
-    var consoleEvent: Continuation<String>? = null
-    
-    @SuppressLint("ClickableViewAccessibility")
+    @SuppressLint("ClickableViewAccessibility", "UseRequireInsteadOfGet")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        
         bindingWorkspace = FragmentWorkspaceBinding.bind(view)
         bindingConsole = FragmentRightPanelBinding.bind(view)
         bindingBlocksPanel = FragmentBlocksBinding.bind(view)
@@ -94,7 +80,11 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
         bindingBlocksPanel.closeButton.setOnClickListener { movePanelWithBlocks(300) }
         bindingBlocksPanel.blocksButton.setOnClickListener {
             if (isConsoleHidden) {
-                movePanelWithBlocks(400)
+                movePanelWithBlocks(200)
+            }
+            else {
+                movePanelWithBlocks(200L)
+                moveConsole(200L)
             }
         }
         
@@ -104,9 +94,7 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
         // set touch listener for button that pull console
         consoleBody = bindingConsole.consoleBody
         consoleBody.addView(EditText(context))
-        getListOfTextViewFromConsole()[getListOfTextViewFromConsole().size - 1].setOnKeyListener(
-            keyListener()
-        )
+        getListOfTextViewFromConsole()[getListOfTextViewFromConsole().size - 1].setOnKeyListener(keyListener())
         
         console = bindingConsole.console
         //bindingConsole.buttonPanel.setOnTouchListener(consoleMoving())
@@ -115,25 +103,37 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
         //if (isButtonForConsoleVisibility) {
         bindingConsole.consoleButton.setOnClickListener {
             if (isBlocksPanelHidden) {
-                isPanelMoving = true
-                isConsoleHidden = if (console.x > 0.6 * metrics.bounds.width()) {
-                    takeConsole(200)
-                    false
-                } else {
-                    hideConsole(bindingConsole.buttonPanel, 200)
-                    true
-                }
-                isPanelMoving = false
+                moveConsole(200L)
+            }
+            else {
+                movePanelWithBlocks(200L)
+                moveConsole(200L)
             }
         }
         //} else {
         //    bindingConsole.consoleButton.visibility = View.INVISIBLE
         //}
         
+        val params = LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT)
+        params.setMargins(8, 8, 8, 8)
+        addBlockToGroup(StartBlock(context!!), params, context!!)
+        addBlockToGroup(InitializationBlock(context!!), params, context!!)
+        addBlockToGroup(InputBlock(context!!), params, context!!)
+        addBlockToGroup(PrintBlock(context!!), params, context!!)
+        addBlockToGroup(SetObjectBlock(context!!), params, context!!)
+        addBlockToGroup(WhileBlock(context!!), params, context!!)
+        addBlockToGroup(IfBlock(context!!), params, context!!)
+        addBlockToGroup(GetObjectBlock(context!!), params, context!!)
+        addBlockToGroup(CompareBlock(context!!), params, context!!)
+        addBlockToGroup(BoolBlock(context!!), params, context!!)
+        addBlockToGroup(AssignBlock(context!!), params, context!!)
+        
+        
         // set on click listener for button that add block from panel to stack
         for (i in 0 until bindingListOfBlocks.listOfBlocks.childCount) {
-            bindingListOfBlocks.listOfBlocks.getChildAt(i).setOnClickListener { button ->
-                addBlockToStack(createBlockByClickedButton(button))
+            bindingListOfBlocks.listOfBlocks.getChildAt(i).scaleX = 0.95f
+            bindingListOfBlocks.listOfBlocks.getChildAt(i).setOnClickListener { block ->
+//                addBlockToStack(createBlockByClickedButton(block))
             }
         }
         
@@ -147,39 +147,146 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
         canvas = DrawView(activity)
         addCanvas(canvas)
         
-        bindingWorkspace.compile.setOnClickListener {
-            try {
-                VM(Compiler(listOfBlocks[0], this).compile()).start()
-            } catch (e: Error) {
-                printToConsole(e.toString(), "#FF3F00")
-                Log.i("TAG", e.stackTraceToString())
-            } catch (e: Exception) {
-                printToConsole("look at logcat", "#FF3F00")
-                Log.i("TAG", e.stackTraceToString())
-            }
-        }
-        
         bindingStack.basketContainer.visibility = INVISIBLE
-//        readlnFromConsole()
 
-//        printlnToConsole("hello, World", "#111111")
-//        printlnToConsole("hello, World", "#222222")
-//        printlnToConsole("hello, World", "#333333")
-//        printlnToConsole("hello, World", "#444444")
-//        printlnToConsole("hello, World", "#555555")
-//        printlnToConsole("hello, World", "#666666")
-//        printlnToConsole("hello, World", "#777777")
-//        printlnToConsole("hello, World", "#888888")
-//        printlnToConsole("hello, World", "#999999")
-//        printlnToConsole("hello, World", "#AAAAAA")
-//        printlnToConsole("hello, World", "#BBBBBB")
-//        printlnToConsole("hello, World", "#CCCCCC")
-//        printlnToConsole("hello, World", "#DDDDDD")
-//        printlnToConsole("hello, World", "#EEEEEE")
-//        printlnToConsole("hello, World", "#FFFFFF")
+        console.x = metrics.bounds.width().toFloat()
+        //bindingScrollBox.scrollBox.setOnTouchListener{ view, event -> vibrate(1000L); true }
+    
     }
     
+    private fun addBlockToGroup(block: BlockView, params: LinearLayout.LayoutParams, context: Context) {
+        setListenersForBlock(block)
+        when (block) {
+            is AssignBlock -> {
+                val newBlock = AssignBlock(context)
+                bindingListOfBlocks.listOfBlocks.addView(newBlock, 10, params)
+                setListenersForBlock(newBlock)
+            }
+            is BoolBlock -> {
+                val newBlock = BoolBlock(context)
+                bindingListOfBlocks.listOfBlocks.addView(newBlock, 9, params)
+                setListenersForBlock(newBlock)
+            }
+            is CompareBlock -> {
+                val newBlock = CompareBlock(context)
+                bindingListOfBlocks.listOfBlocks.addView(newBlock, 8, params)
+                setListenersForBlock(newBlock)
+            }
+            is GetObjectBlock -> {
+                val newBlock = GetObjectBlock(context)
+                bindingListOfBlocks.listOfBlocks.addView(newBlock, 7, params)
+                setListenersForBlock(newBlock)
+            }
+            is IfBlock -> {
+                val newBlock = IfBlock(context)
+                bindingListOfBlocks.listOfBlocks.addView(newBlock, 6, params)
+                setListenersForBlock(newBlock)
+            }
+            is InitializationBlock -> {
+                val newBlock = InitializationBlock(context)
+                bindingListOfBlocks.listOfBlocks.addView(newBlock, 1, params)
+                setListenersForBlock(newBlock)
+            }
+            is InputBlock -> {
+                val newBlock = InputBlock(context)
+                bindingListOfBlocks.listOfBlocks.addView(newBlock, 2, params)
+                setListenersForBlock(newBlock)
+            }
+            is PrintBlock -> {
+                val newBlock = PrintBlock(context)
+                bindingListOfBlocks.listOfBlocks.addView(newBlock, 3, params)
+                setListenersForBlock(newBlock)
+            }
+            is SetObjectBlock -> {
+                val newBlock = SetObjectBlock(context)
+                bindingListOfBlocks.listOfBlocks.addView(newBlock, 4, params)
+                setListenersForBlock(newBlock)
+            }
+            is StartBlock -> {
+                val newBlock = StartBlock(context)
+                bindingListOfBlocks.listOfBlocks.addView(newBlock, 0, params)
+                setListenersForBlock(newBlock)
+            }
+            is WhileBlock -> {
+                val newBlock = WhileBlock(context)
+                bindingListOfBlocks.listOfBlocks.addView(newBlock, 5, params)
+                setListenersForBlock(newBlock)
+            }
+        }
+    }
     
+    private fun setListenersForBlock(block: BlockView) {
+        for (i in block.getListOfOutputView()) {
+            i.setOnTouchListener(onTouchIO())
+        }
+        for (i in block.getListOfInputView()) {
+            i.setOnTouchListener(onTouchIO())
+        }
+        block.translationZ = translationForBlocks
+        translationForBlocks++
+        
+        block.setOnClickListener {
+            Log.i("hello", "i'm here")
+            moveToStack(block, Point(0f, 0f))
+            correctNearBorder(block)
+            val params = LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT)
+            params.setMargins(8, 8, 8, 8)
+            addBlockToGroup(block, params, context!!)
+            block.setOnClickListener{ }
+        }
+        block.setOnLongClickListener(dragListener())
+    }
+    
+     //generate and put in stack blocks
+   // @SuppressLint("UseRequireInsteadOfGet")
+//    private fun createBlockByClickedButton(view: View): BlockView =
+//        when (view) {
+//            bindingListOfBlocks.ASSIGN -> { AssignBlock(context!!) }
+//            bindingListOfBlocks.WHILE -> { WhileBlock(context!!) }
+//            bindingListOfBlocks.COMPARE -> { CompareBlock(context!!) }
+//            bindingListOfBlocks.IF -> { IfBlock(context!!) }
+//            bindingListOfBlocks.INIT -> { InitializationBlock(context!!) }
+//            bindingListOfBlocks.BOOL -> { BoolBlock(context!!) }
+//            else -> { InitializationBlock(context!!) }
+//        }
+    
+    @SuppressLint("ClickableViewAccessibility")
+    private fun addBlockToStack(block: BlockView) {
+        bindingStack.stack.addView(block)
+        for (i in block.getListOfOutputView()) {
+            i.setOnTouchListener(onTouchIO())
+        }
+        for (i in block.getListOfInputView()) {
+            i.setOnTouchListener(onTouchIO())
+        }
+        block.setOnLongClickListener(dragListener())
+        block.translationZ = translationForBlocks
+        translationForBlocks++
+        block.scaleX *= scaleInStack
+        block.scaleY *= scaleInStack
+        listOfBlocks.add(block)
+    }
+    
+    private fun moveConsole(time: Long) {
+        isPanelMoving = true
+        isConsoleHidden = if (console.x > 0.6 * metrics.bounds.width()) {
+            takeConsole(200)
+            false
+        } else {
+            hideConsole(200)
+            true
+        }
+        isPanelMoving = false
+    }
+    @Suppress("DEPRECATION")
+    private fun vibrate(time: Long) {
+        val vibrator = context?.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+        if (Build.VERSION.SDK_INT >= 26) {
+            vibrator.vibrate(VibrationEffect.createOneShot(time,VibrationEffect.DEFAULT_AMPLITUDE))
+        } else {
+            vibrator.vibrate(time)
+        }
+    }
     private fun getListOfTextViewFromConsole(): MutableList<TextView> {
         val list = mutableListOf<TextView>()
         consoleBody.forEach { list.add(it as TextView) }
@@ -192,12 +299,15 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
     
     fun printToConsole(text: String) {
         val list = getListOfTextViewFromConsole()
-        if (list.size > 1) {
-            val newText = list[list.size - 1].text.toString() + text
+        if(isConsoleHidden) {
+            takeConsole(200L)
+            isConsoleHidden = false
+        }
+        if(list.size > 1) {
+            val newText = list[list.size - 2].text.toString() + text
             list[list.size - 2].text = newText
-        } else printlnToConsole(text)
+        }else printlnToConsole(text)
     }
-    
     @SuppressLint("SetTextI18n")
     fun printlnToConsole(text: String) {
         val newLine = TextView(context)
@@ -205,31 +315,39 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
         newLine.text = ">> $text"
     }
     
-    fun printToConsole(text: String, color: String) {
-        val list = getListOfTextViewFromConsole()
-        if (list.size > 0) {
-            val newText = list[list.size - 1].text.toString() + text
-            list[list.size - 1].text = newText
-        } else printlnToConsole(text, color)
-    }
+//    fun printToConsole(text: String, color: String) {
+//        val list = getListOfTextViewFromConsole()
+//        if(isConsoleHidden) {
+//            takeConsole(200L)
+//            isConsoleHidden = false
+//        }
+//        if(list.size > 1) {
+//            val newText = list[list.size - 1].text.toString() + text
+//            list[list.size - 2].text = newText
+//        }else printlnToConsole(text, color)
+//    }
     
     @SuppressLint("SetTextI18n")
     fun printlnToConsole(text: String, color: String) {
         val newLine = TextView(context)
-        consoleBody.addView(newLine)
+        consoleBody.addView(newLine, consoleBody.childCount - 1)
         newLine.setTextColor(Color.parseColor(color))
         newLine.text = ">> $text"
     }
     
-//    fun readlnFromConsole(): String {
-//        if (listOfReading.isNotEmpty()) {
-//            val line = listOfReading[0]
-//            listOfReading.removeAt(0)
-//            return line
-//        } else {
-//            return ""
-//        }
-//    }
+    fun readlnFromConsole(): String {
+        if(isConsoleHidden) {
+            takeConsole(200L)
+            isConsoleHidden = false
+        }
+        return if(listOfReading.isNotEmpty()) {
+            val line = listOfReading[0]
+            listOfReading.removeAt(0)
+            line
+        } else {
+            ""
+        }
+    }
     
     @SuppressLint("SetTextI18n")
     private fun keyListener() = OnKeyListener { view, key, event ->
@@ -240,14 +358,9 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
             val newLine = TextView(context)
             consoleBody.addView(newLine, consoleBody.childCount - 1)
             newLine.text = "<< ${view.text}"
-            
-            if(consoleEvent != null){
-                consoleEvent?.resume(view.text.toString())
-                consoleEvent = null
-            }else listOfReading.add(view.text.toString())
-            
-            (view as EditText).text.clear()
+            listOfReading.add(view.text.toString())
         }
+        (view as EditText).text.clear()
         false
     }
     
@@ -261,26 +374,24 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
     
     @SuppressLint("ClickableViewAccessibility")
     private fun onTouchIO() = OnTouchListener { fromView, event ->
-        if (!isInScrollBox(fromView)) return@OnTouchListener true
+        if(!isInScrollBox(fromView)) return@OnTouchListener true
         when (event.action) {
             MotionEvent.ACTION_DOWN -> {
-                //TODO: add vibration
+                vibrate(100L)
                 touchPoint = getCoordinatesOfIOPoint(fromView, bindingScrollBox.scrollBox)
             }
             MotionEvent.ACTION_MOVE -> {
-                val currentPoint = Point(event.x + touchPoint.x, event.y + touchPoint.y)
+                    val currentPoint = Point(event.x + touchPoint.x, event.y + touchPoint.y)
                 if (calculateDistanceBetweenPoints(
-                        touchPoint,
-                        currentPoint
-                    ) >= 1.5 * fromView.height
-                ) {
+                        Point(touchPoint.x + fromView.width/2, touchPoint.y + fromView.height/2),
+                        currentPoint) >= 1.5*fromView.height) {
                     drawWireInMove(fromView, touchPoint, currentPoint)
+                    
                 }
             }
             MotionEvent.ACTION_UP -> {
                 val toView = findIOWhereMovingEnded(
-                    Point(event.x + touchPoint.x, event.y + touchPoint.y)
-                )
+                    Point(event.x + touchPoint.x, event.y + touchPoint.y))
                 if (toView == null) {
                     canvas.draw(listOfWires)
                     return@OnTouchListener true
@@ -292,10 +403,7 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
                     return@OnTouchListener true
                 }
                 if (isTwoIOPointsInOneBlock(fromView, toView) || !isInputAndOutput(
-                        fromView,
-                        toView
-                    )
-                ) {
+                        fromView, toView)) {
                     canvas.draw(listOfWires)
                     return@OnTouchListener true
                 }
@@ -303,7 +411,6 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
                 val currentPoint = Point(event.x + touchPoint.x, event.y + touchPoint.y)
                 drawWireInMove(fromView, touchPoint, currentPoint)
                 makeConnect(fromView, toView)
-                
                 
                 recalculateWiresPoint()
                 
@@ -314,24 +421,25 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
         true
     }
     
+//    private fun updateSizeOfBlocks() {
+//        for(i in listOfBlocks) {
+//            i.invalidate()
+//        }
+//    }
+    
+    
+    
     private fun recalculateWiresPoint() {
-        for (i in 0 until listOfWires.size) {
-            val outputX = getCoordinatesOfIOPoint(
-                listOfWires[i].startBlock.getListOfOutputView()[0],
-                listOfWires[i].startBlock
-            ).x
-            Log.i("hello", "${listOfWires[i].startBlock}, $outputX")
+        for(i in 0 until listOfWires.size) {
+            val outputX = getCoordinatesOfIOPoint(listOfWires[i].startBlock.getListOfOutputView()[0], listOfWires[i].startBlock).x
             listOfWires[i].outputPoint.x = outputX
-//            outputX = getCoordinatesOfIOPoint(i.startBlock.getListOfOutputView()[0], i.endBlock).x
-//            i.outputPoint.x = outputX
-        
         }
     }
     
     private fun isInScrollBox(view: View): Boolean {
         var buffView = view
-        while (buffView != bindingWorkspace.root) {
-            if (buffView == bindingScrollBox.scrollBox) return true
+        while(buffView != bindingWorkspace.root) {
+            if(buffView == bindingScrollBox.scrollBox) return true
             buffView = buffView.parent as View
         }
         return false
@@ -344,28 +452,22 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
             input = first
             output = second
         }
-    
-        //todo: убрать лишние проверки
-        when {
-            !listOfBlocks[findBlockIndByIOView(input)].isInputComplete(input) &&
-                    !listOfBlocks[findBlockIndByIOView(output)].isOutputComplete(output) -> {
-                addNewWire(input, output)
-                Log.i("TAG", "connect")
-            }
-            listOfBlocks[findBlockIndByIOView(input)].isInputComplete(input) &&
-                    !listOfBlocks[findBlockIndByIOView(output)].isOutputComplete(output) -> {
-                Log.i("TAG", "reconnect input")
-                disconnectWireByIO(input)
-                removeWireByIO(input)
-                addNewWire(input, output)
-            }
-            !listOfBlocks[findBlockIndByIOView(input)].isInputComplete(input) &&
-                    listOfBlocks[findBlockIndByIOView(output)].isOutputComplete(output) -> {
-                Log.i("TAG", "reconnect output")
-                disconnectWireByIO(output)
-                removeWireByIO(output)
-                addNewWire(input, output)
-            }
+        
+        if(!listOfBlocks[findBlockIndByIOView(input)].isInputComplete(input) &&
+            !listOfBlocks[findBlockIndByIOView(output)].isOutputComplete(output)) {
+            addNewWire(input, output)
+        }
+        else if(listOfBlocks[findBlockIndByIOView(input)].isInputComplete(input) &&
+            !listOfBlocks[findBlockIndByIOView(output)].isOutputComplete(output)) {
+            disconnectWireByIO(input)
+            removeWireByIO(input)
+            addNewWire(input, output)
+        }
+        else if(!listOfBlocks[findBlockIndByIOView(input)].isInputComplete(input) &&
+            listOfBlocks[findBlockIndByIOView(output)].isOutputComplete(output)) {
+            disconnectWireByIO(output)
+            removeWireByIO(output)
+            addNewWire(input, output)
         }
         
     }
@@ -411,21 +513,16 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
                     true,
                     listOfBlocks[0], listOfBlocks[0], second,
                     Point(
-                        first.x + from.width / 2,
-                        first.y + from.height / 2
-                    )
-                )
-            )
+                    first.x + from.width / 2,
+                    first.y + from.height / 2)))
         else
             canvas.draw(
                 listOfWires, Wire(
                     true,
                     listOfBlocks[0], listOfBlocks[0], Point(
                         first.x + from.width / 2,
-                        first.y + from.height / 2
-                    ), second
-                )
-            )
+                        first.y + from.height / 2),
+                    second))
     }
     
     private fun isInputInBlock(view: View): Boolean {
@@ -436,7 +533,6 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
         }
         return false
     }
-    
     private fun isInputInBlock(view: View, block: BlockView): Boolean {
         for (input in block.getListOfInputView()) {
             if (input == view) return true
@@ -508,87 +604,34 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
         while (buffView != bindingScrollBox.scrollBox) {
             point.x += buffView.x
             point.y += buffView.y
-            if (buffView.parent == bindingWorkspace.root) break
+            if(buffView.parent == bindingWorkspace.root) break
             buffView = (buffView.parent as View)
             if (buffView == endParent) break
         }
         return point
     }
     
-    // generate and put in stack blocks
-    @SuppressLint("UseRequireInsteadOfGet")
-    private fun createBlockByClickedButton(view: View): BlockView =
-        when (view) {
-            bindingListOfBlocks.ASSIGN -> {
-                AssignBlock(context!!)
-            }
-            bindingListOfBlocks.WHILE -> {
-                WhileBlock(context!!)
-            }
-            bindingListOfBlocks.COMPARE -> {
-                CompareBlock(context!!)
-            }
-            bindingListOfBlocks.IF -> {
-                IfBlock(context!!)
-            }
-            bindingListOfBlocks.INIT -> {
-                InitializationBlock(context!!)
-            }
-            bindingListOfBlocks.BOOL -> {
-                BoolBlock(context!!)
-            }
-            bindingListOfBlocks.PRINT -> {
-                PrintBlock(context!!)
-            }
-            bindingListOfBlocks.START -> {
-                StartBlock(context!!)
-            }
-            bindingListOfBlocks.INPUT -> {
-                InputBlock(context!!)
-            }
-            bindingListOfBlocks.GETOBJECT -> {
-                GetObjectBlock(context!!)
-            }
-            bindingListOfBlocks.SETOBJECT -> {
-                SetObjectBlock(context!!)
-            }
-            else -> {
-                InitializationBlock(context!!)
-            }
-        }
     
-    @SuppressLint("ClickableViewAccessibility")
-    private fun addBlockToStack(block: BlockView) {
-        bindingStack.stack.addView(block)
-        for (i in block.getListOfOutputView()) {
-            i.setOnTouchListener(onTouchIO())
-        }
-        for (i in block.getListOfInputView()) {
-            i.setOnTouchListener(onTouchIO())
-        }
-        block.setOnLongClickListener(dragListener())
-        block.translationZ = translationForBlocks
-        translationForBlocks++
-        block.scaleX *= scaleInStack
-        block.scaleY *= scaleInStack
-        listOfBlocks.add(block)
-    }
     
     
     // drag-n-drop for blocks
-    @SuppressLint("ClickableViewAccessibility")
+    @SuppressLint("ClickableViewAccessibility", "UseRequireInsteadOfGet")
     private fun dragListener() = OnLongClickListener { view ->
         val data = ClipData.newPlainText("", "")
-        //TODO: add vibration
-        
-        dragShadow = DragShadowBuilder(view)
+        vibrate(100L)
+    
+        //dragShadow = DragShadowBuilder(view)
+        if(view.parent == bindingListOfBlocks.listOfBlocks) {
+            movePanelWithBlocks(200L)
+            val params = LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT)
+            params.setMargins(8, 8, 8, 8)
+            addBlockToGroup(view as BlockView, params, context!!)
+        }
         draggingView = view as View
+        dragShadow = DragShadowBuilder(draggingView)
         bindingStack.basketContainer.translationZ = 100f
         bindingStack.basketContainer.visibility = VISIBLE
-//        dragShadow.onProvideShadowMetrics(
-//            android.graphics.Point(draggingView.width*scaleInStack.toInt(), draggingView.height),
-//            android.graphics.Point(draggingView.width, draggingView.height/2))
-        if (view is BlockView) view.translationZ = translationForBlocks
+        if(view is BlockView) view.translationZ = translationForBlocks
         translationForBlocks++
         
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
@@ -602,22 +645,10 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
     }
     
     private fun dropListener() = OnDragListener { view, event ->
-        if (!isBlocksPanelHidden) return@OnDragListener true
+        if(!isBlocksPanelHidden) movePanelWithBlocks(200L)
         when (event.action) {
             DragEvent.ACTION_DRAG_ENTERED -> {
-                when (view) {
-                    bindingStack.basketContainer -> {
-                        //TODO: add vibration
-                    }
-                    bindingStack.stack -> {
-//                        dragShadow.onProvideShadowMetrics(
-//                            android.graphics.Point(draggingView.width*scaleInStack.toInt(), draggingView.height),
-//                            android.graphics.Point(draggingView.width, draggingView.height/2))
-                    }
-                    bindingScrollBox.scrollBox -> {
-                    
-                    }
-                }
+                if(view == bindingStack.basketContainer) vibrate(100L)
             }
             DragEvent.ACTION_DROP -> {
                 when (view) {
@@ -637,6 +668,8 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
                         canvas.draw(listOfWires)
                     }
                 }
+            }
+            DragEvent.ACTION_DRAG_ENDED -> {
                 bindingStack.basketContainer.visibility = INVISIBLE
             }
         }
@@ -646,19 +679,15 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
     private fun correctNearBorder(block: BlockView) {
         val parent = block.parent
         var scale = scaleInStack
-        if (parent == bindingScrollBox.scrollBox) scale = 1f
-        if (parent is ConstraintLayout) {
+        if(parent == bindingScrollBox.scrollBox) scale = 1f
+        if(parent is ConstraintLayout) {
             when {
-                block.x + block.width * (1 - scale) / 2 < 0 -> block.x =
-                    0f - block.width * (1 - scale) / 2
-                block.x + block.width * (1 + scale) / 2 > parent.width -> block.x =
-                    parent.width - block.width * (1 + scale) / 2
+                block.x + block.width * (1 - scale) / 2 < 0 -> block.x = 0f - block.width * (1 - scale) / 2
+                block.x + block.width * (1 + scale) / 2 > parent.width -> block.x = parent.width - block.width * (1 + scale) / 2
             }
             when {
-                block.y + block.width * (1 - scale) / 2 < 0 -> block.y =
-                    0f - block.height * (1 - scale) / 2
-                block.y + block.height * (1 + scale) / 2 > parent.height -> block.y =
-                    parent.height - block.height * (1 + scale) / 2
+                block.y + block.height * (1 - scale) / 2 < 0 -> block.y = 0f - block.height * (1 - scale) / 2
+                block.y + block.height * (1 + scale) / 2 > parent.height -> block.y = parent.height - block.height * (1 + scale) / 2
             }
         }
     }
@@ -677,10 +706,10 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
     }
     
     private fun disconnectAllWires(block: BlockView) {
-        for (i in block.getListOfInputView()) {
+        for(i in block.getListOfInputView()) {
             disconnectWireByIO(i, block)
         }
-        for (i in block.getListOfOutputView()) {
+        for(i in block.getListOfOutputView()) {
             disconnectWireByIO(i, block)
         }
     }
@@ -689,70 +718,74 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
         val block = listOfBlocks[findBlockIndByIOView(IO)]
         disconnectWireByIO(IO, block)
     }
-    
     private fun disconnectWireByIO(IO: View, block: BlockView) {
-        if (isInputInBlock(
-                IO,
-                block
-            )
-        ) block.disconnectInput(block.findInputByInputRadioButton(IO)!!)
-        else block.disconnectOutputAll(block.findOutputByOutputRadioButton(IO)!!) //todo: соединеённый print ломает эту фню с ошибкой NPE
+        if(isInputInBlock(IO, block)) block.disconnectInput(block.findInputByInputRadioButton(IO)!!)
+        else block.disconnectOutputAll(block.findOutputByOutputRadioButton(IO)!!)
     }
     
     private fun removeWireByIO(IO: View) {
         val block = listOfBlocks[findBlockIndByIOView(IO)]
         removeWireByIO(IO, block)
     }
-    
     private fun removeWireByIO(IO: View, block: BlockView) {
         val point = getCoordinatesOfIOPoint(IO, block)
-        point.x += IO.width / 2
-        point.y += IO.height / 2
-        for (i in listOfWires.size - 1 downTo 0) {
-            
-            if ((listOfWires[i].inputPoint == point && listOfWires[i].endBlock == block) ||
-                (listOfWires[i].outputPoint == point && listOfWires[i].startBlock == block)
-            ) {
+        point.x += IO.width/2
+        point.y += IO.height/2
+        for(i in listOfWires.size - 1 downTo 0) {
+
+            if((listOfWires[i].inputPoint == point && listOfWires[i].endBlock == block) ||
+                (listOfWires[i].outputPoint == point && listOfWires[i].startBlock == block)) {
                 listOfWires.removeAt(i)
             }
         }
     }
     
     private fun moveToScrollBox(block: BlockView, location: Point) {
+        var delta = Point(0f, 0f)
         if (block.parent != bindingScrollBox.scrollBox) {
-            bindingStack.stack.removeView(block)
+            if(block.parent == bindingStack.stack) bindingStack.stack.removeView(block)
+            if(block.parent == bindingListOfBlocks.listOfBlocks) {
+                delta = Point(block.x, block.y)
+                bindingListOfBlocks.listOfBlocks.removeView(block)
+                listOfBlocks.add(block)
+                setListenersForBlock(block)
+                block.setOnClickListener {  }
+            }
+            else {
+                block.scaleX /= scaleInStack
+                block.scaleY /= scaleInStack
+            }
             bindingScrollBox.scrollBox.addView(block)
             changeVisibilityWiresForBlock(block)
-            for (i in listOfBlocks) {
-                if (i == block) {
-                    i.scaleX /= scaleInStack
-                    i.scaleY /= scaleInStack
-                }
-            }
+
         }
-        block.x = location.x - block.width / 2
-        block.y = location.y - block.height / 2
+        block.x = location.x + delta.x - block.width / 2
+        block.y = location.y + delta.y - block.height / 2
     }
     
     private fun moveToStack(block: BlockView, location: Point) {
+        var delta = Point(0f, 0f)
         if (block.parent != bindingStack.stack) {
-            bindingScrollBox.scrollBox.removeView(block)
+            if(block.parent == bindingScrollBox.scrollBox) bindingScrollBox.scrollBox.removeView(block)
+            if(block.parent == bindingListOfBlocks.listOfBlocks) {
+                delta = Point(block.x, block.y)
+                bindingListOfBlocks.listOfBlocks.removeView(block)
+                listOfBlocks.add(block)
+                setListenersForBlock(block)
+                block.setOnClickListener {  }
+            }
             bindingStack.stack.addView(block)
             changeVisibilityWiresForBlock(block)
-            for (i in listOfBlocks) {
-                if (i == block) {
-                    i.scaleX *= scaleInStack
-                    i.scaleY *= scaleInStack
-                }
-            }
+            block.scaleX *= scaleInStack
+            block.scaleY *= scaleInStack
         }
-        block.x = location.x - block.width / 2
-        block.y = location.y - block.height / 2
+        block.x = location.x + delta.x - block.width / 2
+        block.y = location.y + delta.y - block.height / 2
     }
     
     private fun changeVisibilityWiresForBlock(block: BlockView) {
-        for (i in listOfWires) {
-            if (i.startBlock == block || i.endBlock == block) {
+        for(i in listOfWires) {
+            if(i.startBlock == block || i.endBlock == block) {
                 i.isVisible = !i.isVisible
             }
         }
@@ -818,11 +851,12 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
         val from = Point(console.x, console.y)
         val to = Point(0.2f * metrics.bounds.width(), console.y)
         moveContainer(from, to, time, console)
+        
     }
     
-    private fun hideConsole(view: View, time: Long) {
+    private fun hideConsole(time: Long) {
         val from = Point(console.x, console.y)
-        val to = Point(metrics.bounds.width() - view.width.toFloat(), console.y)
+        val to = Point(metrics.bounds.width().toFloat(), console.y)
         moveContainer(from, to, time, console)
     }
     
