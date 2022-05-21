@@ -25,6 +25,8 @@ import com.example.interpreter.databinding.*
 import com.example.interpreter.vm.Compiler
 import com.example.interpreter.vm.VM
 import com.example.interpreter.vm.instruction.If
+import kotlin.coroutines.Continuation
+import kotlin.coroutines.resume
 import kotlin.math.pow
 import kotlin.math.sqrt
 
@@ -68,7 +70,7 @@ class WorkspaceFragment : Fragment(R.layout.fragment_workspace) {
     var listOfReading = ArrayDeque<String>()
     var consoleEvent: Continuation<String>? = null
     
-    @SuppressLint("ClickableViewAccessibility")
+    @SuppressLint("ClickableViewAccessibility", "UseRequireInsteadOfGet")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         bindingWorkspace = FragmentWorkspaceBinding.bind(view)
